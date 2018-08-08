@@ -1,6 +1,6 @@
 @import 'base';
 body {
-  background: url("./../resouce/images/2.jpg") no-repeat;
+  background: url("./../resouce/bg/2.jpg") no-repeat;
   -moz-background-size: 100% 100%;
        background-size: 100% 100%;
   overflow: hidden;
@@ -911,10 +911,16 @@ video{
   }
 }
 
+.screen .articleMain{
+    width:100%;
+    right:0;
+    z-index: 5;
+  }
 .screen main {
   position: absolute;
   top: 8%;
   right: -3%;
+  will-change: width,height,z-index;
   width:86.5%;
   overflow: hidden;
   -webkit-transition: all .5s;
@@ -1229,6 +1235,8 @@ video{
         }
         li.dynamic_item{
           width: 82%;
+          perspective: 1000px;
+          transform-style: preserve-3d;
           min-height: 77px;
           margin-left: 5%;
           margin-top: 15px;
@@ -1239,12 +1247,14 @@ video{
           background: rgba(0,0,0,.3);
           .dynamic-msg-container{
             width:100%;
-            max-height : 440px;
+            transition: all .3s;
+            max-height: 0px;
             margin-bottom : 20px;
             -moz-border-radius : 10px;
                  border-radius : 10px;
             position : relative;
-            display : none;
+            will-change: transform;
+            transform: scale3d(0,0,0);
             border : 1px solid rgb(252, 248, 227);
             .leave-dynamic-mg{
                 position: absolute;
@@ -1317,6 +1327,10 @@ video{
                 }
               }
             }
+          }
+          .showMsg{
+            transform: scale3d(1,1,1);
+            max-height: 440px;
           }
           .title{
             color: white;
@@ -1543,11 +1557,6 @@ pre.ql-syntax{
     li img{
       max-width: 70% !important;
     }
-    li:hover{
-      transform: translate3D(15%,-10px,0);
-      transition: all .3s;
-      box-shadow: 5px 9px 18px rgba(0,0,0,0.3), -5px 9px 18px rgba(0,0,0,0.3);
-    }
     li .article-info{
     position: absolute;
     display: -webkit-box;
@@ -1649,6 +1658,7 @@ pre.ql-syntax{
       transform: translate3d(15%,0,0);
       -moz-border-radius: 7px;
            border-radius: 7px;
+           animation-fill-mode: backwards;
       cursor: pointer;
       position: relative;
       text-align: center;
@@ -1662,14 +1672,20 @@ pre.ql-syntax{
         position: absolute;
         width: 30px;
         height: 30px;
+        line-height: 30px;
         color: #3c763d;
         font-size: 20px;
         cursor: pointer;
-        top: -15px;
+        top: 10px;
         background: white;
-        left: -11px;
+        right: 10px;
         border-radius: 15px;
-        display: none;
+        transition: all .5s;
+        will-change: transform;
+        transform: scale3d(0,0,0);
+      }
+      .showClose{
+        transform: scale3d(1,1,1);
       }
       .article_summary {
         color : rgb(136, 136, 136);
@@ -1721,6 +1737,7 @@ pre.ql-syntax{
       }
       .article_date {
         position: absolute;
+        will-change: transform;
         top: 8px;
         left: -16%;
         width: 80px;
@@ -1734,6 +1751,9 @@ pre.ql-syntax{
         -moz-transition: all .5s;
         transition: all .5s;
       }
+      .toggleDate{
+        transform: translate3d(-100%,0,0);
+      }
       .article_date::after {
         content: '';
         width: 2px;
@@ -1744,6 +1764,24 @@ pre.ql-syntax{
         background: white;
       }
     }
+      li:hover{
+        transform: translate3D(15%,-7px,0);
+        transition: all .3s;
+        box-shadow: 5px 9px 18px rgba(0,0,0,0.3), -5px 9px 18px rgba(0,0,0,0.3);
+    }
+    .showArticle {
+      background: rgba(0,0,0,.3);
+      position: relative;
+      -moz-border-radius: 7px;
+          border-radius: 7px;
+      cursor: pointer;
+      position: relative;
+      width: 110%;
+      height: 100% ;
+      transform: translate3d(0,0,0) !important;
+      cursor: auto ;
+      text-align: center;
+  }
     li:hover .article_date {
       -moz-border-radius: 10px 0 0 10px;
            border-radius: 10px 0 0 10px;
@@ -1774,20 +1812,6 @@ p.toggleP {
 }
 .article_title_toggle{
     margin-left:40% !important;
-}
-li.showArticle {
-  background: rgba(0,0,0,.3);
-/*margin-top: 20px;*/
-  position: relative;
-  -moz-border-radius: 7px;
-       border-radius: 7px;
-  cursor: pointer;
-  position: relative;
-  width: 110% !important;
-  height: 100% !important;
-  transform: translate3d(2%,0,0) !important;
-  cursor: auto !important;
-  text-align: center;
 }
 
 /*admin menu*/
@@ -2246,7 +2270,8 @@ li.showArticle {
         padding-bottom:12px;
         margin: 0 auto;
         border-bottom: 1px solid #ccc;
-
+        perspective: 1000px;
+        transform-style: preserve-3d;
         .repeat_list_con{
           overflow:hidden;
           width:300px;
@@ -2254,16 +2279,21 @@ li.showArticle {
         }
         .repeat_list{
           width:100%;
-          background:url(/resouce/images/bg.jpg) repeat;
+          // background:url(/resouce/images/bg.jpg) repeat;
           height:100%;
-          display:none;
+          will-change: height,width,opacity,padding,margin,overflow;
+          // transform: scale3d(0,0,0);
           margin: 0 auto;
           overflow-x:hidden;
           overflow-y:auto;
+          display: none;
           color:#000409;
+          // transition: all .3s;
           .repeat_item{
             font-size : 14px;
-            margin:10px 0 0 100px;
+            margin:0px 0 0 100px;
+            background: #f0f0f0;
+            padding:10px 0px 1px 10px;
             .repeat_date{
                 font-size:12px;
                 color:red;
@@ -2276,13 +2306,18 @@ li.showArticle {
               font-weight:bold;
             }
             .repeat_text{
-              margin-left:20px;
-              padding-right:38px;
+              margin-left:61px;
+              padding-right:55px;
               text-indent: 2em;
               font-size:12px;
               white-space: pre-line;
+              word-break:break-all;
             }
           }
+        }
+        .repeatShow{
+          max-height:440px;
+          transform: scale3d(1,1,1);
         }
         .message_operation{
           margin:30px 20px 0 0 ;
@@ -2325,14 +2360,15 @@ li.showArticle {
             margin-left:70px;
         }
         p.message_content{
-          font-size: 13px;
-          padding:5px 50px 0px 20px;
-          white-space: pre-line;
-          clear:both;
-          line-height:20px;
-          text-indent: 2em;
-          position:relative;
-          margin-left:90px;
+            font-size: 13px;
+            padding: 5px 50px 0px 20px;
+            white-space: pre-line;
+            clear: both;
+            line-height: 20px;
+            text-indent: 2em;
+            word-break: break-all;
+            position: relative;
+            margin-left: 61px;
         }
         .user {
           font-size: 15px;
@@ -2578,27 +2614,46 @@ li.showArticle {
         width:100%;
     }
     li:first-of-type span,li:first-of-type a{cursor: pointer;}
-    li:hover .cover{
-      left:43px;
+    li:hover span{
+      transform: translate3d(20px,0,0);
+    }
+    li:hover .shake{
+      transform: scale3d(1.1,1.1,1.1)
+    }
+    #zone{
+      cursor: pointer;
     }
     li {
       width: 96%;
       height: 10%;
       text-align: left;
       color:white;
+      perspective: 1000px;
+      transform-style: preserve-3d;
       padding-left: 4%;
       -webkit-transition: all .5s;
       -moz-transition: all .5s;
       transition: all .5s;
       position: relative;
-      .cover{
-          position:absolute;
-          height:30px;
+      .shake{
+        display: inline-block;
+        transition: all .3s;
+        will-change: transform;
+      }
+      span{
+        position: absolute;
+        display: inline-block;
+        will-change: transform;
+        top:1px;
           -webkit-transition: .3s;
           -moz-transition: .3s;
           transition: .3s;
+      }
+      .cover{
+          position:absolute;
+          height:30px;
           pointer-events:none;
-          top:9px;
+          top:12px;
           left:35px;
           font-size:13px;
         }
@@ -2662,21 +2717,22 @@ li.showArticle {
         border: 10px solid transparent;
         border-top-color: white;
         position: absolute;
-        right: 104px;
+        right: 66px;
         bottom: -20px;
       }
       .wechat_img{
         width: 150px;
         height: 150px;
         display: block;
+        will-change: transform,opacity,z-index;
         position: absolute;
-        top: -200px;
-        right: -98px;
+        right:-68px;
+        transform: translate3d(0px,-50px,0) scale(0);
         -webkit-transition:all .3s;
         -moz-transition:all .3s;
         transition:all .3s;
         opacity:0;
-        z-index:-5;
+        z-index:3;
         img{
           display:block;
           width:100%;
@@ -2689,6 +2745,7 @@ li.showArticle {
         -webkit-transition: all .3s;
         -moz-transition: all .3s;
         transition: all .3s;
+        padding-right: 0;
         cursor:pointer;
       }
       .theme_containter::before{
@@ -2703,13 +2760,14 @@ li.showArticle {
       }
       .theme_containter{
           position: absolute;
-          top:40px;
-          right:0;
+          right:-12px;
           width:135px;
+          will-change: transform,opacity,z-index;
           z-index: -1;
           height:30px;
           opacity: 0;
           background: white;
+          transform: translate3d(0,-30px,0);
           -webkit-transition: all .3s;
           -moz-transition: all .3s;
           transition: all .3s;
@@ -2790,6 +2848,7 @@ li.showArticle {
       }
       i.change_theme{
           color:rgba(0,0,0,.2);
+          padding-right: 0;
           font-weight: bolder;
           cursor: pointer;
           -webkit-transition: all .3s;
@@ -2808,8 +2867,7 @@ li.showArticle {
 
 .wechat_show{
   opacity:1 !important;
-  top:-162px !important;
-  z-index: 3 !important;
+  transform:translate3D(0px,-162px,0) scale(1) !important;
 }
 .sina_show{
   opacity:1 !important;
@@ -3263,7 +3321,7 @@ color:#ffffff;
 }
 /*show theme container*/
 .theme_show{
-   top:50px !important;
+   transform: translate3d(0,0,0) !important;
    opacity: 1 !important;
    z-index: 0 !important;
 }
@@ -3700,7 +3758,6 @@ main .search_result_container{
 @media screen and (max-width: 800px) {
 .screen main .all .face:nth-of-type(3) {
   .message_board_input,ul.temp_ul,.message_box,.message_list,.message_list li{
-  width: 100%;
   left : 10px;
   }
 }

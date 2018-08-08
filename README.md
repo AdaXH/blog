@@ -5,60 +5,75 @@
    $ npm i
 ```
 to install all modules the project need,
-The project's data should got from local mongodb,
-you should config that in app.js:
+The project's data should get from local mongodb,
+you should config that in koa.js:
 
-## prepare data with mongo
+## config :
 
 ```ruby
     mongoose.connect('mongodb://localhost:27017/blog').then(res=> {
-    if (res) 
-        console.log('connect to mongo');
-    else
-        console.log('can not connect to mongo'+err);
+    res ?
+        console.log('connect to mongo')
+    :
+        console.log('can not connect to mongo'+err)
 });
 ```
-## you should create the flow collections before running :
+## you should create the following collections or run 'mongorestore' in the 'dump' floder before running :
 ```ruby
-const dynamicSchema = mongoose.Schema({
+module.exports = mongoose.model('dynamics', mongoose.Schema({
     title: String,
     content: String,
     date: String,
     upvote: Number,
-    msg:Array({
-      context : String,
-      date : String
+    msg: Array({
+        context: String,
+        date: String
     })
-})  //collection's name 'dynamics'
+}))
 ```
 ```ruby
-const articleSchema = mongoose.Schema({
-	date:String,
-	year:String,
-	title:String,
-	summary:String
-});  //collection's name 'articles'
+module.exports = mongoose.model('articles', mongoose.Schema({
+    date: String,
+    year: String,
+    type: String,
+    summary: String,
+    time: String,
+    viewer: {
+        default: 0,
+        type: Number
+    }
+}))
 ```
 ```ruby
-const messageSchema = mongoose.Schema({
+module.exports = mongoose.model('messages', mongoose.Schema({
+    name: String,
+    content: String,
+    date: String,
+    repeat: Array({
+        info: String,
+        date: String,
+        name: String
+    })
+}))
+```
+```ruby
+module.exports = mongoose.model('moods', mongoose.Schema({
+	date: String,
+	mood: String,
+	user: String
+}))
+```
+```ruby
+module.exports = mongoose.model('users', mongoose.Schema({
 	name:String,
-	content:String,
-	date:String
-}); //collection's name 'messages'
-```
-```ruby
-const moodSchema = mongoose.Schema({
-	date:String,
-	mood:String,
-	user:String
-}) //collection's name 'moods'
-```ruby
-const userSchema = mongoose.Schema({
-	name:String,
-	password:String
-}); // collection's name 'users' , **the admin's account must be 'Ada' or some operation won't work !**  
+    password:String,
+    admin: {
+        type: Bollean,
+        default: false
+    }
+})) //  **the admin's name must be 'Ada' or some operation won't be work !**  
 ```
 
-review at https://adaxh.applinzi.com
+URL  https://adaxh.applinzi.com
  
 ![screenshot](http://wx2.sinaimg.cn/mw690/a99a6e98ly1fox9b9l44ij20sg0lc457.jpg)  

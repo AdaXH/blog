@@ -1,14 +1,4 @@
-// ,["transform-runtime",
-// {
-//   "helpers": false,
-//   "polyfill": false,
-//   "regenerator": true,
-//   "moduleName": "babel-runtime"
-// }
-// ]],
-// import Test from './module.js'
-// Test()
-(function ($) {       //add shake
+(function ($) {       //add shake 
     $.fn.extend({    //扩展实例方法
         shake: function (speed, param, scale) {
 
@@ -211,7 +201,7 @@ class RegisterClass {  //register fn
                 return res
             }).then(data => {
                 if(data && data.success){
-                    sessionStorage.setItem('user', na)
+                    sessionStorage && sessionStorage.setItem('user', na)
                     $('.register span').css('color', '#6fb2df').html(na);
                     $('.user_name').html(na);
                     // $('.msg_name').val(na);
@@ -221,8 +211,9 @@ class RegisterClass {  //register fn
                     uploadAvatar(sessionStorage.getItem('user'))
                     getAvatar(na)
                     $('#avatar').show()
+                    if( data.avatar ) $('.avatar_img')[0].src = data.avatar
                     messageOperation(na)
-                    if(na==='Ada'){
+                    if( data.admin ){
                         adminToggle();
                         publishDynamic();
                         publishItem()
@@ -409,14 +400,16 @@ function showArticle() {  //show full article when click article's summary
         $(this).addClass('showArticle').
         siblings().removeClass('showArticle').find('.article_tittle').removeClass('article_title_toggle');
         $(this).siblings().find('.article_summary').removeClass('toggleP');
-        $(this).siblings().find('.article_date').css({
-        	left:'-16%'
-        });
-        $(this).siblings().find('.article_close').hide(500);
+        // $(this).siblings().find('.article_date').css({
+        // 	left:'-16%'
+        // });
+        $(this).find('.article_close').addClass('showClose')
+        $(this).siblings().find('.article_close').removeClass('showClose');
         $(this).find('.article_tittle').addClass('article_title_toggle');
         $(this).find('.article_summary').addClass('toggleP');
         showArticlePrepare($(this));
         closeArticle($(this), tempObj);
+        // $('main').addClass('articleMain')
     }))
     // $('.article_list') = null
 }
@@ -443,9 +436,9 @@ function updateViewer(_id , viewer , el , _this){
 function showArticlePrepare(param) {   //before show full article
     $('.right_article_list').hide(500);
     param.find('.article_close').show(500);
-    param.find('.article_date').stop().animate({
-        left: -250
-    }, 300);
+    // param.find('.article_date').stop().animate({
+    //     left: -250
+    // }, 300);
 }
 
 function closeArticleNew(){
@@ -456,10 +449,11 @@ function closeArticleNew(){
       var e = e || window.event;
       e.stopPropagation();
       $('.context-menu').hide()
-      $(this).hide();
-      $(this).closest('.article').find('.article_date').stop().animate({
-          left: '-16%'
-      }, 300);
+      $(this).removeClass('showClose');
+    //   $('main').removeClass('articleMain')
+    //   $(this).closest('.article').find('.article_date').stop().animate({
+    //       left: '-16%'
+    //   }, 300);
   })
   // $('.article_list') = null
 }
@@ -472,10 +466,11 @@ function closeArticle(temp, k) {        //close full article
         var e = e || window.event;
         e.stopPropagation();
         $('.context-menu').hide()
-        $(this).hide();
-        temp.find('.article_date').stop().animate({
-            left: '-16%'
-        }, 300);
+        $(this).removeClass('showClose');
+        // $('main').removeClass('articleMain')
+        // temp.find('.article_date').stop().animate({
+        //     left: '-16%'
+        // }, 300);
     })
     // temp.find('.article_close') = null
 }
@@ -779,7 +774,7 @@ function eatDot(arr, y, dots) {//dot hide
 function asideTextHover() {
     let lis = $('aside .aside_menu li');
     lis.mouseenter(function () {
-        $(this).find('i').stop().shake(400, 3, 1.2)
+        $(this).find('i.shake').stop().shake(400, 3, 1.2)
     })
 }
 
@@ -932,32 +927,75 @@ function sendRepeat(name ,_id){
 }
 
 function messageOperation(name){
-    $('.message_list').on('click','a.delete_msg',function(){
-        const _id = this.getAttribute('_id')
-        const _this = this
-        if(name === undefined || name !== 'Ada'){
-            infoContainer('请登入管理员账号' , false)
-            return
-        }
-        fetch('/deleteMsgById', {
+        // if(name === undefined || name !== 'Ada'){
+        //     infoContainer('请登入管理员账号' , false)
+        //     return
+        // }
+        isAdmin(sessionStorage && sessionStorage.getItem('user'), () => {
+            $('.message_list').on('click', 'a.delete_msg', function () {
+                    const _id = this.getAttribute('_id')
+                    const _this = this
+                fetch('/deleteMsgById', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({ _id })
+                }).then(res => {
+                    if(res.status >= 200 && res.status < 300)
+                        return res.json()
+                    return res.status
+                }).then(result => {
+                    if(result && result.success){
+                        infoContainer('删除成功', true)
+                        $(_this).closest('li').remove()
+                    }else 
+                    infoContainer(result && result.errorMsg || '网络繁忙' + result)
+                })
+            })
+        }).catch(err => { })
+}
+
+function isAdmin(name , callback){
+    return new Promise((resolve, reject) => {
+        fetch('/checkAdmin', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
                 'accept': 'application/json'
             },
-            body: JSON.stringify({ _id })
+            body: JSON.stringify({name})
         }).then(res => {
             if(res.status >= 200 && res.status < 300)
                 return res.json()
             return res.status
         }).then(result => {
-            if(result && result.success){
-                infoContainer('删除成功', true)
-                $(_this).closest('li').remove()
-            }else 
-            infoContainer(result && result.errorMsg || '网络繁忙' + result)
+            if(result && result.success ){
+                resolve(result.data)
+                callback && callback()
+            }else
+                reject(result && result.errorMsg || '获取权限失败' + result)
         })
     })
+}
+
+function checkPerssion(name){
+    isAdmin(name).then(boll => {
+        if (boll) {
+            adminToggle();
+            publishDynamic();
+            publishItem()
+            deleteDynamic();
+            deleteArticle();
+            adminEdit()
+            updateArticle()
+            editDynamic()
+            // uploadAvatar('Ada');
+        }
+        else
+            $('.menu_toggle').on('click', _ => { infoContainer(name+ '还没有这个权限哦', false) })
+    }).catch(err => $('.menu_toggle').on('click', _ => { infoContainer(err, false) }))
 }
 
 function loginState() {
@@ -967,42 +1005,44 @@ function loginState() {
         b.push(arr[i].split('='))
     let count = 0
     for(let item of b){
-        if(item[0] === 'user'){
-            rememberLoginState(item[1]);
+        if(item[0] === 'user' || window.sessionStorage && sessionStorage.getItem('user')){
+            if(window.sessionStorage && !sessionStorage.getItem('user')) sessionStorage.setItem('user', item[1])
+            rememberLoginState(sessionStorage.getItem('user') || item[1]);
             $('.all_user span').text('注销');
-            $('.user_name').html(item[1]);
-            getAvatar(item[1])
+            $('.user_name').html(sessionStorage.getItem('user') || item[1]);
+            getAvatar(sessionStorage.getItem('user') || item[1])
             // $('.msg_name').val(item[1] || '')
-            repeatCon(item[1])
-            uploadAvatar(item[1])
+            repeatCon(sessionStorage.getItem('user') || item[1])
+            uploadAvatar(sessionStorage.getItem('user') || item[1])
             $('#avatar').show() 
-            messageOperation(item[1]) 
-            sessionStorage && sessionStorage.setItem('user', item[1])
-            if(item[1] !== 'Ada'){
-              $('.menu_toggle').on('click',_=>{infoContainer('你还没有这个权限哦' , false)})
-            }
-            if(item[1] === 'Ada'){
-                        adminToggle();
-                        publishDynamic();
-                        publishItem()
-                        deleteDynamic();
-                        deleteArticle();
-                        adminEdit()
-                        updateArticle()
-                        editDynamic()
-                        uploadAvatar('Ada');
-            }
+            messageOperation(sessionStorage.getItem('user') || item[1]) 
+            checkPerssion(sessionStorage.getItem('user') || item[1])
+            // if(item[1] !== 'Ada'){
+            //   $('.menu_toggle').on('click',_=>{infoContainer('你还没有这个权限哦' , false)})
+            // }
+            // if(item[1] === 'Ada'){
+            //             adminToggle();
+            //             publishDynamic();
+            //             publishItem()
+            //             deleteDynamic();
+            //             deleteArticle();
+            //             adminEdit()
+            //             updateArticle()
+            //             editDynamic()
+            //             uploadAvatar('Ada');
+            // }
             return
         }else count++
     }
     if(count === b.length){
-            loginWarning();
-           getAvatar('Ada')
-            messageOperation(undefined)
-            repeatCon(undefined)
-            $('#avatar').hide()
-            $('.all_user span').html('登陆');
-            $('.user_name').html('Ada');       
+        loginWarning();
+        getAvatar('Ada')
+        messageOperation(undefined)
+        repeatCon(undefined)
+        $('#avatar').hide()
+        $('.all_user span').html('登陆')
+        $('.user_name').html('Ada')   
+        window.sessionStorage && sessionStorage.getItem('user') && checkPerssion(sessionStorage.getItem('user'))   
     }
 }
 
@@ -1850,17 +1890,18 @@ function hideAllClickWindow(){   //hide sth when click anywhere
         for(let i in videos)
             videos[i].paused = false
 		var e = e || window.event;
-        $('.dynamic-msg-container').hide(300)
+        $('.dynamic-msg-container').hasClass('showMsg') && $('.dynamic-msg-container').removeClass('showMsg')
 
         $('.full_summary').text('').hide();
         // $('.error_search').hide()
 		var $article = $('.article_list .article');
 		$article.removeClass('showArticle').find('.article_tittle').removeClass('article_title_toggle');
         $article.find('.article_summary').removeClass('toggleP');
-        $article.find('.article_date').css({
-        	left:'-16%'
-        });
-        $article.find('.article_close').hide(500);
+        // $article.find('.article_date').css({
+        // 	left:'-16%'
+        // });
+        $article.find('.article_close').removeClass('showClose');
+        // $('main').removeClass('articleMain')
 		$('.right_article_list').show(500);
 		$('.search_result_container').removeClass('show_search_container bounceInDown');
 	})
@@ -2023,7 +2064,7 @@ function dynamicMsg(){   //leave a msg on dynamic
     $('.dynamic').on('click  ','.dynamic-msg-icon',function(ev){
         ev.stopPropagation();
         $('.context-menu').hide()
-        $(this).parent().next().toggle(500);
+        $(this).parent().next().toggleClass('showMsg');
     })
     $('.dynamic').click(ev=>{
         ev.stopPropagation();
@@ -2047,9 +2088,13 @@ function dynamicMsg(){   //leave a msg on dynamic
         let _id = $(this).closest('li')[0].getAttribute('_id');
         let msg = [{context : word,date : currentDay}];
         // alert(_id)
-        if(word === '') {
+        if(word === '' || word.trim() === '') {
             infoContainer('评论不能为空' , false)
-            return ;
+            return 
+        }
+        if(word.length > 50){
+            infoContainer('字数不能超过50个字符', false)
+            return
         }
         fetch('/leave-dynamic-mg', {
             method: 'POST',
@@ -2117,22 +2162,6 @@ function randomTheme(){
         backgroundSize : 'cover'
     })
 }
-
-(function(){
-    let imgs = ['/resouce/gallery/1.png','/resouce/gallery/2.png','/resouce/gallery/3.png','/resouce/gallery/4.png','/resouce/gallery/5.png','/resouce/gallery/6.png','/resouce/gallery/7.png','/resouce/gallery/8.png','/resouce/gallery/9.png','/resouce/gallery/10.png','/resouce/gallery/11.png','/resouce/gallery/12.png','/resouce/images/1.jpg','/resouce/images/2.jpg','/resouce/images/3.jpg','/resouce/images/4.jpg','/resouce/images/5.jpg','/resouce/images/6.jpg','/resouce/images/admin_icon.jpg','/resouce/images/load.png','/resouce/images/loading.png','/resouce/images/loading1.png','/resouce/images/login.jpg','/resouce/images/loginbg.jpg','/resouce/images/ly.jpg','/resouce/images/lyy.jpg','/resouce/images/qaone.png','/resouce/images/wechat.jpg','/resouce/images/wechat.png'];
-    let imgObj = new Image();
-    let count = 0;
-    for(let i = 0,len = imgs.length; i<len; i++){
-        imgObj.src = imgs[i];
-        imgObj.onload = function(){
-            count++;
-            $('.loadingUI').remove();
-            randomTheme();
-        }
-        imgObj.onerror = function(){
-         };
-    }
-})();
 
 function textEdit(){  //config text-edit-plugin
   var quill = new Quill('#editor-container', {
@@ -2395,7 +2424,7 @@ function toggleRepeatList(){
         let ul = $(this).next()
         let _this = this
         ul.toggle(500,()=>{
-           ul.css('display') === 'none' ? $(_this).text('展开回复列表') : $(_this).text('关闭回复列表')
+            $(_this).text() !== '展开回复列表' ? $(_this).text('展开回复列表') : $(_this).text('关闭回复列表')
         })
 
     })
@@ -2607,17 +2636,45 @@ function loginApi(){
     })
 }
 
+function share(){
+    const title = '个人主页'
+    const pic = "http://wx4.sinaimg.cn/mw690/a99a6e98ly1fox8tzjwvaj211l0hmq39.jpg || http://wx4.sinaimg.cn/mw690/a99a6e98ly1fox8u9irlkj211x0hndnw.jpg || http://wx4.sinaimg.cn/mw690/a99a6e98ly1fox8u5cwpsj211y0hltn0.jpg || http://wx4.sinaimg.cn/mw690/a99a6e98ly1fox8udqz9yj211x0hntde.jpg"
+    $('.shareToSina').click(_ =>{ 
+        (function (s, d, e) { try { } catch (e) { } var f = 'http://v.t.sina.com.cn/share/share.php?', u = d.location.href, p = ['url=', e(u), '&title=', e(title), '&appkey=2924220432', '&pic=', e(pic)].join(''); function a() { if (!window.open([f, p].join(''), 'mb', ['toolbar=0,status=0,resizable=1,width=620,height=450,left=', (s.width - 620) / 2, ',top=', (s.height - 450) / 2].join(''))) u.href = [f, p].join(''); }; if (/Firefox/.test(navigator.userAgent)) { setTimeout(a, 0) } else { a() } })(screen, document, encodeURIComponent);
+    })
+    $("#zone").click(function () {
+        const p = {
+            url: 'http://adaxh.applinzi.com',
+            showcount: '1',/*是否显示分享总数,显示：'1'，不显示：'0' */
+            summary: '个人主页，快来看看吧！',/*分享摘要(可选)*/
+            title,/*分享标题(可选)*/
+            pics: 'https://camo.githubusercontent.com/55b9bef92d318357c3688e135d9723519f7085f1/687474703a2f2f7778322e73696e61696d672e636e2f6d773639302f61393961366539386c7931666f783962396c3434696a32307367306c633435372e6a7067', /*分享图片的路径(可选)*/
+            style: '203',
+            width: 98,
+            height: 22
+        };
+        const s = []
+        for (let key in p) 
+            s.push(key + '=' + encodeURIComponent(p[key] || ''))
+        window.open("http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?" + s.join('&'))
+        // window.open("http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?summary=test")
+    });
+
+}
+
 $(function () {
+    share()
     loginApi()
     mobileEntry()
     // concoleEffect()
     // initMore()
     // initOverLay()
     // entryAboutMe()
+    randomBg()
     randomAbountMe()
     entryMoreOperation()
     allUserAvatar()
-    messageBoxHover()
+    // messageBoxHover()
     toggleRepeatList()
     randomUserAvatar()
     editEffect()
@@ -2642,7 +2699,7 @@ $(function () {
     loginState();
     showArticle();
     loading();
-    asideTextHover();
+    // asideTextHover();
     init();
     selectNav();
     face1LeftbaraShake();

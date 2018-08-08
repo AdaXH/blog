@@ -10,11 +10,9 @@ routerExports.login = {
 		const date = new Date()
 		date.setDate(date.getDate() + 5)
 		try {
-			await callLogin(name, pwd, state)
+			const result = await callLogin(name, pwd, state)
 			state && ctx.cookies.set('user', name, { expires: date, httpOnly: false })
-			ctx.body = {
-				success: true
-			}
+			ctx.body = result
 		} catch (error) {
 			ctx.body = {
 				success: false,
@@ -32,12 +30,43 @@ function callLogin(name, pwd){
 					name, password: pwd
 				}).then(res => {
 					res ?
-						resolve(true)
+						resolve({
+							success: true,
+							admin : res.admin || false,
+							avatar : res.avatar || false
+						})
 						:
 						reject('用户名与密码不匹配')
 				})
 		)
 
+	})
+}
+
+routerExports.admin = {
+	method: 'post',
+	url: '/checkAdmin',
+	route: async(ctx, next) => {
+		const { name } = ctx.request.body
+		try {
+			const result = await callCheckAdmin(name)
+			ctx. body = {
+				success: true,
+				data: result
+			}
+		} catch (error) {
+			ctx.body = {
+				success: false,
+				errorMsg: error
+			}
+		}
+	}
+}
+
+function callCheckAdmin(name){
+	return new Promise((resolve, reject) => {
+		User.findOne({ name }).then(data => data && data.admin ? resolve(true) : reject( name + '无权限') )
+			.catch(err => reject(err instanceof Object ? JSON.stringify(err) : err.toString()))
 	})
 }
 

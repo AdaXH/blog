@@ -17,7 +17,7 @@
     <script src="./js/jq.js"></script>
     <script src="./js/buddle.js"></script>
     <script src="./js/glitcheffect.js"></script>
-    <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js" type="text/javascript" charset="utf-8"></script>
+    <!-- <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js" type="text/javascript" charset="utf-8"></script> -->
     <script src="./js/ge1doot.js"></script>
     <script src="./js/imageTransform3D.js"></script>
 </head>
@@ -341,76 +341,52 @@
             <li >
             	<div class="hover_shadow"></div>
             	<a class="animated fr all_user new_login" href="javascript: void(0);">
-            		<i class="linkfont">&#xe6ba;</i><span></span></a>
+            		<i class="linkfont shake">&#xe6ba;</i><span></span></a>
             </li>
             <li >
             	<div class="hover_shadow"></div>
             	<a class="animated fr add_article_api new_register" href="javascript: void(0);">
-            		<i class="linkfont">&#xe6a3;</i>注册</a>
+                    <i class="linkfont shake">&#xe6a3;</i>
+                    <span>注册</span>
+                </a>
             </li>
             <li>
             	<div class="hover_shadow"></div>
-            	<a class="leave_message" href="javascript: void(0);"><i class="linkfont">&#xeee0;</i>留言板</a></li>
+            	<a class="leave_message" href="javascript: void(0);"><i class="linkfont shake">&#xeee0;</i><span>留言板</span></a></li>
             <li>
             	<div class="hover_shadow"></div>
-            	<a class='gallery_api' href="javascript: void(0);"><i class="linkfont">&#xe632;</i>图库走廊</a></li>
-            <li class="ic">
+            	<a class='gallery_api' href="javascript: void(0);"><i class="linkfont shake">&#xe632;</i><span>图库走廊</span></a></li>
+            <li class="ic shareToSina">
             	<div class="hover_shadow"></div>
                 <a href="javascript: void(0);">
-                    <i class="linkfont">&#xe6b8;</i>分享到新浪
-                    <div class="sina">
-                    <!--     <wb:share-button appkey="1NpS4Z" addition="number" type="button"></wb:share-button> -->
-                    <wb:share-button addition="simple" type="button" default_text="nodejs+express的轻量级单页面应用,快来围观啦~" pic="http://wx4.sinaimg.cn/mw690/a99a6e98ly1fox8tzjwvaj211l0hmq39.jpg || http://wx4.sinaimg.cn/mw690/a99a6e98ly1fox8u9irlkj211x0hndnw.jpg || http://wx4.sinaimg.cn/mw690/a99a6e98ly1fox8u5cwpsj211y0hltn0.jpg || http://wx4.sinaimg.cn/mw690/a99a6e98ly1fox8udqz9yj211x0hntde.jpg"></wb:share-button>
-                    <!-- <wb:share-button addition="number" type="button" ralateUid="2783914115" ></wb:share-button> -->
-                    </div>
-                    <i class="fr sina_api linkfont">&#xe6b9;</i>
+                    <i class="linkfont shake">&#xe6b8;</i>
+                    <span>分享到新浪</span>
                 </a>
             </li>
-            <li class="ic">
-            	<div class="hover_shadow"></div>
-            	<a href="https://github.com/AdaXH/blog"><i class="linkfont">&#xe6a4;</i>github</a></li>
-            <li class="ic">
-                <div class="wechat_img"><img src='./resouce/images/wechat.png' alt='微信二维码'></div>
-            	<div class="hover_shadow"></div>
-            	<a href="javascript: void(0);"><i class="linkfont">&#xe64f;</i>微信二维码
-                <i class="fr wechat linkfont">&#xe6b9;</i>
-                </a>
-            </li>
-            <li class="ic qz">
+            <li class="ic qz" id='zone'>
                 <div class="hover_shadow"></div>
-                <i class="qzone fl">
+                <i class="qzone fl shake">
                     <img class="fl" src="./resouce/images/qzone.png" alt=' '>
                 </i>
                 <span class="cover">分享到QQ空间</span>
-                <div class="sharetoqzone fl">
-                    <script type="text/javascript">
-(function(){
-var p = {
-url:location.href,
-showcount:'0',/*是否显示分享总数,显示：'1'，不显示：'0' */
-desc:'',/*默认分享理由(可选)*/
-summary:'emmmm,帮帮忙点一下链接',/*分享摘要(可选)*/
-title:'',/*分享标题(可选)*/
-site:'',/*分享来源 如：腾讯网(可选)*/
-pics:'http://wx2.sinaimg.cn/mw690/a99a6e98ly1fox9b9l44ij20sg0lc457.jpg',
-style:'202',
-opacity:0,
-width:60,
-height:15
-};
-var s = [];
-for(var i in p){
-s.push(i + '=' + encodeURIComponent(p[i]||''));
-}
-document.write(['<a version="1.0" class="qzOpenerDiv" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?',s.join('&'),'" target="_blank"></a>'].join(''));
-})();
-</script>
-</div>
-<script src="http://qzonestyle.gtimg.cn/qzone/app/qzlike/qzopensl.js#jsdate=20111201" charset="utf-8"></script>
+            </li>
+            <li class="ic">
+            	<div class="hover_shadow"></div>
+                <a href="https://github.com/AdaXH/blog"><i class="linkfont shake">&#xe6a4;</i>
+                    <span>github</span>
+                </a></li>
+            <li class="ic">
+                <div class="wechat_img"><img src='./resouce/images/wechat.png' alt='微信二维码'></div>
+            	<div class="hover_shadow"></div>
+                <a href="javascript: void(0);"><i class="linkfont shake">&#xe64f;</i>
+                    <span>微信二维码</span>
+                <i class="fr wechat linkfont">&#xe6b9;</i>
+                </a>
             </li>
             <li>
             	<div class="hover_shadow"></div>
-            	<a class="theme"><i class="linkfont">&#xe663;</i>主题
+                <a class="theme"><i class="linkfont shake">&#xe663;</i>
+                    <span>主题</span>
             	<i class="fr change_theme linkfont">&#xe6b9;</i>
             </a>
             <div class="theme_containter">
