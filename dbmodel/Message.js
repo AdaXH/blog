@@ -7,6 +7,7 @@ module.exports = mongoose.model('messages', mongoose.Schema({
     repeat: Array({
         info: String,
         date: String,
-        name: String
+        name: String,
+        toRepeat: String
     })
 }))

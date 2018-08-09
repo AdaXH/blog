@@ -13,6 +13,7 @@
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/monokai-sublime.min.css"/>
   	<link href="/css/themes/quill.snow.css" rel="stylesheet">
     <script type="text/javascript" src='./js/menu_plugin.js'></script>
+    <script src="./js/base64.js"></script>
     <script src="./js/template.js"></script>
     <script src="./js/jq.js"></script>
     <script src="./js/buddle.js"></script>
@@ -603,22 +604,35 @@
                               <span class="message_date"><%= item.date %></span>
                             </p>
                             <div class="message_operation fr">
-                              <a class="repeat_msg fl" _id=<%= item._id%>>[回复]</a>
-                              <a class="delete_msg fr" _id=<%= item._id%>>[删除]</a>
+                              <a class="repeat_msg fl"  _to_repeat=<%= item.name %> _id=<%= item._id %>>[回复]</a>
+                              <a class="delete_msg fr" _id=<%= item._id %>>[删除]</a>
                             </div>
                             <p class="message_content"><%= item.content %>
                             </p>
-                                                     <a class="togger_repeat_list" style=<%- item.repeat.length === 0 ? 'display:none' : 'display:block' %>>
-                                展开回复列表
+                            <a class="togger_repeat_list" style=<%- item.repeat.length === 0 ? 'display:none' : 'display:block' %>>
+                                展开
                             </a>
                             <!-- <div class="repeat_list_con"> -->
                             <ul class="repeat_list">
-                              <% item.repeat.forEach((repeatt)=>{ %>
+                              <% item.repeat.forEach((repeat)=>{ %>
                                 <li class="repeat_item">
-                                  <p class="repeat_user"><%= repeatt.name %>
-                                   <span class="repeat_date"><%= repeatt.date %><span>_回复:</span></span></p> 
-                                  <p class="repeat_text"><%= repeatt.info %></p>
-                                  
+                                    <div class="innerRepeat fr">
+                                        <a class="innerRepeatAPI fl" _id=
+                                        <%= repeat._id %> _to_repeat=<%= repeat.name %> _parent_id=<%= item._id %>>[回复]</a>
+                                        <a class="innerDeleteMsg fr" _name=<%= repeat.name %> _parent_id=
+                                        <%= item._id%> _id=<%= repeat._id %>>[删除]</a>
+                                    </div>
+                                    <p class="repeat_user fl"><%= repeat.name %>
+                                        <span class="repeat_date"><%= repeat.date %>
+                                            <span>
+                                                回复
+                                                <span style='color:red'><%= repeat.toRepeat %>
+                                                    <span>:</span>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </p> 
+                                    <p class="repeat_text"><%= repeat.info %></p>
                                 </li>                              
                           <%  }) %>
 
@@ -634,22 +648,31 @@
                                       <span class="message_date">{{message.date}}</span>
                                     </p>
                                                             <div class="message_operation fr">
-                              <a class="repeat_msg fl" _id={{message._id}}>[回复]</a>
+                              <a class="repeat_msg fl" _to_repeat={{message.name}} _id={{message._id}}>[回复]</a>
                               <a class="delete_msg fr" _id={{message._id}}>[删除]</a>
                             </div>
                                      <p class="message_content">{{message.content}} </p>
                              <a class="togger_repeat_list" style={{message.repeat.length !== 0 ? 'display:block' : 'display:none'}}>
-                                展开回复列表
+                                展开
                             </a>
                                     
                                 <!-- <div class="repeat_list_con"> -->
                           <ul class="repeat_list">
-                              {{ each message.repeat as repeatt }}
+                              {{ each message.repeat as repeat }}
                                 <li class="repeat_item">
-                                  <p class="repeat_user">{{repeatt.name }}
-                                    <span class="repeat_date">{{repeatt.date }}<span>_回复：</span></span>
+                                    <div class="innerRepeat fr">
+                                        <a class="innerRepeatAPI fl" _id={{repeat._id}} _to_repeat={{repeat.name || ''}} _parent_id={{message._id}}>[回复]</a>
+                                        <a class="innerDeleteMsg fr" _name={{repeat.name }} _parent_id={{message._id}} _id={{repeat._id}}>[删除]</a>
+                                    </div>
+                                  <p class="repeat_user fl">{{repeat.name }}
+                                    <span class="repeat_date">{{repeat.date }}
+                                        <span>
+                                            回复
+                                        <span style='color:red'>{{repeat.toRepeat}}
+                                            <span>:</span>
+                                        </span></span></span>
                                   </p>
-                                  <p class="repeat_text">{{repeatt.info }}</p>
+                                  <p class="repeat_text">{{repeat.info }}</p>
                                   
                                 </li>                              
                           {{/each}}

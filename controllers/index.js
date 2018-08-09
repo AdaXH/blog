@@ -128,10 +128,12 @@ function messageArr(){
             err ? reject([]) : resolve(res)
             let rebuildMsg = []
             for(let item of res)
-                if(item.repeat && item.repeat.length !== 0 ){
+                if(item.repeat && item.repeat.length !== 0){
                     for(let item2 of item.repeat){
-                        let temp = new Date(item2.date).getTime()
-                        item2.date = timeago(temp)
+                        if(item2 && item2 !== null){
+                            let temp = new Date(item2.date).getTime()
+                            item2.date = timeago(temp)
+                        }
                     }
                 } 
         })
@@ -155,6 +157,10 @@ routerExports.routerIndex = {
                 dynamic
             })
         } catch (error) {
+            const mood = await moodArr()
+            const article = await articleArr()
+            const message = await messageArr()
+            const dynamic = await dynamicArr()
             await ctx.render('index', {
                 title: 'Ada - 个人主页',
                 mood,

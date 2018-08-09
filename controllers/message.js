@@ -1,10 +1,55 @@
 const Message = require('./../dbmodel/Message') 
-
+const User = require('./../dbmodel/User')
 const routerExports = { }
 
 function escapeMessage(str){
     if(!str) return '' 
     else    return str.replace(/<\/?script>/g,'') 
+}
+
+routerExports.deleteInnerRepeat = {
+    method: 'post',
+    url: '/deleteInnerRepeat',
+    route: async(ctx, next) => {
+        const { _id, _parent_id, name } = ctx.request.body
+        try {
+            const result = await deleteInnerRepeat(_id, _parent_id, name)
+            ctx.body = {
+                success: true
+            }
+        } catch (error) {
+            ctx.body = {
+                success: false,
+                errorMsg: error
+            }
+        }
+    }
+}
+
+function deleteInnerRepeat(_id, _parent_id, name){
+    return new Promise((resolve, reject) => {
+       Message.findOne({ _id: _parent_id }).then(ans => {
+           if(!ans) reject('该条回复已不存在')
+           else{
+               const repeat = ans.repeat.filter(item => item._id != _id )
+               const na = ans.repeat.filter(item => item._id == _id)[0].name
+               User.findOne({ name }).then(ans => {
+                   console.log(ans)
+                   if(!ans) reject('当前用户不存在')
+                   else{
+                       if(name === na || ans.admin)
+                           Message.updateOne({ _id: _parent_id }, {
+                               $set: {
+                                      repeat: [...repeat]
+                               }
+                           }).then(res => res.ok === 1 ? resolve(true) : reject('删除失败'))
+                       else if (name !== na) reject('只能删除自己的回复')
+                   }
+               })
+            .catch(err => reject(reject(err instanceof Object ? JSON.stringify(err) : err.toString())))
+           }
+       }).catch(err => reject(reject(err instanceof Object ? JSON.stringify(err) : err.toString())))
+    })
 }
 
 routerExports.repeatMsg = {
@@ -26,7 +71,7 @@ routerExports.repeatMsg = {
         }
     }
 }
-
+//
 function callRepeatMsg(_id, msg){
     return new Promise((resolve, reject) => {
         Message.findOne({ _id }).then(ans => {

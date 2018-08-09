@@ -158,7 +158,7 @@ class RegisterClass {  //register fn
                     'content-type': 'application/json',
                     'accept': 'application/json'
                 },
-                body: JSON.stringify({ name, pwd })
+                body: JSON.stringify({ name, pwd:Base64.encode(pwd) })
             }).then(res => {
                 if(res.status >= 200 && res.status <300 )
                     return res.json()
@@ -194,22 +194,23 @@ class RegisterClass {  //register fn
                     'accept': 'application/json'
                 },
                 credentials: "include",
-                body: JSON.stringify({ name: na, pwd: $('#password').val(), state })
+                body: JSON.stringify({ name: na, pwd: Base64.encode($('#password').val()), state })
             }).then(res => {
                 if(res.status >= 200 && res.status < 300)
                     return res.json()
                 return res
             }).then(data => {
                 if(data && data.success){
-                    sessionStorage && sessionStorage.setItem('user', na)
+                    window.sessionStorage && sessionStorage.getItem('user') && sessionStorage.removeItem('user')
+                    sessionStorage && sessionStorage.setItem('user', Base64.encode(na))
                     $('.register span').css('color', '#6fb2df').html(na);
                     $('.user_name').html(na);
                     // $('.msg_name').val(na);
                     $('#login_anchor').html('register');
                     exitLoginRegFace();
                     repeatCon(na)
-                    uploadAvatar(sessionStorage.getItem('user'))
-                    getAvatar(na)
+                    uploadAvatar(Base64.decode(sessionStorage.getItem('user')))
+                    getAvatar(Base64.decode(sessionStorage.getItem('user')))
                     $('#avatar').show()
                     if( data.avatar ) $('.avatar_img')[0].src = data.avatar
                     messageOperation(na)
@@ -625,7 +626,7 @@ function init() {
     }).eq(0).css({
         transform: `translateX(0) translateZ(0)`
     })
-    if(sessionStorage && sessionStorage.getItem('user') !== 'Ada')
+    if (sessionStorage && Base64.decode(sessionStorage.getItem('user')) !== 'Ada')
         $('.delete_msg').css('cursor', 'not-allowed')
 }
 
@@ -828,7 +829,7 @@ function uploadAvatar(name){
 }
 
 function getAvatar(name){
-    if(name === undefined || name.length >= 30) return
+    if(name === undefined || name.length >= 100) return
     const img = document.getElementsByClassName('avatar_img')
     fetch('/get-avatar',{
         method : 'POST',
@@ -836,7 +837,9 @@ function getAvatar(name){
             'content-type' : 'application/json',
             'accept' : 'application/json'
         },
-        body : JSON.stringify({ name : name })
+        body: JSON.stringify({
+            name: Base64.encode(JSON.stringify({ name : name })
+        )})
     }).then(res => {
         if(res.status >=200 && res.status < 300)
             return res.json()
@@ -851,19 +854,43 @@ function getAvatar(name){
 }
 
 function repeatCon(name){
-    $('.cancel_repeat').click(_=>{
-
-        $('.repeat_over').hide().removeClass('bounceIn')
-    })
         $('.message_list').off('click').on('click','a.repeat_msg',function(){
     if(name === undefined || name.length >=30) {
         infoContainer('你还没有登陆' , false)
      return   
     }
             const _id = this.getAttribute('_id')
+            const toRepeat = this.getAttribute('_to_repeat')
             if(name){
-                $('.repeat_over').addClass('bounceIn').show()
-                sendRepeat(name , _id)
+                sendRepeat((d, word) => {
+                    fetch('/repeatMsg', {
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json',
+                            'accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            _id,
+                            msg: {
+                                info: word,
+                                name,
+                                date: d,
+                                toRepeat
+                            }
+                        })
+                    }).then(res => {
+                        if (res.status >= 200 && res.status < 300)
+                            return res.json()
+                        return res.status
+                    }).then(result => {
+                        if (result && result.success) {
+                            console.log(result)
+                            reRenderMsg(result.data)
+                            $('.cancel_repeat').trigger('click')
+                        } else
+                            infoContainer(result && result.errorMsg || '网络繁忙' + result)
+                    })
+                })
                 // console.log(_id)
             }
             else{
@@ -879,7 +906,11 @@ function escapeMessage(str){
     else    return str.replace(/<\/?script>+|傻逼+|SB+|sB+|sb+|操+|你妈/g,'*');
 }
 
-function sendRepeat(name ,_id){
+function sendRepeat(callback){
+    $('.repeat_over').addClass('bounceIn').show()
+    $('.cancel_repeat').click(_ => {
+        $('.repeat_over').hide().removeClass('bounceIn')
+    })
     $('.submit_repeat').off('click').on('click',function(){
         const word = escapeMessage($('.repeat_word').val().replace(/<\/?script>/g , ''))
         let date = new Date()
@@ -894,35 +925,8 @@ function sendRepeat(name ,_id){
         if(word === '' || word.trim() === '' || word.length > 280) {
             infoContainer('回复内容不能为空内容过长' , false)
             return
-        }else{
-            fetch('/repeatMsg', {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    'accept': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    _id, 
-                    msg: { 
-                        info: word,
-                        name, 
-                        date: d 
-                    }
-                })
-            }).then(res => {
-                if(res.status >= 200 && res.status < 300)
-                    return res.json()
-                return res.status
-            }).then(result => {
-                if(result && result.success){
-                    console.log(result)
-                    reRenderMsg(result.data)
-                    $('.cancel_repeat').trigger('click')
-                }else 
-                    infoContainer(result && result.errorMsg || '网络繁忙' + result)
-            })
-        }
-        
+        }else
+            callback && callback(d, word) 
     })
 }
 
@@ -931,7 +935,7 @@ function messageOperation(name){
         //     infoContainer('请登入管理员账号' , false)
         //     return
         // }
-        isAdmin(sessionStorage && sessionStorage.getItem('user'), () => {
+    isAdmin(sessionStorage && Base64.decode(sessionStorage.getItem('user')), () => {
             $('.message_list').on('click', 'a.delete_msg', function () {
                     const _id = this.getAttribute('_id')
                     const _this = this
@@ -965,7 +969,10 @@ function isAdmin(name , callback){
                 'content-type': 'application/json',
                 'accept': 'application/json'
             },
-            body: JSON.stringify({name})
+            body: JSON.stringify({
+                name: Base64.encode(JSON.stringify({ name: name })
+                )
+            })
         }).then(res => {
             if(res.status >= 200 && res.status < 300)
                 return res.json()
@@ -1007,16 +1014,16 @@ function loginState() {
     for(let item of b){
         if(item[0] === 'user' || window.sessionStorage && sessionStorage.getItem('user')){
             if(window.sessionStorage && !sessionStorage.getItem('user')) sessionStorage.setItem('user', item[1])
-            rememberLoginState(sessionStorage.getItem('user') || item[1]);
+            rememberLoginState(Base64.decode(sessionStorage.getItem('user')) || item[1]);
             $('.all_user span').text('注销');
-            $('.user_name').html(sessionStorage.getItem('user') || item[1]);
-            getAvatar(sessionStorage.getItem('user') || item[1])
+            $('.user_name').html(Base64.decode(sessionStorage.getItem('user')) || item[1]);
+            getAvatar(Base64.decode(sessionStorage.getItem('user')) || Base64.decode(item[1]))
             // $('.msg_name').val(item[1] || '')
-            repeatCon(sessionStorage.getItem('user') || item[1])
-            uploadAvatar(sessionStorage.getItem('user') || item[1])
+            repeatCon(Base64.decode(sessionStorage.getItem('user')) || item[1])
+            uploadAvatar(Base64.decode(sessionStorage.getItem('user')) || item[1])
             $('#avatar').show() 
-            messageOperation(sessionStorage.getItem('user') || item[1]) 
-            checkPerssion(sessionStorage.getItem('user') || item[1])
+            messageOperation(Base64.decode(sessionStorage.getItem('user')) || item[1]) 
+            checkPerssion(Base64.decode(sessionStorage.getItem('user')) || item[1])
             // if(item[1] !== 'Ada'){
             //   $('.menu_toggle').on('click',_=>{infoContainer('你还没有这个权限哦' , false)})
             // }
@@ -1042,7 +1049,7 @@ function loginState() {
         $('#avatar').hide()
         $('.all_user span').html('登陆')
         $('.user_name').html('Ada')   
-        window.sessionStorage && sessionStorage.getItem('user') && checkPerssion(sessionStorage.getItem('user'))   
+        window.sessionStorage && sessionStorage.getItem('user') && checkPerssion(Base64.decode(sessionStorage.getItem('user')))   
     }
 }
 
@@ -1704,7 +1711,7 @@ function clearInfo() {  //remove info about result of leave message
 function leaveMsg() {  //message board
     $('.leave_msg').on('click  ', () => {
         let msg = escapeMessage($('.msg').val())
-        let name = window.sessionStorage && sessionStorage.getItem('user')
+        let name = window.sessionStorage && Base64.decode(sessionStorage.getItem('user'))
         let date = new Date()
         let minute = date.getMinutes()
         minute < 10 ? minute+1  : '0'+minute
@@ -2423,10 +2430,8 @@ function toggleRepeatList(){
     $('.message_box').on('click','.togger_repeat_list',function(){
         let ul = $(this).next()
         let _this = this
-        ul.toggle(500,()=>{
-            $(_this).text() !== '展开回复列表' ? $(_this).text('展开回复列表') : $(_this).text('关闭回复列表')
-        })
-
+        ul.toggle(300);
+        (/展开/.test($(_this).text())) ? $(_this).text('收起') : $(_this).text('展开')
     })
 }
 
@@ -2658,11 +2663,79 @@ function share(){
             s.push(key + '=' + encodeURIComponent(p[key] || ''))
         window.open("http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?" + s.join('&'))
         // window.open("http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?summary=test")
-    });
+    })
+}
 
+function innerRepeat(){
+    $('.message_box').on('click', '.innerRepeatAPI', function () {
+        const _id = this.getAttribute('_parent_id')
+        const toRepeat = this.getAttribute('_to_repeat')
+        const name = window.sessionStorage && Base64.decode(sessionStorage.getItem('user')) || undefined
+        if(!name){
+            infoContainer('登录才可以操作', false)
+            return
+        }
+        sendRepeat((d, word) => {
+            fetch('/repeatMsg', {
+                method: 'post',
+                headers: {
+                    'content-type': 'application/json',
+                    'accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    _id,
+                    msg: {
+                        name,
+                        toRepeat,
+                        info: word,
+                        date: d,
+                    }
+                })
+            }).then(res => {
+                if (res.status >= 200 && res.status < 300)
+                    return res.json()
+                return res.status
+            }).then(result => {
+                if (result && result.success) {
+                    reRenderMsg(result.data)
+                    $('.cancel_repeat').trigger('click')
+                } else
+                infoContainer(result && result.errorMsg || '网络繁忙' + result)
+        })
+    })
+    })
+    $('.message_box').on('click', '.innerDeleteMsg', function () {
+        const _parent_id = this.getAttribute('_parent_id')
+        const _id = this.getAttribute('_id')
+        const name = sessionStorage.getItem('user') || undefined
+        if(!sessionStorage.getItem('user')){
+            infoContainer('你还没有登录', false)
+            return
+        }
+        fetch('/deleteInnerRepeat', {
+            method: 'post',
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify({ _id, _parent_id, name: Base64.decode(name) })
+        }).then(res => {
+            if(res.status >= 200 && res.status < 300)
+                return res.json()
+            return res.status
+        }).then(result => {
+            if(result && result.success){
+                infoContainer('删除成功', true)
+                $(this).closest('li').remove()
+            }
+            else
+                infoContainer(result && result.errorMsg || '网络繁忙' + result)
+        })
+    })
 }
 
 $(function () {
+    innerRepeat()
     share()
     loginApi()
     mobileEntry()

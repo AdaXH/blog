@@ -1,6 +1,7 @@
 const routerExports = {}
 const User = require('./../dbmodel/User') 
 const fs = require('fs')
+const Base64 = require('js-base64').Base64
 
 routerExports.login = { 
 	method: 'post',
@@ -11,7 +12,7 @@ routerExports.login = {
 		date.setDate(date.getDate() + 5)
 		try {
 			const result = await callLogin(name, pwd, state)
-			state && ctx.cookies.set('user', name, { expires: date, httpOnly: false })
+			state && ctx.cookies.set('user', Base64.encode(name), { expires: date, httpOnly: false })
 			ctx.body = result
 		} catch (error) {
 			ctx.body = {
@@ -48,8 +49,9 @@ routerExports.admin = {
 	url: '/checkAdmin',
 	route: async(ctx, next) => {
 		const { name } = ctx.request.body
+		const na = JSON.parse(Base64.decode(name)).name
 		try {
-			const result = await callCheckAdmin(name)
+			const result = await callCheckAdmin(na)
 			ctx. body = {
 				success: true,
 				data: result
@@ -75,7 +77,8 @@ routerExports.getAvatar = {
 	url: '/get-avatar',
 	route: async (ctx, res) => {
 		const { name } = ctx.request.body
-		await User.findOne({ name }).then(data => {
+		const na = JSON.parse(Base64.decode(name)).name
+		await User.findOne({ name: na }).then(data => {
 			data ? ctx.body = {
 				success: true,
 				data: data.avatar
