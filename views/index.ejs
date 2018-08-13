@@ -11,18 +11,31 @@
   	<link rel="stylesheet" type="text/css" href="/css/htmleaf-demo.css">
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css"/>
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/monokai-sublime.min.css"/>
-  	<link href="/css/themes/quill.snow.css" rel="stylesheet">
+      <link href="/css/themes/quill.snow.css" rel="stylesheet">
+      <script src="./js/jq.js"></script>
+      <script src='./js/loading.js'></script>
     <script type="text/javascript" src='./js/menu_plugin.js'></script>
     <script src="./js/base64.js"></script>
     <script src="./js/template.js"></script>
-    <script src="./js/jq.js"></script>
-    <script src="./js/buddle.js"></script>
+    
     <script src="./js/glitcheffect.js"></script>
     <!-- <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js" type="text/javascript" charset="utf-8"></script> -->
     <script src="./js/ge1doot.js"></script>
     <script src="./js/imageTransform3D.js"></script>
+    <script src='./js/buddle.js'></script>
 </head>
 <body style="height:100%">
+    <div class="srcLoading">
+        <div class="loading-circle">
+    
+        </div>
+        <div class="loading-word">
+            <div id='percentProgress' class="percent"></div>
+        </div>
+        <div class="loading-word">
+            <p>loading... <span id='percentText' class="percent">0</span>%</p>
+        </div>
+    </div>
   <div class="context-menu tempexit animated">
     <ul>
       <li class="menu-reload"><i class="linkfont">&#xe662;</i>重新栽入</li>
@@ -39,9 +52,9 @@
     <p class="fr">test message</p>
   </div>
 <div class="loadingUI">
-  <div class="loading-circle">
-
-  </div>
+    <div class="loading-circle">
+    
+    </div>
     <div class="loading-word">
         <p>loading...</p>
     </div>

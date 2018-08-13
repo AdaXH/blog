@@ -38,13 +38,37 @@ body{
     cursor: pointer;
     font-weight: bolder;
 }
+.srcLoading .loading-circle{
+  animation: loading-circle 3s infinite;
+}
+.srcLoading div:nth-of-type(2){overflow: hidden}
+.srcLoading div:nth-of-type(2) .percent{
+  height: 20px;
+  background: white;
+  position: absolute;
+  transition: all 1s linear;
+}
+.srcLoading .loading-word{
+  width: 300px;
+  height: 20px;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  border: 1px solid white;
+  border-radius: 30px;
+  transform: translate(-50%,-50%);
+}
+.srcLoading .loading-word p{
+  position: relative;
+  bottom:-30px;
+}
 body .loadingUI{
     width:100%;
     height:100%;
     position:absolute;
-    z-index: 220;
-    display: none;
-    background: black;
+    z-index: 999;
+    display: none;  
+    background: rgba(0,0,0,0.3);
 }
 @keyframes loading-circle {
   form{transform: rotatae(0)}
@@ -67,18 +91,20 @@ body .loadingUI{
   to{transform: rotate(360deg);}
 }
 body .loading-circle{
-  animation: loading-circle 2s infinite;
-  -webkit-animation: loading-circle 2s infinite;
-  -moz-animation: loading-circle 2s infinite;
-  -ms-animation: loading-circle 2s infinite;
-  -o-animation: loading-circle 2s infinite;
   position: absolute;
-  top:50%;
+  top:45%;
   left:50%;
   width:100px;
   height:100px;
   border-radius: 50%;
   margin : -50px 0 0 -50px;
+}
+body .runCircle{
+  animation: loading-circle 2s infinite;
+  -webkit-animation: loading-circle 2s infinite;
+  -moz-animation: loading-circle 2s infinite;
+  -ms-animation: loading-circle 2s infinite;
+  -o-animation: loading-circle 2s infinite;
 }
 body .loading-circle::after{
   content: '';
@@ -113,4 +139,11 @@ body .loading-circle::before{
 .loading-word p {
     color:white;
     text-align: center;
+}
+body .srcLoading{
+  position: absolute;
+  width:100%;
+  height: 100%;
+  z-index: 1000;
+  background: #2d2a2b;
 }

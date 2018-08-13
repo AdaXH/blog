@@ -316,7 +316,7 @@ const inputStyle = {
     textAlign : 'center',
     width : '30px',
     transition : 'all .3s',
-    height : '30px',
+    height : '20px',
     background : 'rgba(255,255,255,0.7)',
     borderRadius : '20px',
     color : '#666',

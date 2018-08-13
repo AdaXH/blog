@@ -883,6 +883,7 @@ function repeatCon(name){
                             return res.json()
                         return res.status
                     }).then(result => {
+                        loadingUI('end')
                         if (result && result.success) {
                             console.log(result)
                             reRenderMsg(result.data)
@@ -925,8 +926,10 @@ function sendRepeat(callback){
         if(word === '' || word.trim() === '' || word.length > 280) {
             infoContainer('回复内容不能为空内容过长' , false)
             return
-        }else
+        }else{
+            loadingUI('start')
             callback && callback(d, word) 
+        }
     })
 }
 
@@ -939,6 +942,7 @@ function messageOperation(name){
             $('.message_list').on('click', 'a.delete_msg', function () {
                     const _id = this.getAttribute('_id')
                     const _this = this
+                loadingUI('start')
                 fetch('/deleteMsgById', {
                     method: 'POST',
                     headers: {
@@ -951,6 +955,7 @@ function messageOperation(name){
                         return res.json()
                     return res.status
                 }).then(result => {
+                    loadingUI('end')
                     if(result && result.success){
                         infoContainer('删除成功', true)
                         $(_this).closest('li').remove()
@@ -1199,6 +1204,7 @@ function publishDynamic() {
                 infoContainer('文字超出限制' , false);
                 return;
             }
+            loadingUI('start')
             fetch('/addDynamic', {
                 method: 'POST',
                 headers: {
@@ -1211,6 +1217,7 @@ function publishDynamic() {
                     return res.json()
                 return res
             }).then(result => {
+                loadingUI('end')
                 if(result && result.success){
                     infoContainer('成功,你可以继续发布', true)
                     reRenderDynamic(result.data.reverse())
@@ -1399,6 +1406,7 @@ function publishBtn(obj , data){  //publish edit content
           const m = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes()
           const s = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds()
           const time = `${h}:${m}:${s}`
+          loadingUI('start')
           fetch('/'+obj.url, {
               method: 'POST',
               headers: {
@@ -1411,6 +1419,7 @@ function publishBtn(obj , data){  //publish edit content
                 return res.json()
             return res.status
           }).then(result => {
+              loadingUI('end')
             (result && result.success) ?
                   infoContainer('发布成功', true, () => window.location.reload() )
             :
@@ -1681,6 +1690,7 @@ function deleteArticle() {  //delete article
         info.hide().removeClass('slideInDown');
         let self = $(this).closest('li');
         const id = self[0].attributes[0].value
+        loadingUI('start')
         fetch('/deleteArticle', {
             method: 'POST',
             headers: {
@@ -1693,6 +1703,7 @@ function deleteArticle() {  //delete article
                 return res.json()
             return res
         }).then(data => {
+            loadingUI('end')
             if(data && data.success){
                 self.remove()
                 infoContainer('删除成功', true, () => 
@@ -1706,6 +1717,18 @@ function clearInfo() {  //remove info about result of leave message
     $('.msg').on('click  ', () => {
         $('.insert_dialog').hide();
     })
+}
+
+function loadingUI(type){
+    if(type === 'start'){
+        $('.loading-circle').addClass('runCircle')
+        $('.screen').addClass('blurBg')
+        $('.loadingUI').show()
+    }else if(type === 'end'){
+        $('.loading-circle').removeClass('runCircle')
+        $('.screen').removeClass('blurBg')
+        $('.loadingUI').hide()
+    }
 }
 
 function leaveMsg() {  //message board
@@ -1733,7 +1756,8 @@ function leaveMsg() {  //message board
             return
         }
         else {
-            $('.load').show()
+            loadingUI('start')
+            // $('.load').show()
             setTimeout(()=>{
                 $('.loadimg').css('transform','rotate(360deg)')
             },100)
@@ -1749,6 +1773,7 @@ function leaveMsg() {  //message board
                     return res.json()
                 return res.status
             }).then(result => {
+                loadingUI('end')
                 if(result && result.success){
                     randomUserAvatar()
                     reRenderMsg(result.data) 
@@ -2670,9 +2695,9 @@ function innerRepeat(){
     $('.message_box').on('click', '.innerRepeatAPI', function () {
         const _id = this.getAttribute('_parent_id')
         const toRepeat = this.getAttribute('_to_repeat')
-        const name = window.sessionStorage && Base64.decode(sessionStorage.getItem('user')) || undefined
+        const name = window.sessionStorage && sessionStorage.getItem('user') || undefined
         if(!name){
-            infoContainer('登录才可以操作', false)
+            infoContainer('你还没有登录哦', false)
             return
         }
         sendRepeat((d, word) => {
@@ -2685,7 +2710,7 @@ function innerRepeat(){
                 body: JSON.stringify({
                     _id,
                     msg: {
-                        name,
+                        name: Base64.decode(name),
                         toRepeat,
                         info: word,
                         date: d,
@@ -2696,6 +2721,7 @@ function innerRepeat(){
                     return res.json()
                 return res.status
             }).then(result => {
+                loadingUI('end')
                 if (result && result.success) {
                     reRenderMsg(result.data)
                     $('.cancel_repeat').trigger('click')
@@ -2712,6 +2738,7 @@ function innerRepeat(){
             infoContainer('你还没有登录', false)
             return
         }
+        loadingUI('start')
         fetch('/deleteInnerRepeat', {
             method: 'post',
             headers: {
@@ -2724,6 +2751,7 @@ function innerRepeat(){
                 return res.json()
             return res.status
         }).then(result => {
+            loadingUI('end')
             if(result && result.success){
                 infoContainer('删除成功', true)
                 $(this).closest('li').remove()
@@ -2804,6 +2832,7 @@ $(function () {
 function updateArticle(){
     $('.o_all_article').on('click','.update_article_icon',function(){
         const _id = this.attributes[0].value
+        loadingUI('start')
         fetch('/queryArticleById', {
             method: 'POST',
             headers: {
@@ -2816,6 +2845,7 @@ function updateArticle(){
                 return res.json()
             return res
         }).then(data => {
+            loadingUI('end')
             if(data && data.success){
                 const { summary, type } = data.data
                 editArticle(summary, _id, type)
@@ -2849,6 +2879,7 @@ function editArticle(summary , _id , type){
 
 function updateArticleById(_id , summary){
     const type = setArticleType()
+    loadingUI('start')
     fetch('/updateArticleById', {
         method: 'POST',
         headers: {
@@ -2858,6 +2889,7 @@ function updateArticleById(_id , summary){
         body: JSON.stringify({ _id, summary, type })
     }).then( res => { return res.json() } )
     .then(result => {
+        loadingUI('end')
         (result && result.success) ?
             infoContainer('更新成功', true, () => window.location.reload())
         :
