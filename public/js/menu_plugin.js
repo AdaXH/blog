@@ -4,48 +4,60 @@
 class Mobile {
     constructor(options){
         this.items = (options && options.menu && options.menu.length !== 0) ? options.menu : [
-        {
-            name : 'menu1',callback : ()=>console.log('click menu1')
-        },
-        {
-            name:'menu2',
-            callback : ()=>console.log('click menu2')
-        }]
-        this.appendTarget = (options && options.target) || document.body
+            {
+                name : 'menu1',
+                callback : () => console.log('click menu1')
+            },
+            {
+                name:'menu2',
+                callback : () => console.log('click menu2')
+            }
+        ] //初始化菜单，以及点击菜单的操作
+        this.appendTarget = options && options.target || document.body //插件将插入的容器
+        /*手机的背景图*/     
         this.bg = options && options.bg || 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1531722258196&di=140edea23c7e52fa99beb430904f88bd&imgtype=0&src=http%3A%2F%2Fpic.qiantucdn.com%2F58pic%2F20%2F10%2F39%2F575525d873545_1024.jpg'
-        this.ul = {}
-        this.interval = undefined
-        this.menuColor = options && options.menuColor || 'black'
-        this.searchInterval = undefined
-        this.searchCallback = options && options.searchCallback || function(_){console.log(_)}
+        this.ul = {} //菜单列表
+        this.interval = undefined //刷新时间的定时器
+        this.menuColor = options && options.menuColor || 'black' //菜单文字颜色
+        this.searchInterval = undefined //搜索入口的特效定时器
+        this.searchCallback = options && options.searchCallback || function (search) { console.log(search) } //点击搜索触发的操作
+        this.appendNodes = [] //需要插入手机容器的元素集合
     }
     start(){
-        if (document.getElementById('_container') && document.getElementById('_container').childNodes.length !== 0)
-         return
+        if (document.getElementById('_container') && document.getElementById('_container').childNodes.length !== 0) //判断页面是否已经存在插件
+            return
         this.init()
-        setTimeout(() => {
+        setTimeout(() => { //初始化载入插件时，首次自动旋转
             this.container.style.transform =  'rotateX(45deg) rotateY(68deg) rotateZ(-45deg) scale(1.3)'
             setTimeout(() => {
                 this.container.style.transform = 'rotateX(60deg) rotateZ(45deg) rotateY(0deg) scale(1.3)'
             }, 1000);
         }, 1000);
     }
-    end(){
+    end(){ //清楚定时器，并移除插件
         if (this.interval)
             clearInterval(this.interval)
         if(this.searchInterval)
             clearInterval(this.searchInterval)
-        if (!document.getElementById('_container')) return
-        this.appendTarget.removeChild(document.getElementById('_container'))
+        document.getElementById('_container') && this.appendTarget.removeChild(document.getElementById('_container'))
     }
-    init(){
+    init(){ //初始化插件
         document.body.style.perspective = '1400px'
         this.createOperationUl()
         this.addMouseEnter(this.ul)
-        this.createContainer()
-        this.setEffect()
+        this.appendNodes = [
+            this.createTopface,
+            this.createBackface,
+            this.createRight,
+            this.createLeft,
+            this.createBottom,
+            this.createForward,
+            this.createOperation
+        ]
+        this.createContainer(this.appendNodes) //创建手机容器，并将需要插入的元素的集合传递过去，在this.createContainer中插入
+        this.renderTime() //刷新手机屏幕上的时间
     }
-    addMouseEnter({ ul, ul2 ,ul3}) {
+    addMouseEnter({ ul, ul2 ,ul3}) {  //hover菜单时，侧屏hover效果
         const _this = this
         const li1 = ul.getElementsByTagName('li')
         const li2 = ul2.getElementsByTagName('li')
@@ -80,7 +92,7 @@ class Mobile {
             })
         }
     }
-    createClock(){
+    createClock(){ //时间容器
         const clock = document.createElement('div')
         setStyle(clock , clockStyle )
         const time = document.createElement('p')
@@ -89,7 +101,7 @@ class Mobile {
         clock.appendChild(time)
         return clock
     }
-    setEffect(){
+    renderTime(){ //刷新时间
         const clock = document.getElementById('menu_plugin_clock')
         const search = document.getElementById('_search')
         this.searchInterval = setInterval(()=>{
@@ -100,13 +112,13 @@ class Mobile {
         },3000)
         this.interval = setInterval(()=>{
             const d = new Date()
-            const h = d.getHours() < 10 ?  '0'+d.getHours() : d.getHours()
-            const m = d.getMinutes() < 10 ? '0'+d.getMinutes() : d.getMinutes()
-            const s = d.getSeconds() < 10 ? '0'+d.getSeconds() : d.getSeconds()
+            const h = d.getHours() < 10 ?  '0' + d.getHours() : d.getHours()
+            const m = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes()
+            const s = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds()
             clock.innerText = '' + h + ' : ' + m + ' : ' + s
         },1000)
     }
-    createSearch(){
+    createSearch(){ //搜索
         const _this = this
         const search = document.createElement('div')
         search.setAttribute('id' , '_search')
@@ -114,26 +126,26 @@ class Mobile {
         setStyle(input , inputStyle)
         setStyle(search , searchStyle)
         input.placeholder = 'O'
-        input.addEventListener('focus',function(){
+        input.addEventListener('focus', function(){
             this.style.width = '140px'
             clearInterval(_this.searchInterval)
-            this.style.paddingLeft = '40px',
+            this.style.paddingLeft = '20px'
             this.style.textAlign = 'left'
             this.placeholder = ''
         },false)
-        input.addEventListener('blur',function(){
+        input.addEventListener('blur', function(){
             this.style.width = '30px'
             this.style.paddingLeft = '0px'
             this.style.textAlign = 'center'
             this.placeholder = 'O'
-            _this.searchInterval = setInterval(()=>{
+            _this.searchInterval = setInterval( () => {
                 search.style.opacity = '0.2'
                 setTimeout(() => {
                     search.style.opacity = '1'
                 }, 1500)
             },3000)
         },false)
-        input.addEventListener('keydown' , function(e){
+        input.addEventListener('keydown', function(e){
             const ev = e || window.event
             if(ev.keyCode === 13)
                _this.searchCallback(this.value)
@@ -141,33 +153,32 @@ class Mobile {
         search.appendChild(input)
         return search
     }
-    createContainer(){
+    createContainer(nodes){ //创建手机的容器，以及子元素
         const container = document.createElement('div')
-        setStyle(container , containerStyle)
+        setStyle(container, containerStyle)
         container.setAttribute('id' , '_container')
-        container.appendChild(this.createTopface())
-        container.appendChild(this.createBackface())
-        container.appendChild(this.createRight())
-        container.appendChild(this.createLeft())
-        container.appendChild(this.createBottom())
-        container.appendChild(this.createForward())
-        container.appendChild(this.createOperation().leftO)
-        container.appendChild(this.createOperation().rightO)
-        container.appendChild(this.createOperation().closeO)
+        for(let item of nodes){
+            if (/Object/.test(Object.prototype.toString.call(item.call(this)))){
+                    const obj = item.call(this)
+                    for(let key in obj)
+                        container.appendChild(obj[key])
+                }else 
+                    container.appendChild(item.call(this))
+        }
         this.container = container
         this.appendTarget.style.perspective = '1400px'
         this.appendTarget.appendChild(container)
     }
-    createOperation(){
+    createOperation(){ //手机旋转
         const leftO = document.createElement('p')
         leftO.innerText = ' <'
-        setStyle(leftO , leftOstyle)
+        setStyle(leftO, leftOstyle)
         leftO.addEventListener('click',()=>{
             this.container.style.transform = 'rotateX(60deg) rotateZ(45deg) rotateY(0deg) scale(1.3)'
         },false)
         const rightO = document.createElement('p')
         rightO.innerText = ' >'
-        setStyle(rightO , rightOstyle)
+        setStyle(rightO, rightOstyle)
         rightO.addEventListener('click', () => {
             this.container.style.transform = 'rotateX(45deg) rotateZ(-45deg) rotateY(0deg) scale(1.3)'
         }, false)
@@ -176,13 +187,12 @@ class Mobile {
         closeO.addEventListener('click', () => {
             this.container.style.transform = 'rotateX(0deg) rotateZ(0deg) rotateY(0deg) scale(1.3)'
         }, false)
-        setStyle(closeO , closeOStyle)
-        return { leftO, rightO, closeO}
+        setStyle(closeO, closeOStyle)
+        return { leftO, rightO, closeO }
     }
-    createTopface(){
+    createTopface(){ //手机的上面
         const top = document.createElement('div')
-        setStyle(top , topStyle)
-        console.log(this)
+        setStyle(top, topStyle)
         top.appendChild(this.ul.ul)
         const lis = this.ul.ul.getElementsByTagName('li')
         top.style.background = `url(${this.bg})`
@@ -191,14 +201,14 @@ class Mobile {
         top.appendChild(this.createSearch())
         return top
     }
-    createBackface() {
+    createBackface() { //手机的背面
         const back = document.createElement('div')
         setStyle(back, backStyle)
         back.style.background = `url(${this.bg})`
         back.style.backgroundSize = 'cover'
         return back
     }
-    createLeft() {
+    createLeft() { //手机的左面
         const left = document.createElement('div')
         setStyle(left, leftStyle)
         left.style.background = `url(${this.bg}) left`
@@ -206,29 +216,29 @@ class Mobile {
         left.appendChild(this.ul.ul3)
         return left
     }
-    createRight(){
+    createRight(){ //手机的右面
         const right = document.createElement('div')
-        setStyle(right , rightStyle)
+        setStyle(right, rightStyle)
         right.style.background = `url(${this.bg}) right`
         right.style.backgroundSize = 'cover'
         right.appendChild(this.ul.ul2)
         return right
     }
-    createBottom() {
+    createBottom() { //手机的下面
         const bottom = document.createElement('div')
         setStyle(bottom, bottomStyle)
         bottom.style.background = `url(${this.bg}) bottom`
         bottom.style.backgroundSize = 'cover'
         return bottom
     }
-    createForward() {
+    createForward() { //手机的前面
         const forward = document.createElement('div')
         setStyle(forward, forwardStyle)
         forward.style.background = `url(${this.bg}) top`
         forward.style.backgroundSize = 'cover'
         return forward
     }
-    createOperationUl(){
+    createOperationUl(){ //菜单
         const ul = document.createElement('ul')
         const ul2 = document.createElement('ul')
         const ul3 = document.createElement('ul')
@@ -250,28 +260,29 @@ class Mobile {
             ul2.appendChild(li2)
             ul3.appendChild(li3)
         }
-        setStyle(ul , ul1Style)
-        setStyle(ul2 , ul2Style)
-        setStyle(ul3 , ul2Style)
-        this.ul =  { ul , ul2 , ul3}
+        setStyle(ul, ul1Style)
+        setStyle(ul2, ul2Style)
+        setStyle(ul3, ul2Style)
+        this.ul =  { ul, ul2, ul3 }
     }
 }
 
 // function
 
-function recover(els,keys){
+function recover(els, keys){ //恢复el的初识样式
     for(let item of els)
         for(let key in keys)
             item.style[key] = keys[key]
 }
 
-function setStyle(el , styles) {
+function setStyle(el , styles) { //设置el样式
     if(!el || !styles ) return null
     if(!styles) return el
     for(let key in styles)
         el.style[key] = styles[key]
     return el
 }
+/* 对应的元素的样式  */
 
 const leftOstyle = {
     position : 'absolute',

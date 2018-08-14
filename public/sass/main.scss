@@ -256,19 +256,19 @@ body {
         }
       }
       .box:nth-of-type(5){
-        background: url(/user_avatar/lyy.jpg) left top;
+        background: url(/upload/user_avatar/lyy.jpg) left top;
         background-size: 200px 200px;
       }
             .box:nth-of-type(6){
-        background: url(/user_avatar/lyy.jpg) right top;
+        background: url(/upload/user_avatar/lyy.jpg) right top;
         background-size: 200px 200px;
       }
             .box:nth-of-type(9){
-        background: url(/user_avatar/lyy.jpg) left bottom;
+        background: url(/upload/user_avatar/lyy.jpg) left bottom;
         background-size: 200px 200px;
       }
             .box:nth-of-type(10){
-        background: url(/user_avatar/lyy.jpg) right bottom;
+        background: url(/upload/user_avatar/lyy.jpg) right bottom;
         background-size: 200px 200px;
       }
     }
@@ -1685,6 +1685,7 @@ pre.ql-syntax{
         background: white;
         right: 10px;
         border-radius: 15px;
+        z-index:1;
         transition: all .5s;
         will-change: transform;
         transform: scale3d(0,0,0);
@@ -1722,6 +1723,8 @@ pre.ql-syntax{
     background-color: #23241f !important;
     color: #f8f8f2 !important;
     overflow: visible !important;
+    white-space: pre-wrap;
+    padding: 20px;
 }
         }
       }
@@ -3122,6 +3125,7 @@ color:#ffffff;
       right: 25px;
       bottom: 76px;
       font-size: 18px;
+      cursor: pointer;
     }
     .registerbtn{
       position:absolute;

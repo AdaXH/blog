@@ -2889,7 +2889,7 @@ function updateArticleById(_id , summary){
         body: JSON.stringify({ _id, summary, type })
     }).then( res => { return res.json() } )
     .then(result => {
-        loadingUI('end')
+        loadingUI('end');
         (result && result.success) ?
             infoContainer('更新成功', true, () => window.location.reload())
         :

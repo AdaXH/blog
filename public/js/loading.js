@@ -1,5 +1,11 @@
 
 const src = [
+    "./../upload/user_avatar/lyy.jpg",
+    "./../resouce/images/qq.png",
+    "./../resouce/images/load.png",
+    "./../resouce/images/qzone.png",
+    "./../resouce/images/wechat.png",
+    "./../resouce/images/ly.jpg",
     "./../resouce/bg/1.jpg",
     "./../resouce/bg/2.jpg",
     "./../resouce/bg/3.jpg",
@@ -9,7 +15,7 @@ const src = [
     "./../resouce/gallery/1.jpg",
     "./../resouce/gallery/2.jpg",
     "./../resouce/gallery/3.jpg",
-    "./../resouce/gallery/4.jpg",
+    "./../resouce/gallery/4.jpg",    
     "./../resouce/gallery/5.jpg",
     "./../resouce/gallery/6.jpg",
     "./../resouce/gallery/7.jpg",
@@ -20,14 +26,11 @@ const src = [
     "./../resouce/gallery/12.jpg",
     "./../resouce/images/loading.png",
     "./../resouce/images/loading1.png",
-    "./../resouce/images/wechat.png",
     "./../resouce/images/point.png",
     "./../resouce/images/time.png",
     "./../resouce/images/title.png",
     "./../resouce/images/type.png",
-    "./../resouce/images/ly.jpg",
-    "./../resouce/images/menu.jpg",
-    "./../resouce/images/qzone.png",
+    "./../resouce/images/menu.jpg"
 ]
 let len = 0
 const l = src.length
@@ -44,9 +47,12 @@ for(let item of src){
     }
 }
 
+// const percentText = document.getElementById('percentText')
+// const percentProgress = document.getElementById('percentProgress')
+
 function check(len){
-    $('#percentText').text((parseFloat(len / l) * 100).toFixed(2))
+    $('#percentText').text((parseFloat(len / l) * 100).toFixed(0))
     $('#percentProgress').css('width', len/l * 100 + '%')
     if(len === l)
-        $('.srcLoading').remove()
+        setTimeout(() => $('.srcLoading').remove() , 1500)
 }

@@ -48,15 +48,15 @@ app.listen(5050, (err, ans) => {
 })
 
 //connect to mongo
-mongoose.connect('mongodb://root:5sKYwhI2Ss6QYLGT0fTCoIghteD13JrZFBVxDJYD@zaokkidcvkmn.mongodb.sae.sina.com.cn:10441').then(res=> {
-    if (res)
-    	console.log('connect to mongo') 
-    else
-    	console.log('can not connect to mongo') 
-}) 
-// mongoose.connect('mongodb://localhost:27017/graduation', { useNewUrlParser: true }).then(res => {
+// mongoose.connect('mongodb://root:5sKYwhI2Ss6QYLGT0fTCoIghteD13JrZFBVxDJYD@zaokkidcvkmn.mongodb.sae.sina.com.cn:10441').then(res=> {
 //     if (res)
 //     	console.log('connect to mongo') 
 //     else
 //     	console.log('can not connect to mongo') 
 // }) 
+mongoose.connect('mongodb://localhost:27017/graduation', { useNewUrlParser: true }).then(res => {
+    if (res)
+    	console.log('connect to mongo') 
+    else
+    	console.log('can not connect to mongo') 
+}) 

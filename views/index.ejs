@@ -11,21 +11,19 @@
   	<link rel="stylesheet" type="text/css" href="/css/htmleaf-demo.css">
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css"/>
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/monokai-sublime.min.css"/>
-      <link href="/css/themes/quill.snow.css" rel="stylesheet">
-      <script src="./js/jq.js"></script>
-      <script src='./js/loading.js'></script>
+    <link href="/css/themes/quill.snow.css" rel="stylesheet">
+    <script src="./js/jq.js"></script>
+    <script src='./js/loading.js'></script>
     <script type="text/javascript" src='./js/menu_plugin.js'></script>
     <script src="./js/base64.js"></script>
     <script src="./js/template.js"></script>
-    
     <script src="./js/glitcheffect.js"></script>
-    <!-- <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js" type="text/javascript" charset="utf-8"></script> -->
     <script src="./js/ge1doot.js"></script>
     <script src="./js/imageTransform3D.js"></script>
     <script src='./js/buddle.js'></script>
 </head>
 <body style="height:100%">
-    <div class="srcLoading">
+    <div id="srcLoading" class="srcLoading">
         <div class="loading-circle">
     
         </div>
@@ -33,7 +31,7 @@
             <div id='percentProgress' class="percent"></div>
         </div>
         <div class="loading-word">
-            <p>loading... <span id='percentText' class="percent">0</span>%</p>
+            <p>loading ... <span id='percentText' class="percent">0</span>%</p>
         </div>
     </div>
   <div class="context-menu tempexit animated">
@@ -55,7 +53,7 @@
     <div class="loading-circle">
     
     </div>
-    <div class="loading-word">
+    <div style="top:50%" class="loading-word">
         <p>loading...</p>
     </div>
 </div>
@@ -429,7 +427,6 @@
         </div>
         <div class="weather fr">
  <iframe width="450" scrolling="no" height="20" frameborder="0" allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=1&color=%23FFFFFF&icon=1&wind=1&num=1&site=15"></iframe>
-<!-- <iframe allowtransparency="true" frameborder="0" width="524" height="28" scrolling="no" src="//tianqi.2345.com/plugin/widget/index.htm?s=3&z=1&t=1&v=0&d=1&bd=0&k=000000&f=ffffff&ltf=808080&htf=c0c0c0&q=1&e=1&a=1&c=71473&w=524&h=28&align=center"></iframe> -->
         </div>
     </header>
     <div class="repeat_over animated">
@@ -445,7 +442,6 @@
         <ul class="all">
             <li class="fl menu face glitch_face">
                 <div class="center_bar fl">
-                  <!-- <div id='fake_scroll_dynamic' class="fake_scroll"></div> -->
                       <ul class="dynamic" id='dynamic_container'>
                         <% dynamic.forEach(item=>{ %>
                         <li class="dynamic_item" _id=<%= item._id %>>
@@ -508,7 +504,6 @@
                             {{/each}}
                         </script>
                     </ul>
-                  <!-- </div> -->
                 </div>
                 <div class="right_bar fr">
                     <div class="swiper-container">
@@ -520,14 +515,7 @@
                         <div class="camera-effect"></div>
                         <div class="camera-effect"></div>
                         <div class="camera-effect"></div>
-                        <!--<span class="effect-line"></span>
-                        <span class="effect-line"></span>
-                        <span class="effect-line"></span>
-                        <span class="effect-line"></span>
-                        <span class="effect-line"></span>
-                        <span class="effect-line"></span>-->
                         <span class="effect-line text">Glitch</span>
-               <!--         <span class="effect-line"></span>-->
                         <span class="swiper-wrapper">
                             <div class="glitch_effect">
                               <div class="customer">
@@ -562,7 +550,6 @@
                       </div>
                       <i class="article_close linkfont">&#xe629;</i>
                       <span class="article_date"><%= item.date %> <p class="year"><%= item.year %></p></span>
-                      <!-- <h4 class="fl article_tittle"><%= item.title %></h4> -->
                       <div class="article_summary"><%- item.summary %></div>
                   </li>
                   <% }) %>
@@ -625,7 +612,6 @@
                             <a class="togger_repeat_list" style=<%- item.repeat.length === 0 ? 'display:none' : 'display:block' %>>
                                 展开
                             </a>
-                            <!-- <div class="repeat_list_con"> -->
                             <ul class="repeat_list">
                               <% item.repeat.forEach((repeat)=>{ %>
                                 <li class="repeat_item">
@@ -650,7 +636,6 @@
                           <%  }) %>
 
                             </ul>
-                          <!-- </div> -->
                         </li>
                         <% }) %>
                         <script type="text/html" id="message-tpl">
@@ -668,8 +653,6 @@
                              <a class="togger_repeat_list" style={{message.repeat.length !== 0 ? 'display:block' : 'display:none'}}>
                                 展开
                             </a>
-                                    
-                                <!-- <div class="repeat_list_con"> -->
                           <ul class="repeat_list">
                               {{ each message.repeat as repeat }}
                                 <li class="repeat_item">
@@ -691,7 +674,6 @@
                           {{/each}}
 
                             </ul>    
-                            <!-- </div>  -->
                                  </li>
                             {{/each}}
                         </script>
@@ -715,7 +697,6 @@
             </li>
         </ul>
         <div class="search_result_container animated">
-            <!-- <div class="error_search">找不到你想要的...</div> -->
         	<p>搜索结果&nbsp;:</p>
         	<ul class="item_info clear_float">
         		<li class="fl">摘要</li>
@@ -759,9 +740,11 @@
                <button name="login" class="current-api" value="" id="login">登录</button>
               <i class="linkfont exit">&#xe626;</i>
               <div class="input-con">
+            <form action="">
               <input id="username" type="text" name="username" placeholder="用户名">
               <input id="password" type="password" name="password" placeholder="密码">
               <input id="check_password" type="password" name="checkpwd" placeholder="确认密码">
+            </form>
               </div>
               <div class="label-con">
                   <label><input type="checkbox" />记住登录状态</label>
