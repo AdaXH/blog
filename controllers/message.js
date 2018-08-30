@@ -78,7 +78,7 @@ function callRepeatMsg(_id, msg){
             if(!ans) reject('这条留言已不存在，无法回复')
             else{
                 const repeat = ans.repeat || []
-                Message.update({ _id }, {
+                Message.updateMany({ _id }, {
                     $set: {
                         repeat: [ ...repeat, msg ]
                     }

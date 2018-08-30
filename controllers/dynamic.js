@@ -1,5 +1,5 @@
 const Dynamic = require('./../dbmodel/Dynamic') 
-
+const Base64 = require('js-base64').Base64
 const routerExports = {}
 
 routerExports.upvote = {
@@ -18,7 +18,7 @@ routerExports.upvote = {
 
 function callUpvote(_id, upvote){
   return new Promise((resolve, reject) => {
-    Dynamic.update({_id }, { $set: { upvote } }).then(res => {
+    Dynamic.updateMany({_id }, { $set: { upvote } }).then(res => {
       res.ok === 0 ? reject(false) : resolve(true)
     }).catch(err => reject(false) )
   })
@@ -28,9 +28,9 @@ routerExports.leaveMsg = {
   method: 'post',
   url: '/leave-dynamic-mg',
   route: async (ctx, next) => {
-    const { _id, msg } = ctx.request.body
+    const { _id, msg, name } = ctx.request.body
     try {
-      const result = await callLeaveMsgDynamic(_id, msg)
+      const result = await callLeaveMsgDynamic(_id, msg, name)
       ctx.body = {
         success: true,
         data: result
@@ -44,14 +44,20 @@ routerExports.leaveMsg = {
   }
 }
 
-function callLeaveMsgDynamic(_id, msg){
+function callLeaveMsgDynamic(_id, msg, name){
   return new Promise((resolve, reject) => {
     Dynamic.findOne({ _id }).then(data => {
       if(data){
         const oldMsg = data.msg
-        const newMsg = oldMsg.concat(msg)
-        Dynamic.update({ _id }, { $set: { msg: newMsg } }).then(res => {
+        const newMsg = oldMsg.concat([{...msg, name: Base64.decode(name) } ])
+        Dynamic.updateMany({ _id }, { $set: { msg: newMsg } }).then(res => {
             Dynamic.find({}).then(ans => {
+              // const result = ans.map(item => {
+              //   if(item.msg && item.msg.length !== 0)
+              //     for(let m of item.msg)
+              //       if(!m.name) m.name = '神秘人'
+              //   return item
+              // })
               resolve(ans)
             }).catch(err => reject('更新成功，但是获取失败了') )
         }).catch(err => {
@@ -136,7 +142,7 @@ routerExports.updateDynamic = {
   route: async (ctx, next) => {
     const { _id, content, title } = ctx.request.body
 
-    await Dynamic.update({ _id }, { $set: { content, title } }).then(data => {
+    await Dynamic.updateMany({ _id }, { $set: { content, title } }).then(data => {
       data.n === 0 ? ctx.body = false : ctx.body = true
     }).catch(err => {
       ctx.body = false
@@ -156,4 +162,37 @@ routerExports.queryDynamic = {
     })
   }
  }
+
+routerExports.deleteDynamicMsg = {
+  method: 'post',
+  url: '/deleteDynamicMsg',
+  route: async(ctx, next) => {
+    const { _id, msgId } = ctx.request.body
+    try{
+      await callDeleteDynamicMsg(_id, msgId)
+      ctx.body = { success: true }
+    }catch(error){
+      ctx.body = {
+        success: false,
+        errorMsg: error
+      }
+    }
+  }
+}
+
+function callDeleteDynamicMsg(_id, msgId){
+  return new Promise((resolve, reject) => {
+    Dynamic.findOne({ _id: msgId }).then(data => {
+      if(data){
+        const msg = data.msg.filter(item => (String(item._id) !== String(_id)))
+        Dynamic.updateOne({ _id: msgId }, {
+          $set: {
+            msg
+          }
+        }).then(ans => ans.ok === 1 ? resolve(true) : reject('删除失败'))
+      }
+    }).catch(err => reject(err instanceof Object ? JSON.stringify(err) : err.toString()))
+  })
+}
+
 module.exports =  routerExports 

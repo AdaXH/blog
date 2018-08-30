@@ -6,33 +6,36 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="./sass/main.css">
     <link rel="stylesheet" href="./sass/animate.css">
-    <link rel="stylesheet" href="./sass/gallery.css">
+    <!-- <link rel="stylesheet" href="./sass/gallery.css"> -->
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-grid.min.css">
-  	<link rel="stylesheet" type="text/css" href="/css/htmleaf-demo.css">
-  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css"/>
-  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/monokai-sublime.min.css"/>
-    <link href="/css/themes/quill.snow.css" rel="stylesheet">
+  	<!-- <link rel="stylesheet" type="text/css" href="/css/htmleaf-demo.css"> -->
+  	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css"/> -->
+  	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/monokai-sublime.min.css"/> -->
+    <!-- <link href="/css/themes/quill.snow.css" rel="stylesheet"> -->
     <script src="./js/jq.js"></script>
-    <script src='./js/loading.js'></script>
-    <script type="text/javascript" src='./js/menu_plugin.js'></script>
-    <script src="./js/base64.js"></script>
     <script src="./js/template.js"></script>
-    <script src="./js/glitcheffect.js"></script>
     <script src="./js/ge1doot.js"></script>
     <script src="./js/imageTransform3D.js"></script>
     <script src='./js/buddle.js'></script>
 </head>
 <body style="height:100%">
     <div id="srcLoading" class="srcLoading">
-        <div class="loading-circle">
-    
+        <div id="loading-circle">
+            <div class="k-line2 k-line12-1"></div>
+            <div class="k-line2 k-line12-2"></div>
+            <div class="k-line2 k-line12-3"></div>
+            <div class="k-line2 k-line12-4"></div>
+            <div class="k-line2 k-line12-5"></div>
+            <div class="k-line2 k-line12-6"></div>
+            <div class="k-line2 k-line12-7"></div>
+            <div class="k-line2 k-line12-8"></div>
         </div>
-        <div class="loading-word">
-            <div id='percentProgress' class="percent"></div>
-        </div>
-        <div class="loading-word">
-            <p>loading ... <span id='percentText' class="percent">0</span>%</p>
-        </div>
+        <p>
+            <span id='percentText' class="percent">
+                0
+            </span>
+            <span>%</span>
+        </p>
     </div>
   <div class="context-menu tempexit animated">
     <ul>
@@ -50,11 +53,11 @@
     <p class="fr">test message</p>
   </div>
 <div class="loadingUI">
-    <div class="loading-circle">
-    
-    </div>
-    <div style="top:50%" class="loading-word">
-        <p>loading...</p>
+    <div class="loadingContainer">
+        <div class="k-ball7a"></div>
+        <div class="k-ball7b"></div>
+        <div class="k-ball7c"></div>
+        <div class="k-ball7d"></div>
     </div>
 </div>
 <div class="body_overlay">
@@ -325,10 +328,16 @@
                             </li>
                             <li>
                                 <i class="linkfont">&#xe663;</i>
-                                <span>背景图</span>
+                                <span>背景资源</span>
                             </li>
                             <li></li>
                             <li></li>
+                        </ul>
+                        <ul class="fr sourceOperation">
+                            <li class="operationItem">
+                                <div class="photoManage"></div>
+                            </li>
+                            <li class="operationItem"></li>
                         </ul>
                     </div>
                 </div>
@@ -367,7 +376,7 @@
             	<a class="leave_message" href="javascript: void(0);"><i class="linkfont shake">&#xeee0;</i><span>留言板</span></a></li>
             <li>
             	<div class="hover_shadow"></div>
-            	<a class='gallery_api' href="javascript: void(0);"><i class="linkfont shake">&#xe632;</i><span>图库走廊</span></a></li>
+            	<a class='gallery_api' href="javascript: void(0)"><i class="linkfont shake">&#xe632;</i><span>图库走廊</span></a></li>
             <li class="ic shareToSina">
             	<div class="hover_shadow"></div>
                 <a href="javascript: void(0);">
@@ -416,10 +425,10 @@
     </aside>
     <header>
         <ul class="nav">
-            <li class="fl"><a class="change index" href="javascript: void(0);">首页</a></li>
-            <li class="fl"><a class="change triggerArticle" href="javascript: void(0);">文章</a></li>
-            <li class="fl"><a class="change" href="javascript: void(0);">留言板</a></li>
-            <li class="fl"><a class="change" href="javascript: void(0);">关于</a></li>
+            <li class="fl"><a class="change index" href="#/index">首页</a></li>
+            <li class="fl"><a class="change triggerArticle" href="#/article">文章</a></li>
+            <li class="fl"><a class="change" href="#/message">留言板</a></li>
+            <li class="fl"><a class="change" href="#/about">关于</a></li>
         </ul>
         <div class="search_container fr">
         	<i class="linkfont fl">&#xe68d;</i>
@@ -462,10 +471,15 @@
                                      <button class="leave-dynamic-mg">发表</button>
                                 </div>
                                 <ul class="dynamic-msg-ul">
-                                    <% item.msg.reverse().forEach(item=>{ %>
+                                    <% item.msg.reverse().forEach(temp => { %>
                                     <li class="dynamic-msg-item" >
-                                        <p class="dynamic-msg-context"><%= item.context %></p>
-                                        <p class="dynamic-msg-date"><%= item.date %></p>
+                                        <i _msgid=<%= item._id %> _id=<%= temp._id %> class="deleteDynamicRepeat linkfont">&#xe603;</i>
+                                        <p class="dynamic-msg-date">
+                                            <span class="dynamic-repeat-name"><%= temp.name || '神秘人' %>：</span>
+                                            <span class="date"><%= temp.date %></span>
+                                        </p>
+                                        <p class="dynamic-msg-context"><%= temp.context %></p>
+                                        
                                     </li>
                              <%   }) %>
                                 </ul>
@@ -494,8 +508,13 @@
                                 <ul class="dynamic-msg-ul">
                                     {{ each dynamic.msg.reverse() as temp }}
                                     <li class="dynamic-msg-item">
+                                        <i _msgid={{dynamic._id}} _id={{ temp._id }} class="deleteDynamicRepeat linkfont">&#xe603;</i>
+                                        <p class="dynamic-msg-date">
+                                            <span class="dynamic-repeat-name">{{temp.name || '神秘人'}}：</span>
+                                            <span class="date">{{ temp.date }}</span>
+                                        </p>
                                         <p class="dynamic-msg-context">{{temp.context}}</p>
-                                        <p class="dynamic-msg-date">{{temp.date}}</p>
+                                        
                                     </li>
                                     {{/each}}
                                 </ul>

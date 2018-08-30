@@ -73,7 +73,7 @@ routerExports.updateArticle = {
 
 function callUpdateArticleViewer(_id, viewer){
 	return new Promise((resolve, reject) =>{
-		Article.update({ _id }, { $set: { viewer } }).then(data => {
+		Article.updateMany({ _id }, { $set: { viewer } }).then(data => {
 			data.n === 0 ? reject(false) : resolve(true)
 		}).catch(err => reject(false))
 	})
@@ -98,7 +98,7 @@ routerExports.updateView = {
 
 function callUpdateArticleById(_id, summary, type){
 	return new Promise((resolve, reject) => {
-		Article.update({ _id }, { $set: { summary, type } }).then( data => {
+		Article.updateMany({ _id }, { $set: { summary, type } }).then( data => {
 			data.ok === 0 ? reject('更新失败') : resolve(true)
 		}).catch(err => reject('更新时出错' + err instanceof Object ? JSON.stringify(err) : err.toString()) )
 	})

@@ -157,16 +157,12 @@ routerExports.routerIndex = {
                 dynamic
             })
         } catch (error) {
-            const mood = await moodArr()
-            const article = await articleArr()
-            const message = await messageArr()
-            const dynamic = await dynamicArr()
             await ctx.render('index', {
                 title: 'Ada - 个人主页',
-                mood,
-                article,
-                message,
-                dynamic
+                mood: [],
+                article: [],
+                message: [],
+                dynamic: []
             })
         } 
     }   

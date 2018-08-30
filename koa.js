@@ -6,7 +6,7 @@ const views = require('koa-views')
 const mongoose = require('mongoose') 
 const fs = require('fs')
 const router = require('koa-router')()
-
+console.log('1')
 const files = fs.readdirSync(__dirname + '/controllers')
 
 // middlewares
@@ -16,13 +16,14 @@ app.use(bodyparser({
     "formLimit": '5mb',
     "textLimit": '5mb'
 }))
+console.log('2')
 app.use(json())
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {
     extension: 'ejs'
 }))
-
+console.log('3')
 //controllers
 const controllers = files.filter(item => item.endsWith('.js') )
 for (let controller of controllers) {
@@ -30,33 +31,31 @@ for (let controller of controllers) {
     if (!controllersExport || !(controllersExport instanceof Object)) 
         console.log(controller + '没有提供正确的接口')
     else
-    for (let key in controllersExport){
-        if (!controllersExport[key].method || !controllersExport[key].url || !controllersExport[key].route)
-            console.log(file + '的' + key + '配置不正确')
-        else
-        router[controllersExport[key].method](controllersExport[key].url, controllersExport[key].route)
-    }
+        for (let key in controllersExport){
+            if(!controllersExport[key].method || !controllersExport[key].url || !controllersExport[key].route)
+                console.log(controller + ' 的 "' + key + '" 配置不正确')
+            else
+                router[controllersExport[key].method](controllersExport[key].url, controllersExport[key].route)
+        }
 }
+console.log('4')
 //router
 app.use(router.routes(), router.allowedMethods())
-
-app.listen(5050, (err, ans) => {
-    if (err)
-        console.log(err) 
-    else
- 		console.log('server on 5050') 
-})
+console.log('5')
+app.listen(5050, _ => console.log('server on 5050'))
 
 //connect to mongo
-// mongoose.connect('mongodb://root:5sKYwhI2Ss6QYLGT0fTCoIghteD13JrZFBVxDJYD@zaokkidcvkmn.mongodb.sae.sina.com.cn:10441').then(res=> {
-//     if (res)
-//     	console.log('connect to mongo') 
-//     else
-//     	console.log('can not connect to mongo') 
-// }) 
-mongoose.connect('mongodb://localhost:27017/graduation', { useNewUrlParser: true }).then(res => {
-    if (res)
-    	console.log('connect to mongo') 
-    else
+//mongodb://root:jTPgd5nT8uSdzDRr0sgazdnwan1dB2gMwcQvslUU@koeabpwkfrbs.mongodb.sae.sina.com.cn:10297,zcubkoddktjc.mongodb.sae.sina.com.cn:10297
+mongoose.connect('mongodb://root:jTPgd5nT8uSdzDRr0sgazdnwan1dB2gMwcQvslUU@koeabpwkfrbs.mongodb.sae.sina.com.cn:10297').then(res=> {
+    res ?
+    	console.log('connected to mongo') 
+    :
     	console.log('can not connect to mongo') 
 }) 
+console.log('6')
+// mongoose.connect('mongodb://localhost:27017/graduation', { useNewUrlParser: true }).then(res => {
+//     res ?
+//     	console.log('connected to mongo') 
+//     :
+//     	console.log('can not connect to mongo') 
+// }) 

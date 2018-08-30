@@ -1,3 +1,769 @@
+//Base64
+(function (global, factory) { typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(global) : typeof define === "function" && define.amd ? define(factory) : factory(global) })(typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : this, function (global) { "use strict"; var _Base64 = global.Base64; var version = "2.4.8"; var buffer; if (typeof module !== "undefined" && module.exports) { if (typeof navigator != "undefined" && navigator.product == "ReactNative") { } else { try { buffer = require("buffer").Buffer } catch (err) { } } } var b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; var b64tab = function (bin) { var t = {}; for (var i = 0, l = bin.length; i < l; i++)t[bin.charAt(i)] = i; return t }(b64chars); var fromCharCode = String.fromCharCode; var cb_utob = function (c) { if (c.length < 2) { var cc = c.charCodeAt(0); return cc < 128 ? c : cc < 2048 ? fromCharCode(192 | cc >>> 6) + fromCharCode(128 | cc & 63) : fromCharCode(224 | cc >>> 12 & 15) + fromCharCode(128 | cc >>> 6 & 63) + fromCharCode(128 | cc & 63) } else { var cc = 65536 + (c.charCodeAt(0) - 55296) * 1024 + (c.charCodeAt(1) - 56320); return fromCharCode(240 | cc >>> 18 & 7) + fromCharCode(128 | cc >>> 12 & 63) + fromCharCode(128 | cc >>> 6 & 63) + fromCharCode(128 | cc & 63) } }; var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g; var utob = function (u) { return u.replace(re_utob, cb_utob) }; var cb_encode = function (ccc) { var padlen = [0, 2, 1][ccc.length % 3], ord = ccc.charCodeAt(0) << 16 | (ccc.length > 1 ? ccc.charCodeAt(1) : 0) << 8 | (ccc.length > 2 ? ccc.charCodeAt(2) : 0), chars = [b64chars.charAt(ord >>> 18), b64chars.charAt(ord >>> 12 & 63), padlen >= 2 ? "=" : b64chars.charAt(ord >>> 6 & 63), padlen >= 1 ? "=" : b64chars.charAt(ord & 63)]; return chars.join("") }; var btoa = global.btoa ? function (b) { return global.btoa(b) } : function (b) { return b.replace(/[\s\S]{1,3}/g, cb_encode) }; var _encode = buffer ? buffer.from && Uint8Array && buffer.from !== Uint8Array.from ? function (u) { return (u.constructor === buffer.constructor ? u : buffer.from(u)).toString("base64") } : function (u) { return (u.constructor === buffer.constructor ? u : new buffer(u)).toString("base64") } : function (u) { return btoa(utob(u)) }; var encode = function (u, urisafe) { return !urisafe ? _encode(String(u)) : _encode(String(u)).replace(/[+\/]/g, function (m0) { return m0 == "+" ? "-" : "_" }).replace(/=/g, "") }; var encodeURI = function (u) { return encode(u, true) }; var re_btou = new RegExp(["[À-ß][-¿]", "[à-ï][-¿]{2}", "[ð-÷][-¿]{3}"].join("|"), "g"); var cb_btou = function (cccc) { switch (cccc.length) { case 4: var cp = (7 & cccc.charCodeAt(0)) << 18 | (63 & cccc.charCodeAt(1)) << 12 | (63 & cccc.charCodeAt(2)) << 6 | 63 & cccc.charCodeAt(3), offset = cp - 65536; return fromCharCode((offset >>> 10) + 55296) + fromCharCode((offset & 1023) + 56320); case 3: return fromCharCode((15 & cccc.charCodeAt(0)) << 12 | (63 & cccc.charCodeAt(1)) << 6 | 63 & cccc.charCodeAt(2)); default: return fromCharCode((31 & cccc.charCodeAt(0)) << 6 | 63 & cccc.charCodeAt(1)) } }; var btou = function (b) { return b.replace(re_btou, cb_btou) }; var cb_decode = function (cccc) { var len = cccc.length, padlen = len % 4, n = (len > 0 ? b64tab[cccc.charAt(0)] << 18 : 0) | (len > 1 ? b64tab[cccc.charAt(1)] << 12 : 0) | (len > 2 ? b64tab[cccc.charAt(2)] << 6 : 0) | (len > 3 ? b64tab[cccc.charAt(3)] : 0), chars = [fromCharCode(n >>> 16), fromCharCode(n >>> 8 & 255), fromCharCode(n & 255)]; chars.length -= [0, 0, 2, 1][padlen]; return chars.join("") }; var atob = global.atob ? function (a) { return global.atob(a) } : function (a) { return a.replace(/[\s\S]{1,4}/g, cb_decode) }; var _decode = buffer ? buffer.from && Uint8Array && buffer.from !== Uint8Array.from ? function (a) { return (a.constructor === buffer.constructor ? a : buffer.from(a, "base64")).toString() } : function (a) { return (a.constructor === buffer.constructor ? a : new buffer(a, "base64")).toString() } : function (a) { return btou(atob(a)) }; var decode = function (a) { return _decode(String(a).replace(/[-_]/g, function (m0) { return m0 == "-" ? "+" : "/" }).replace(/[^A-Za-z0-9\+\/]/g, "")) }; var noConflict = function () { var Base64 = global.Base64; global.Base64 = _Base64; return Base64 }; global.Base64 = { VERSION: version, atob: atob, btoa: btoa, fromBase64: decode, toBase64: encode, utob: utob, encode: encode, encodeURI: encodeURI, btou: btou, decode: decode, noConflict: noConflict }; if (typeof Object.defineProperty === "function") { var noEnum = function (v) { return { value: v, enumerable: false, writable: true, configurable: true } }; global.Base64.extendString = function () { Object.defineProperty(String.prototype, "fromBase64", noEnum(function () { return decode(this) })); Object.defineProperty(String.prototype, "toBase64", noEnum(function (urisafe) { return encode(this, urisafe) })); Object.defineProperty(String.prototype, "toBase64URI", noEnum(function () { return encode(this, true) })) } } if (global["Meteor"]) { Base64 = global.Base64 } if (typeof module !== "undefined" && module.exports) { module.exports.Base64 = global.Base64 } else if (typeof define === "function" && define.amd) { define([], function () { return global.Base64 }) } return { Base64: global.Base64 } });
+
+// author: Ada
+// web:https://www.adaxh.applinzi.com
+class Mobile {
+    constructor(options) {
+        this.items = (options && options.menu && options.menu.length !== 0) ? options.menu : [
+            {
+                name: 'menu1',
+                callback: () => console.log('click menu1')
+            },
+            {
+                name: 'menu2',
+                callback: () => console.log('click menu2')
+            }
+        ] //初始化菜单，以及点击菜单的操作
+        this.appendTarget = options && options.target || document.body //插件将插入的容器
+        /*手机的背景图*/
+        this.bg = options && options.bg || 'http://www.rui2.net/uploadfile/output/3/2013/1001/4acf64758d420524.jpg'
+        this.ul = {} //菜单列表
+        this.interval = undefined //刷新时间的定时器
+        this.menuColor = options && options.menuColor || 'black' //菜单文字颜色
+        this.searchInterval = undefined //搜索入口的特效定时器
+        this.searchCallback = options && options.searchCallback || function (search) { console.log(search) } //点击搜索触发的操作
+        this.appendNodes = [] //需要插入手机容器的元素集合
+    }
+    start() {
+        if (document.getElementById('_container') && document.getElementById('_container').childNodes.length !== 0) //判断页面是否已经存在插件
+            return
+        this.init()
+        setTimeout(() => { //初始化载入插件时，首次自动旋转
+            this.container.style.transform = 'rotateX(45deg) rotateY(68deg) rotateZ(-45deg) scale(1.3)'
+            setTimeout(() => {
+                this.container.style.transform = 'rotateX(60deg) rotateZ(45deg) rotateY(0deg) scale(1.3)'
+            }, 1000);
+        }, 1000);
+    }
+    end() { //清楚定时器，并移除插件
+        if (this.interval)
+            clearInterval(this.interval)
+        if (this.searchInterval)
+            clearInterval(this.searchInterval)
+        document.getElementById('_container') && this.appendTarget.removeChild(document.getElementById('_container'))
+    }
+    init() { //初始化插件
+        this.createOperationUl()
+        this.addMouseEnter(this.ul)
+        this.appendNodes = [
+            this.createTopface,
+            this.createBackface,
+            this.createRight,
+            this.createLeft,
+            this.createBottom,
+            this.createForward,
+            this.createOperation
+        ]
+        this.createContainer(this.appendNodes) //创建手机容器，并将需要插入的元素的集合传递过去，在this.createContainer中插入
+        this.renderTime() //刷新手机屏幕上的时间
+    }
+    addMouseEnter({ ul, ul2, ul3 }) {  //hover菜单时，侧屏hover效果
+        const _this = this
+        const li1 = ul.getElementsByTagName('li')
+        const li2 = ul2.getElementsByTagName('li')
+        const li3 = ul3.getElementsByTagName('li')
+        for (let i = 0; i < li1.length; i++) {
+            li1[i].onmouseover = function () {
+                recover(li1, {
+                    background: 'none',
+                    paddingLeft: '10px',
+                    color: _this.menuColor,
+                })
+                recover(li2, { background: 'none' })
+                recover(li3, { background: 'none' })
+                this.style.background = '#A4D768'
+                this.style.paddingLeft = '20px'
+                this.style.color = 'white'
+                li2[i].style.background = '#A4D768'
+                li3[i].style.background = '#A4D768'
+            }
+        }
+        ul.onmouseleave = function () {
+            recover(li1, {
+                background: 'none',
+                paddingLeft: '10px',
+                color: _this.menuColor
+            })
+            recover(li2, {
+                background: 'none'
+            })
+            recover(li3, {
+                background: 'none'
+            })
+        }
+    }
+    createClock() { //时间容器
+        const clock = document.createElement('div')
+        setStyle(clock, clockStyle)
+        const time = document.createElement('p')
+        time.setAttribute('id', 'menu_plugin_clock')
+        setStyle(time, timeStyle)
+        clock.appendChild(time)
+        return clock
+    }
+    renderTime() { //刷新时间
+        const clock = document.getElementById('menu_plugin_clock')
+        const search = document.getElementById('_search')
+        this.searchInterval = setInterval(() => {
+            search.style.opacity = '0.2'
+            setTimeout(() => {
+                search.style.opacity = '1'
+            }, 1500)
+        }, 3000)
+        this.interval = setInterval(() => {
+            const d = new Date()
+            const h = d.getHours() < 10 ? '0' + d.getHours() : d.getHours()
+            const m = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes()
+            const s = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds()
+            clock.innerText = '' + h + ' : ' + m + ' : ' + s
+        }, 1000)
+    }
+    createSearch() { //搜索
+        const _this = this
+        const search = document.createElement('div')
+        search.setAttribute('id', '_search')
+        const input = document.createElement('input')
+        setStyle(input, inputStyle)
+        setStyle(search, searchStyle)
+        input.placeholder = 'O'
+        input.addEventListener('focus', function () {
+            this.style.width = '140px'
+            clearInterval(_this.searchInterval)
+            this.style.paddingLeft = '20px'
+            this.style.textAlign = 'left'
+            this.placeholder = ''
+        }, false)
+        input.addEventListener('blur', function () {
+            this.style.width = '25px'
+            this.style.paddingLeft = '0px'
+            this.style.textAlign = 'center'
+            this.placeholder = 'O'
+            _this.searchInterval = setInterval(() => {
+                search.style.opacity = '0.2'
+                setTimeout(() => {
+                    search.style.opacity = '1'
+                }, 1500)
+            }, 3000)
+        }, false)
+        input.addEventListener('keydown', function (e) {
+            const ev = e || window.event
+            if (ev.keyCode === 13)
+                _this.searchCallback(this.value)
+        }, false)
+        search.appendChild(input)
+        return search
+    }
+    createContainer(nodes) { //创建手机的容器，以及子元素
+        const container = document.createElement('div')
+        setStyle(container, containerStyle)
+        container.setAttribute('id', '_container')
+        for (let item of nodes) {
+            if (/Object/.test(Object.prototype.toString.call(item.call(this)))) {
+                const obj = item.call(this)
+                for (let key in obj)
+                    container.appendChild(obj[key])
+            } else
+                container.appendChild(item.call(this))
+        }
+        this.container = container
+        this.appendTarget.style.perspective = '1400px'
+        this.appendTarget.style.transformStyle = 'preserve-3d'
+        this.appendTarget.appendChild(container)
+    }
+    createOperation() { //手机旋转
+        const leftO = document.createElement('p')
+        leftO.innerText = ' <'
+        setStyle(leftO, leftOstyle)
+        leftO.addEventListener('click', () => {
+            this.container.style.transform = 'rotateX(60deg) rotateZ(45deg) rotateY(0deg) scale(1.3)'
+        }, false)
+        const rightO = document.createElement('p')
+        rightO.innerText = ' >'
+        setStyle(rightO, rightOstyle)
+        rightO.addEventListener('click', () => {
+            this.container.style.transform = 'rotateX(45deg) rotateZ(-45deg) rotateY(0deg) scale(1.3)'
+        }, false)
+        const closeO = document.createElement('p')
+        closeO.innerText = 'x'
+        closeO.addEventListener('click', () => {
+            this.container.style.transform = 'rotateX(0deg) rotateZ(0deg) rotateY(0deg) scale(1)'
+        }, false)
+        setStyle(closeO, closeOStyle)
+        return { leftO, rightO, closeO }
+    }
+    createTopface() { //手机的上面
+        const top = document.createElement('div')
+        const barrery = document.createElement('div')
+        const barreryStatus = document.createElement('div')
+        const sign = document.createElement('div')
+        const statusBar = document.createElement('div')
+        sign.innerText = '.....'
+        barreryStatus.innerText = '100%'
+        setStyle(statusBar, statusBarStyle)
+        setStyle(barrery, barreryStyle)
+        setStyle(barreryStatus, barreryStatusStyle)
+        setStyle(top, topStyle)
+        setStyle(sign, singStyle)
+        top.appendChild(this.ul.ul)
+        const lis = this.ul.ul.getElementsByTagName('li')
+        top.style.background = `url(${this.bg})`
+        top.style.backgroundSize = 'cover'
+        statusBar.appendChild(barreryStatus)
+        statusBar.appendChild(barrery)
+        statusBar.appendChild(sign)
+        top.appendChild(statusBar)
+        top.appendChild(this.createClock())
+        top.appendChild(this.createSearch())
+        return top
+    }
+    createBackface() { //手机的背面
+        const back = document.createElement('div')
+        setStyle(back, backStyle)
+        back.style.background = `url(${this.bg})`
+        back.style.backgroundSize = 'cover'
+        return back
+    }
+    createLeft() { //手机的左面
+        const left = document.createElement('div')
+        setStyle(left, leftStyle)
+        left.style.background = `url(${this.bg}) left`
+        left.style.backgroundSize = 'cover'
+        left.appendChild(this.ul.ul3)
+        return left
+    }
+    createRight() { //手机的右面
+        const right = document.createElement('div')
+        setStyle(right, rightStyle)
+        right.style.background = `url(${this.bg}) right`
+        right.style.backgroundSize = 'cover'
+        right.appendChild(this.ul.ul2)
+        return right
+    }
+    createBottom() { //手机的下面
+        const bottom = document.createElement('div')
+        setStyle(bottom, bottomStyle)
+        bottom.style.background = `url(${this.bg}) bottom`
+        bottom.style.backgroundSize = 'cover'
+        return bottom
+    }
+    createForward() { //手机的前面
+        const forward = document.createElement('div')
+        setStyle(forward, forwardStyle)
+        forward.style.background = `url(${this.bg}) top`
+        forward.style.backgroundSize = 'cover'
+        return forward
+    }
+    createOperationUl() { //菜单
+        const ul = document.createElement('ul')
+        const ul2 = document.createElement('ul')
+        const ul3 = document.createElement('ul')
+        for (let item of this.items) {
+            const li = document.createElement('li')
+            const li2 = document.createElement('li')
+            const li3 = document.createElement('li')
+            li.innerText = item.name
+            if (item.callback)
+                li.addEventListener('click', item.callback, false)
+            ul.appendChild(setStyle(li, li1Style))
+            li.style.color = this.menuColor
+            li2.style.height = '30px'
+            li2.style.transition = 'all ease .3s'
+            li2.style.boxSizing = 'border-box'
+            li3.style.height = '30px'
+            li3.style.transition = 'all ease .3s'
+            li3.style.boxSizing = 'border-box'
+            ul2.appendChild(li2)
+            ul3.appendChild(li3)
+        }
+        setStyle(ul, ul1Style)
+        setStyle(ul2, ul2Style)
+        setStyle(ul3, ul2Style)
+        this.ul = { ul, ul2, ul3 }
+    }
+}
+
+// function
+
+function recover(els, keys) { //恢复el的初识样式
+    for (let item of els)
+        for (let key in keys)
+            item.style[key] = keys[key]
+}
+
+function setStyle(el, styles) { //设置el样式
+    if (!el || !styles) return null
+    if (!styles) return el
+    for (let key in styles)
+        el.style[key] = styles[key]
+    return el
+}
+/* 对应的元素的样式  */
+
+const leftOstyle = {
+    position: 'absolute',
+    left: '300px',
+    bottom: '50px',
+    cursor: 'pointer',
+    fontSize: '20px',
+    'text-shadow': '0px 10px 10px rgba(6, 5, 5, 0.9)',
+}
+
+const statusBarStyle = {
+    position: 'absolute',
+    width: '100%',
+    height: '20px',
+    top: '6x'
+}
+
+const barreryStyle = {
+    position: 'absolute',
+    top: '6px',
+    right: '6px',
+    width: '20px',
+    height: '8px',
+    background: 'white',
+    borderRadius: '3px',
+}
+
+const singStyle = {
+    position: 'absolute',
+    top: '-2px',
+    left: '6px',
+    color: 'white',
+    fontSize: '25px',
+    lineHeight: '8px'
+}
+
+const barreryStatusStyle = {
+    position: 'absolute',
+    width: '20px',
+    top: '6px',
+    right: '35px',
+    lineHeight: '8px',
+    textAligin: 'center',
+    color: 'white',
+    fontSize: '12px',
+    transform: 'scale(0.7)'
+}
+
+const closeOStyle = {
+    position: 'absolute',
+    bottom: '50px',
+    cursor: 'pointer',
+    fontSize: '20px',
+    'text-shadow': '0px 10px 10px rgba(6, 5, 5, 0.9)',
+    left: '400px'
+}
+
+const rightOstyle = {
+    position: 'absolute',
+    right: '200px',
+    bottom: '50px',
+    cursor: 'pointer',
+    fontSize: '20px',
+    'text-shadow': '0px 10px 10px rgba(6, 5, 5, 0.9)',
+}
+
+const clockStyle = {
+    position: ' absolute',
+    width: '200px',
+    height: '100px',
+    top: '20px'
+}
+
+const inputStyle = {
+    outline: 'none',
+    border: 'none',
+    display: 'block',
+    margin: '0px auto',
+    cursor: 'pointer',
+    textAlign: 'center',
+    width: '25px',
+    transition: 'all .3s',
+    height: '25px',
+    background: 'rgba(255,255,255,0.7)',
+    borderRadius: '12.5px',
+    color: '#666',
+    fontSize: '12px'
+}
+
+const searchStyle = {
+    willChange: 'opacity',
+    width: '200px',
+    height: '30px',
+    position: 'absolute',
+    top: '130px',
+    opacity: '0.2',
+    filter: 'alpha(opacity = 20)',
+    transition: 'all 1s',
+    'transform-style': 'preserve-3d',
+    'transform': 'translateZ(1px)'
+}
+
+const timeStyle = {
+    textAlign: 'center',
+    lineHeight: '100px',
+    fontSize: '20px',
+    color: 'white'
+}
+
+const ul2Style = {
+    width: '20px',
+    position: 'absolute',
+    bottom: '20px',
+    minHeight: '70px',
+}
+
+const ul1Style = {
+    position: 'absolute',
+    bottom: '20px',
+    left: '0',
+    cursor: 'pointer',
+    minHeight: '70px',
+    'transform-style': 'preserve-3d',
+    'transform': 'translateZ(0.1px)'
+}
+
+const li1Style = {
+    transformStyle: 'preserve-3d',
+    transform: 'translateX(-1px)',
+    padding: '0 0 0 10px',
+    height: '30px',
+    'line-height': '30px',
+    width: '200px',
+    // 'border-bottom': '1px solid #eee',
+    fontSize: '12px',
+    transition: 'all ease .3s',
+    'box-sizing': 'border-box',
+    cursor: 'pointer'
+}
+
+const bottomStyle = {
+    'transform-style': 'preserve-3d',
+    transform: 'rotateX(90deg) rotateY(0deg) rotateZ(0deg) translateY(-10px) translateZ(-10px)',
+    position: 'absolute',
+    'box-sizing': 'border-box',
+    width: '200px',
+    top: '430px',
+    left: '300px',
+    height: '20px',
+    'transform-origin': 'left',
+    'background-size': 'auto',
+    borderRadius: '10px',
+}
+
+const forwardStyle = {
+    'transform-style': 'preserve-3d',
+    transform: 'rotateX(90deg) rotateY(0deg) rotateZ(0deg) translateY(-10px) translateZ(-10px)',
+    position: 'absolute',
+    'box-sizing': 'border-box',
+    width: '200px',
+    top: '30px',
+    left: '300px',
+    height: '20px',
+    'transform-origin': 'left',
+    'background-size': 'auto',
+    borderRadius: '10px',
+}
+
+const rightStyle = {
+    'transform-style': 'preserve-3d',
+    position: 'absolute',
+    'box-sizing': 'border-box',
+    width: '20px',
+    height: '400px',
+    left: '480px',
+    top: '50px',
+    'background-size': 'cover',
+    transform: 'rotateY(90deg) translateZ(10px)  translateX(10px)',
+    borderRadius: '10px',
+}
+
+const leftStyle = {
+    'transform-style': 'preserve-3d',
+    position: 'absolute',
+    'box-sizing': 'border-box',
+    width: '20px',
+    'transform-style': 'preserve-3d',
+    height: '400px',
+    left: '280px',
+    top: '50px',
+    'background-size': 'cover',
+    transform: 'rotateY(-90deg) translateX(-10px) translateY(0px) translateZ(-10px)',
+    borderRadius: '10px',
+}
+
+const topStyle = {
+    width: '200px',
+    height: '400px',
+    left: '300px',
+    top: '50px',
+    zIndex: '1',
+    'transform-origin': 'top',
+    'background-size': 'cover',
+    border: '0.5px solid white',
+    position: 'absolute',
+    borderRadius: '5px',
+    'box-sizing': 'border-box',
+    transformStyle: 'preserve-3d',
+    transform: 'translateZ(0px)'
+}
+
+const backStyle = {
+    width: '200px',
+    height: '400px',
+    left: '300px',
+    top: '50px',
+    'transform-origin': 'top',
+    'background-size': 'cover',
+    position: 'absolute',
+    borderRadius: '10px',
+    'box-sizing': 'border-box',
+    'box-shadow': '0px 50px 50px rgba(6, 5, 5, 0.9)',
+    transformStyle: 'preserve-3d',
+    transform: 'translateZ(-20px)'
+}
+
+const shadowStyle = {
+    'transform-style': 'preserve-3d',
+    width: '200px',
+    height: '400px',
+    left: '300px',
+    top: '50px',
+    'transform-origin': 'top',
+    position: 'absolute',
+    'box-sizing': 'border-box',
+    background: 'transparent',
+    transform: 'translateZ(-100px)'
+}
+
+const containerStyle = {
+    'will-change': 'transform',
+    width: '700px',
+    height: '600px',
+    position: 'absolute',
+    top: '50%',
+    zIndex: '5',
+    left: '41%',
+    margin: '-300px 0 0 -350px',
+    perspective: '1400px',
+    'transform-style': 'preserve-3d',
+    'transform-origin': 'center',
+    transition: 'all 1s'
+}
+
+// Author:AdaXH
+// 2018-1-31
+//loading
+const src = [
+    "./../upload/user_avatar/lyy.jpg",
+    "./../resouce/images/qq.png",
+    "./../resouce/images/load.png",
+    "./../resouce/images/qzone.png",
+    "./../resouce/images/wechat.png",
+    "./../resouce/images/ly.jpg",
+    "./../resouce/bg/1.jpg",
+    "./../resouce/bg/2.jpg",
+    "./../resouce/bg/3.jpg",
+    "./../resouce/bg/4.jpg",
+    "./../resouce/bg/5.jpg",
+    "./../resouce/bg/6.jpg",
+    "./../resouce/gallery/1.jpg",
+    "./../resouce/gallery/2.jpg",
+    "./../resouce/gallery/3.jpg",
+    "./../resouce/gallery/4.jpg",
+    "./../resouce/gallery/5.jpg",
+    "./../resouce/gallery/6.jpg",
+    "./../resouce/gallery/7.jpg",
+    "./../resouce/gallery/8.jpg",
+    "./../resouce/gallery/9.jpg",
+    "./../resouce/gallery/10.jpg",
+    "./../resouce/gallery/11.jpg",
+    "./../resouce/gallery/12.jpg",
+    "./../resouce/images/loading.png",
+    "./../resouce/images/loading1.png",
+    "./../resouce/images/point.png",
+    "./../resouce/images/time.png",
+    "./../resouce/images/title.png",
+    "./../resouce/images/type.png",
+    "./../resouce/images/menu.jpg"
+]
+let len = 0
+const l = src.length
+for (let item of src) {
+    const img = new Image()
+    img.src = item
+    img.onload = function () {
+        len++
+        check(len)
+    }
+    img.onerror = function () {
+        len++
+        check(len)
+    }
+}
+
+// const percentText = document.getElementById('percentText')
+// const percentProgress = document.getElementById('percentProgress')
+
+function check(len) {
+    $('#percentText').text((parseFloat(len / l) * 100).toFixed(0))
+    // $('#percentProgress').css('width', len / l * 100 + '%')
+    if (len === l){
+        // console.log($('#srcLoading'))
+        setTimeout(() => $('#srcLoading').remove(), 800)
+    }
+}
+
+//hashRoute
+class HashRoute{
+    constructor(map){
+        this.map = map
+        this.routes = {}
+        this.curUrl = ''
+    }
+    reload(){
+        this.curUrl = location.hash.substring(0) || '#/index'
+        this.routes[this.curUrl]()
+    }
+    init(){
+        for(let item of this.map)
+            this.routes[item.url] = item.map
+        window.addEventListener('hashchange', this.reload.bind(this))
+    }
+}
+function hashRouter(){
+    const navs = $('header .nav li')
+    const router = new HashRoute([
+            {
+                url:'#/index',
+                map: () => mapToHash('#/index')
+            },
+            {
+                url:'#/article',
+                map: () => mapToHash('#/article')
+            },
+            {
+                url:'#/message',
+                map: () => mapToHash('#/message')
+            },
+            {
+                url:'#/about',
+                map: () => mapToHash('#/about')
+            }
+        ])
+    router.init()
+    function mapToHash(url){
+        // if(url === '#/gallery')
+        //     $('.gallery_api').trigger('click')
+        // else
+        for(let nav of navs){
+            if($(nav).find('a')[0].getAttribute('href') === url){
+                // $('.exit_gallery').trigger('click')
+                $(nav).find('a').trigger('click')
+                return
+            }
+        }
+    }
+}
+//glitch
+(function ($) {
+    $.fn.extend({
+        glitch: function (config) {
+            var option = {      //default configure
+                zIndexDefault: 3,
+                effect1TimeMin: 600,
+                effect1TimeMax: 900,
+                effect2TimeMin: 10,
+                effect2TimeMax: 115,
+                time: 100
+            };
+            option = $.extend(option, config);
+
+            function randomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function init(el, option) {
+                var el1 = el.clone();
+                el1.insertBefore(el).css({ 'z-index': option.zIndexDefault });
+
+                var el2 = $(el).clone();
+                el2.insertAfter(el).addClass('front-3').
+                    css({ 'z-index': option.zIndexDefault + 1 });
+
+                var el3 = el.clone();
+                el3.insertAfter(el).css({ 'z-index': option.zIndexDefault + 2 });
+            }
+
+            function mix(el, option) {
+
+                var clipPos1 = randomInt(10, 1900);
+                var clipPos2 = 9999;
+                var clipPos3 = randomInt(10, 1300);
+                var clipPos4 = 0;
+                var leftValue = randomInt(0, 40);
+                var rightValue = randomInt(0, 40);
+                var scaleValue = (Math.random() * (1.1 - 0.9) + 0.9).toFixed(2);
+                var randomTime = randomInt(option.effect2TimeMin, option.effect2TimeMax);
+                $(el).next().next().css({
+                    'clip': 'rect(' + clipPos1 + 'px, ' + clipPos2 + 'px, ' + clipPos3 + 'px,' + clipPos4 + 'px)',
+                    'left': leftValue,
+                    'right': rightValue,
+                    '-webkit-transform': 'scale(' + scaleValue + ')',
+                    '-ms-transform': 'scale(' + scaleValue + ')',
+                    'transform': 'scale(' + scaleValue + ')',
+                    'mix-blend-mode': 'hue'
+                });
+            }
+
+            function glitch1(el, config) {
+                var clip1 = randomInt(10, 1900);
+                var clip2 = 9999;
+                var clip3 = randomInt(10, 1300);
+                var clip4 = 0;
+                var left = randomInt(0, 16);
+                var right = randomInt(0, 16);
+                var randomTime = randomInt(config.effect1TimeMin, config.effect1TimeMax);
+
+                $(el).css({   //attention to : the principle of glitch effect
+                    'clip': 'rect(' + clip1 + 'px, ' + clip2 + 'px, ' + clip3 + 'px,' + clip4 + 'px)',
+                    'right': right,
+                    'left': left
+                });
+            }
+
+            function glitch2(el, config) {
+                var clip1 = randomInt(10, 1900);
+                var clip2 = 9999;
+                var clip3 = randomInt(10, 1300);
+                var clip4 = 0;
+                var left = randomInt(0, 40);
+                var right = randomInt(0, 40);
+                var randomTime = randomInt(config.effect2TimeMin, config.effect2TimeMax);
+                var scale = (Math.random() * (1.1 - 0.9) + 0.9).toFixed(2);
+
+                $(el).next().css({
+                    'clip': 'rect(' + clip1 + 'px, ' + clip2 + 'px, ' + clip3 + 'px,' + clip4 + 'px)',
+                    'left': left,
+                    'right': right,
+                    '-webkit-transform': 'scale(' + scale + ')',
+                    '-ms-transform': 'scale(' + scale + ')',
+                    'transform': 'scale(' + scale + ')',
+                });
+            }
+
+            init(this, option);
+            setInterval(() => {
+                glitch1(this, option);
+                glitch2(this, option);
+                mix(this, option);
+            }, option.time);
+        }
+    })
+})(jQuery);
+
 (function ($) {       //add shake 
     $.fn.extend({    //扩展实例方法
         shake: function (speed, param, scale) {
@@ -521,7 +1287,7 @@ function selectNav() {      //nav
         face.css('display','block');
         $('.insert_dialog').hide();
         let index = $(this).parent().index();
-        history.pushState('','',url[index]);
+        // history.pushState('','','?page=' +  url[index]);
         function foo(item) {
             // setTimeout(() => {
                 item.css({
@@ -885,7 +1651,7 @@ function repeatCon(name){
                     }).then(result => {
                         loadingUI('end')
                         if (result && result.success) {
-                            console.log(result)
+                            $('.repeat_word').val('')
                             reRenderMsg(result.data)
                             $('.cancel_repeat').trigger('click')
                         } else
@@ -923,8 +1689,12 @@ function sendRepeat(callback){
         let month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
         let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
         let d = year + '/' + month + '/' + day + ' '+hour+':'+minute+':'+seconds
-        if(word === '' || word.trim() === '' || word.length > 280) {
-            infoContainer('回复内容不能为空内容过长' , false)
+        if(word === '' || word.trim() === '' ) {
+            infoContainer('回复内容不能为空' , false)
+            return
+        } 
+        if ( word.length > 280) {
+            infoContainer('内容不能超过280字', false)
             return
         }else{
             loadingUI('start')
@@ -1183,7 +1953,7 @@ function infoContainer(data , status , callback){
  if($('.result-info').hasClass('tada')){
      setTimeout(() => {
          $('.result-info').hide()
-     }, 2500) 
+     }, 1500)
      callback && callback() 
  }
 }
@@ -1725,9 +2495,11 @@ function loadingUI(type){
         $('.screen').addClass('blurBg')
         $('.loadingUI').show()
     }else if(type === 'end'){
-        $('.loading-circle').removeClass('runCircle')
-        $('.screen').removeClass('blurBg')
-        $('.loadingUI').hide()
+        setTimeout(()=>{
+            $('.loading-circle').removeClass('runCircle')
+            $('.screen').removeClass('blurBg')
+            $('.loadingUI').hide()
+        },1500)
     }
 }
 
@@ -2724,6 +3496,7 @@ function innerRepeat(){
                 loadingUI('end')
                 if (result && result.success) {
                     reRenderMsg(result.data)
+                    $('.repeat_word').val('')
                     $('.cancel_repeat').trigger('click')
                 } else
                 infoContainer(result && result.errorMsg || '网络繁忙' + result)
@@ -2766,6 +3539,7 @@ $(function () {
     innerRepeat()
     share()
     loginApi()
+    hashRouter()
     mobileEntry()
     // concoleEffect()
     // initMore()
@@ -3020,7 +3794,6 @@ function test(){
 
 function exitGallery() {  //exit gallery
     $('.exit_gallery').on('click  ', () => {
-        $('.index').trigger('click')
         $('.canvas_box').css({
             zIndex: -100,
             transform: 'scale(0)'
@@ -3030,7 +3803,7 @@ function exitGallery() {  //exit gallery
 
 function galleryApi() {  //gallery
     $('.gallery_api').on('click  ', () => {
-        history.pushState('','','/gallery');
+        // history.pushState('','','/gallery');
         $('.canvas_box').css({
             zIndex: 1000,
             transform: 'scale(1)'

@@ -154,7 +154,7 @@ function callSaveAvatar(avatar, name, fileName){
 	return new Promise((resolve, reject) => {
 		fs.writeFile(`./public/upload/user_avatar/${fileName}`, bf, err => {
 			err === null ? 
-				User.update({ name }, { $set: { avatar: `/upload/user_avatar/${fileName}` } }).then(data => {
+				User.updateMany({ name }, { $set: { avatar: `/upload/user_avatar/${fileName}` } }).then(data => {
 					data.n === 0 ? reject('更新失败') : resolve(true)
 				})
 			: 

@@ -7,7 +7,8 @@ const dynamicCollection = mongoose.model('dynamics', mongoose.Schema({
     upvote: Number,
     msg: Array({
         context: String,
-        date: String
+        date: String,
+        name: String
     })
 }))
 module.exports = dynamicCollection
