@@ -10,5 +10,9 @@ module.exports = mongoose.model('users', mongoose.Schema({
     admin: {
         type: Boolean,
         default: false
+    },
+    introduce: {
+        type: String,
+        default: undefined
     }
 }))

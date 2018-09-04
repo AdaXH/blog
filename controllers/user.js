@@ -44,6 +44,61 @@ function callLogin(name, pwd){
 	})
 }
 
+routerExports.introduce = {
+	method: 'post',
+	url: '/introduce',
+	route: async (ctx, next) => {
+		try {
+			const introduce = await callIntroduce()
+			ctx.body = {
+				success: true,
+				'introduce': String(introduce)
+			}
+		} catch (error) {
+			ctx.body = {
+				success: false,
+				errorMsg: error
+			}
+		}
+	}
+}
+
+function callIntroduce(){
+	return new Promise((resolve, reject) => {
+		User.findOne({ name: 'Ada'}).then(res => {
+			if(res) resolve(res.introduce)
+			else reject('查询失败')
+		}).catch(err => reject(err))
+	})
+}
+
+routerExports.updateIntroduce = {
+	method: 'post',
+	url: '/updateIntroduce',
+	route: async (ctx, next) => {
+		const { introduce } = ctx.request.body
+		try {
+			const success = await callUpdateIntroduce(introduce)
+			ctx.body = {
+				success: true
+			}
+		} catch (error) {
+			ctx.body = {
+				success: false,
+				errorMsg: error
+			}
+		}
+	}
+}
+
+function callUpdateIntroduce(introduce){
+	return new Promise((resolve, reject) => {
+		User.updateOne({ $set: { introduce } }).then(res => {
+			res.ok === 1 ? resolve(true) : reject('更新失败')
+		}).catch(err => reject(err) )
+	})
+}
+
 routerExports.admin = {
 	method: 'post',
 	url: '/checkAdmin',
@@ -123,7 +178,7 @@ function getAvatar(names){
 		User.find({}).then(data => {
 			for(let item of names)
 				for(let item1 of data)			
-					item === item1.name && result.push({...item1._doc , password : '***'})
+					item === item1.name && result.push({ name: item1.name, avatar: item1.avatar })
 			result.length !== 0 ? reslove(result) : reject('用户表为空')
 		})
 	})

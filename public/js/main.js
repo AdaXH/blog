@@ -569,6 +569,7 @@ const src = [
     "./../resouce/bg/4.jpg",
     "./../resouce/bg/5.jpg",
     "./../resouce/bg/6.jpg",
+    './../upload/user_avatar/default_avatar.jpg',
     "./../resouce/gallery/1.jpg",
     "./../resouce/gallery/2.jpg",
     "./../resouce/gallery/3.jpg",
@@ -978,65 +979,26 @@ class RegisterClass {  //register fn
                     uploadAvatar(Base64.decode(sessionStorage.getItem('user')))
                     getAvatar(Base64.decode(sessionStorage.getItem('user')))
                     $('#avatar').show()
+                    $('.avatarTip').show()
+                    $('#setAvatarTip').show()
                     if( data.avatar ) $('.avatar_img')[0].src = data.avatar
                     messageOperation(na)
                     if( data.admin ){
-                        adminToggle();
-                        publishDynamic();
+                        adminToggle()
+                        publishDynamic()
                         publishItem()
-                        deleteDynamic();
-                        deleteArticle();
+                        deleteDynamic()
+                        deleteArticle()
                         adminEdit()
                         updateArticle()
                         editDynamic()
-                    }
-                    else{
-                        $('.menu_toggle').on('click',_=>{infoContainer('你还没有这个权限哦' , false)})
+                        adminUI()
                     }
                     $('.new_login span').text('注销')
                     // $('.all_user').html('register');
                     loginOut();
                 }else infoContainer(data && data.errorMsg || '网络错误' + data.status)
             })
-            // $.post('./login', {
-            //     state: Number(state),
-            //     name: na,
-            //     pwd: $('#password').val()
-            // }, function (res) {
-            //     if (res) {
-            //         $('.register span').css('color', '#6fb2df').html(na);
-            //         $('.user_name').html(na);
-            //         $('.msg_name').val(na);
-            //         $('#login_anchor').html('register');
-            //         exitLoginRegFace();
-            //         repeatCon(na)
-            //         uploadAvatar(na)
-            //         getAvatar(na)
-            //         $('#avatar').show()
-            //         messageOperation(na)
-            //         if(na==='Ada')
-            //         {
-            //             adminToggle();
-            //             publishDynamic();
-            //             publishItem()
-            //             deleteDynamic();
-            //             deleteArticle();
-            //             adminEdit()
-            //             updateArticle()
-            //             editDynamic()
-            //             uploadAvatar(na);
-            //         }
-            //         else{
-            //             $('.menu_toggle').on('click',_=>{infoContainer('你还没有这个权限哦' , false)})
-            //         }
-            //         $('.new_login span').text('注销')
-            //         // $('.all_user').html('register');
-            //         loginOut();
-            //     } else {
-            //         // $('.register span').css('color', 'red').html('name and password is not match');
-            //         infoContainer('用户名与密码不匹配' , false)
-            //     }
-            // })
         })
     }
 }
@@ -1287,46 +1249,45 @@ function selectNav() {      //nav
         face.css('display','block');
         $('.insert_dialog').hide();
         let index = $(this).parent().index();
-        // history.pushState('','','?page=' +  url[index]);
         function foo(item) {
-            // setTimeout(() => {
                 item.css({
                     opacity: 1,
                     transform: 'translateX(0) translateZ(0)'
                 })
-            //     item.animate({
-            //         opacity: 1,
-            //         left: 0
-            //     }, 300)
-            // }, 300);
         }
-
         function fo(item) {
             item.css({
                 opacity: 0,
                 transform: 'translateX(-40px) translateZ(0)'
             })
-            // item.animate({
-            //     opacity: 0,
-            //     left: -40
-            // }, 300);
         }
-
-		if(index === 3){
-			let i = 0;
-			$.get('./../static/introduce.json',(res)=>{
-				if(res){
-					introduce(i,res.introduce);
-				}else{
-					introduce(i,'null');
-				}
-			})
-			//var word = `先介绍一下自己的情况，大四学生，赶上了校招季，运气好加上人品爆发，前前后后只面了不过十场就签了Dream Offer，面试经历不算多，不过在自我介绍这个环节还算有些心得，分享给大家，如有不对的地方请指正。经验有限，所以此答案只针对校招生or找实习的孩子们。走进办公室后，坐好，抬头面带微笑，快速与诸位面试官逐一眼神交流过后，开始自我介绍：“各位面试官早上好，首先非常感谢各位能给予我这次面试机会，我是……，来自……，专业是……。我今天应聘的职务是……。简单用三个词来概括一下我这个人，分别是A B C，（随后用几句话简单列举两三件小事来证明以上ABC三点）。我认为这三个特点对于……（要应聘的职务）来说至关重要，所以，我才有勇气来参加今天的面试，我相信我的实力可以胜任这个岗位。感谢各位的耐心倾听，谢谢。”`
-
-		}
         if (index === 1) {
             $('.right_article_list').show(500);
             foo($('.article_summary'));
+        }
+        else if(index === 3){
+            const _this = this
+            if (!this.isIntroduce) {
+                const text = $('#introduce_textarea')
+                fetch('/introduce', {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'content-type': 'application/json'
+                    }
+                }
+                ).then(res => {
+                    if (200 <= res.status && res.status < 300)
+                        return res.json()
+                    return res.status
+                }).then(result => {
+                    if (result && result.success) {
+                        introduce(0, result.introduce);
+                        text.val(result.introduce)
+                        _this.isIntroduce = true
+                    }
+                }).catch(err => infoContainer(err && err.errorMsg || err))
+            }
         }
         else if (index !== 1) {
             $('.right_article_list').hide();
@@ -1353,22 +1314,12 @@ function selectNav() {      //nav
             opacity: 0,
             zIndex: -1,
         })
-        // face.eq(index).siblings().animate({
-        //     left: -wd,
-        //     opacity: 0,
-        //     zIndex: -1
-        // }, 300);
         face.eq(index).css('z-index', '3');
         face.eq(index).css({
             opacity: 1,
             transform: 'translateX(0) translateZ(0)'
         })
-        // face.eq(index).animate({
-        //     left: 0,
-        //     opacity: 1,
-        // }, 300);
     });
-    // nav = null
 }
 
 function init() {
@@ -1438,20 +1389,13 @@ function SetSlide(current) {
         this.slideTo(this.current);
     }
     this.slideTo = function (index) {
-        //$('.slide_photo').css('transition','all 1.5s')
         if (index === -1) {
-            // $('.slide_photo').css('transition','all none').css(
-            //     'transform', 'translateX(-'+this.wd * (count - 2)+'px)'
-            // );
             $('.slide_photo').css({
                 left: -this.wd * (count - 2)
             })
             index = this.current = count - 3;
         }
         if (index === count) {
-            // $('.slide_photo').css('transition','none').css(
-            //     'transform','translateX(-' +this.wd +'px)'
-            // );
             $('.slide_photo').css({
                 left: -1 * this.wd
             })
@@ -1461,8 +1405,6 @@ function SetSlide(current) {
         $('.slide_photo').animate({
             left: leftValue
         }, 1500)
-        // $('.slide_photo').css('transform','translateX('+leftValue+'px)');
-        //.css('transition','all 1.5s');
     }
 }
 
@@ -1704,11 +1646,10 @@ function sendRepeat(callback){
 }
 
 function messageOperation(name){
-        // if(name === undefined || name !== 'Ada'){
-        //     infoContainer('请登入管理员账号' , false)
-        //     return
-        // }
-    isAdmin(sessionStorage && Base64.decode(sessionStorage.getItem('user')), () => {
+    name = name || sessionStorage && sessionStorage.getItem('user') || undefined
+    console.log(name)
+    if(!name) return
+    isAdmin(name, () => {
             $('.message_list').on('click', 'a.delete_msg', function () {
                     const _id = this.getAttribute('_id')
                     const _this = this
@@ -1737,6 +1678,7 @@ function messageOperation(name){
 }
 
 function isAdmin(name , callback){
+    if(!name || name === '') return
     return new Promise((resolve, reject) => {
         fetch('/checkAdmin', {
             method: 'POST',
@@ -1763,8 +1705,12 @@ function isAdmin(name , callback){
 }
 
 function checkPerssion(name){
-    isAdmin(name).then(boll => {
-        if (boll) {
+    if(!name || Base64.decode(name) == undefined){
+        deleteDynamicRepeat(false)
+        return
+    }
+    isAdmin(name).then(perssion => {
+        if (perssion) {
             adminToggle();
             publishDynamic();
             publishItem()
@@ -1773,11 +1719,51 @@ function checkPerssion(name){
             adminEdit()
             updateArticle()
             editDynamic()
-            // uploadAvatar('Ada');
+            deleteDynamicRepeat(true)
+            adminUI()
         }
-        else
-            $('.menu_toggle').on('click', _ => { infoContainer(name+ '还没有这个权限哦', false) })
-    }).catch(err => $('.menu_toggle').on('click', _ => { infoContainer(err, false) }))
+    }).catch(err => {
+        $('.menu_toggle').on('click', _ => { infoContainer(err, false) })
+        deleteDynamicRepeat(false)
+    })
+}
+
+function adminUI(){
+    $('.deleteDynamicRepeat').css('cursor', 'pointer')
+    $('.delete_msg').css('cursor', 'pointer')
+}
+
+function deleteDynamicRepeat(perrsion){
+    if (!perrsion) {
+        $('.deleteDynamicRepeat').css('cursor', 'not-allowed')
+        return
+    }
+    $('.deleteDynamicRepeat').css('cursor', 'cursor')
+    $('.dynamic').on('click','.deleteDynamicRepeat', function(){
+        const _id = this.getAttribute('_id')
+        const msgId = this.getAttribute('_msgid')
+        const li = $(this).closest('li')
+        loadingUI('start')
+        fetch('/deleteDynamicMsg', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify({ _id, msgId })
+        }).then(ans => {
+            if(200 <= ans.status && ans.status < 300)
+                return ans.json()
+            return ans.status
+        }).then(result => {
+            loadingUI('end')
+            if(result && result.success){
+                infoContainer('删除成功', true)
+                li.remove()
+            }else
+                infoContainer('删除失败' + result && result.errorMsg || result)
+        })
+    })
 }
 
 function loginState() {
@@ -1789,30 +1775,16 @@ function loginState() {
     for(let item of b){
         if(item[0] === 'user' || window.sessionStorage && sessionStorage.getItem('user')){
             if(window.sessionStorage && !sessionStorage.getItem('user')) sessionStorage.setItem('user', item[1])
-            rememberLoginState(Base64.decode(sessionStorage.getItem('user')) || item[1]);
+            rememberLoginState(Base64.decode(sessionStorage.getItem('user') || item[1]));
             $('.all_user span').text('注销');
-            $('.user_name').html(Base64.decode(sessionStorage.getItem('user')) || item[1]);
-            getAvatar(Base64.decode(sessionStorage.getItem('user')) || Base64.decode(item[1]))
-            // $('.msg_name').val(item[1] || '')
-            repeatCon(Base64.decode(sessionStorage.getItem('user')) || item[1])
-            uploadAvatar(Base64.decode(sessionStorage.getItem('user')) || item[1])
+            $('.user_name').html(Base64.decode(sessionStorage.getItem('user') || item[1]));
+            getAvatar(Base64.decode(sessionStorage.getItem('user') || item[1]))
+            repeatCon(Base64.decode(sessionStorage.getItem('user') || item[1]))
+            uploadAvatar(Base64.decode(sessionStorage.getItem('user') || item[1]))
             $('#avatar').show() 
-            messageOperation(Base64.decode(sessionStorage.getItem('user')) || item[1]) 
-            checkPerssion(Base64.decode(sessionStorage.getItem('user')) || item[1])
-            // if(item[1] !== 'Ada'){
-            //   $('.menu_toggle').on('click',_=>{infoContainer('你还没有这个权限哦' , false)})
-            // }
-            // if(item[1] === 'Ada'){
-            //             adminToggle();
-            //             publishDynamic();
-            //             publishItem()
-            //             deleteDynamic();
-            //             deleteArticle();
-            //             adminEdit()
-            //             updateArticle()
-            //             editDynamic()
-            //             uploadAvatar('Ada');
-            // }
+            $('#setAvatarTip').show()
+            messageOperation(Base64.decode(sessionStorage.getItem('user') || item[1])) 
+            checkPerssion(Base64.decode(sessionStorage.getItem('user') || item[1]))
             return
         }else count++
     }
@@ -1823,13 +1795,42 @@ function loginState() {
         repeatCon(undefined)
         $('#avatar').hide()
         $('.all_user span').html('登陆')
-        $('.user_name').html('Ada')   
-        window.sessionStorage && sessionStorage.getItem('user') && checkPerssion(Base64.decode(sessionStorage.getItem('user')))   
+        $('.user_name').html('Ada')  
+        const name = sessionStorage && sessionStorage.getItem('user') && Base64.decode(sessionStorage.getItem('user')) || undefined 
+        checkPerssion(name)   
     }
 }
 
 function adminToggle() {
     var wd = window.innerWidth;
+    $('#editIntroduce').click(() => {
+        const val = $('#introduce_textarea').val()
+        if(val.length >= 300){
+            infoContainer('不能超过300个字符', !1)
+            return
+        }
+        if(val.trim() === ''){
+            infoContainer('不能为空', !1)
+            return
+        }
+        fetch('/updateIntroduce', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify({ introduce: val })
+        }).then(res => {
+            if (200 <= res.status && res.status < 300)
+                return res.json()
+            return res.status
+        }).then(result => {
+            result && result.success ? 
+                infoContainer('更新成功', 1)
+            :
+                infoContainer(result, !1)
+        }).catch(err => infoContainer(err && err.errorMsg || err))
+    })
     $('.menu_toggle').off('.loginMove').on('click  ', () => {
         // $('.insert_dialog').hide();
         // $('.new_error_info').hide();
@@ -1935,10 +1936,7 @@ function adminEdit() {
         setTimeout(() => {
             $('.select_line .dot').addClass('bounce');
         }, 10);
-        // $('.edit_ul li').eq(index).show().siblings().hide();
-        // $('.edit_ul li').eq(index).show().siblings().hide();
     });
-    // $('.admin_menu li a') = null
 }
 
 function infoContainer(data , status , callback){
@@ -1953,7 +1951,7 @@ function infoContainer(data , status , callback){
  if($('.result-info').hasClass('tada')){
      setTimeout(() => {
          $('.result-info').hide()
-     }, 1500)
+     }, 2500)
      callback && callback() 
  }
 }
@@ -1996,24 +1994,6 @@ function publishDynamic() {
                 }else 
                     infoContainer(result && result.errorMsg || '网络繁忙' + result.status)
             })
-            // $.ajax({
-            //     url:'/saveDw',
-            //     type:'POST',
-            //     data:{
-            //         title: title,
-            //         content: content,
-            //         date: d,
-            //         upvote: 1
-            //     },
-            //     traditional : true,
-            //     success: function (res) {
-            //         if (res) {
-            //             infoContainer('成功,你可以继续发布' , true);
-            //             reRenderDynamic(res.reverse());
-            //             var title = $('#dw_title').val('');
-            //             var content = $('#short_article_textarea').val('');
-            //         }
-            //     }})
         }
         else {
             infoContainer('输入不完整' ,false)
@@ -2031,46 +2011,6 @@ function reRenderArticle(data) {  // reload article
     $('.o_all_article').append($(html2));
 }
 
-// function publishDw() {  //publish short article
-//     $('#publish_dw').click(function () {
-//         var title = $('#dw_title').val();
-//         var content = $(this).prev().prev().val();
-//         var count = $(this).prev().find('span').html();
-//         var date = new Date();
-//         var d = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-//         var temp = {
-//             title: title,
-//             content: content
-//         }
-//         if (checkBeforePublish(temp)) {
-//             if (count < 0) {
-//                 $('.err_info').show().html('文字超出限制');
-//                 return;
-//             }
-//             $.ajax({
-//                 url :'/saveDw',
-//                 type : 'POST',
-//                 data :{
-//                     title: title,
-//                     content: content,
-//                     msg : [{context:'',date:''}],
-//                     date: d,
-//                     upvote: 1
-//                 },
-//                 traditional: true,
-//                 success : function (res) {
-//                     if (res.arr) {
-//                         $('.err_info').show().html('成功,你可以继续发布');
-//                         reRenderDynamic(res.arr.reverse());
-//                     }
-//                 }})
-//         }
-//         else {
-//             $('.err_info').show();
-//         }
-//     })
-// }
-
 function reRenderDynamic(data) {  // reload dynamic
     var html = template('dynamic_tpl', {dynamics: data});
     $('.dynamic').find('li').remove();
@@ -2081,50 +2021,38 @@ function reRenderDynamic(data) {  // reload dynamic
 }
 
 function checkBeforePublish(temp) { // title and content shouldn't be null
-    // if (temp.title === '' || temp.content === '') {
     let resultBool = true
-    // console.log(temp)
     for(let key in temp)
-      // console.log(temp[key].trim())
       if(temp[key].trim() === ""){
         resultBool = false
         break
       }
       return resultBool
-        // $('.edit_ul').removeClass('bounceInRight');
-        // $('.edit_ul').removeClass('shake');
-        // setTimeout(() => {
-        //     $('.edit_ul').addClass('shake');
-        // }, 0);
-    //     return false;
-    // }
-    // else return true;
 }
 
 function publishItem() {  //publish item
-    var t = $('.select_line').css('top');
-    var obj = {
+    const t = $('.select_line').css('top');
+    const obj = {
       url : null
-    };
+    }
+    const mapLi = $('.map_li')
     $('.admin_menu li a').on('click  ', function () {
         var index = $(this).parent().index();
         $('.select_line').animate({
             top: parseInt(t) + index * 40
         }, 300);
+        mapLi.removeClass('pulse').hide().eq(index).addClass('pulse').show()
         if(index === 0) {
             obj.url = 'saveDw';
             obj.type = 'content';
-            $('.temp_operation').stop().removeClass('pulse').hide(0);
-            $('.edit_li').stop().show().addClass('pulse');
+            // $('.temp_operation').stop().removeClass('pulse').hide(0);
+            // $('.edit_li').stop().show().addClass('pulse');
         }
         else if(index === 2) {
            obj.url = 'saveArticle';
            obj.type = 'summary';
-           $('.temp_operation').stop().removeClass('pulse').hide(0);
-           $('.toggleitem').stop().show().addClass('pulse');
-        }else if(index === 3){
-            $('.temp_operation').stop().removeClass('pulse').hide(0);
-          $('.operation').stop().show().addClass('pulse');
+        //    $('.temp_operation').stop().removeClass('pulse').hide(0);
+        //    $('.toggleitem').stop().show().addClass('pulse');
         }
         else  obj.url = null;
     })
@@ -2137,8 +2065,6 @@ function publishItem() {  //publish item
           }
           publishBtn(obj , data)
     })
-    // $('.publish-edit') = null
-    // $('.admin_menu li a') = null
 }
 
 function cancleTextEdit(){
@@ -2270,155 +2196,6 @@ function clearErrorInfo() {  //hide error info
     })
 }
 
-// function editDynamic() {  //edit dynamic
-//     $('.all_short_article').on('click', 'a.edit_item_dynamic', function () {
-//         $('.edit_ul').addClass('bounceOutRight');
-//         $('.new_error_info').hide();
-//         $('.edit_box').animate({
-//             opacity: 1
-//         }, 500);
-//         var self = $(this).closest('li');
-//         var index = self.index();
-//         var title = self.find('p').html();
-//         $.post(
-//             '/editDynamic',
-//             {
-//                 title: title
-//             }, function (res) {
-//                 if (res) {
-//                     var content = res.content;
-//                     $('.new_title').val(title);
-//                     $('.new_content').val(content);
-//                     $('.new_count').html('' + (180 - content.length));
-//                     var oldTitle = $('.new_title').val();
-//                     var oldContent = $('.new_content').val();
-//                     $('.new_publish').on('click', () => {
-//                         var newTitle = $('.new_title').val();
-//                         var newContent = $('.new_content').val();
-//                         if (newTitle !== oldTitle || newContent !== oldContent) {
-//                             updateDynamic(oldTitle,newTitle,newContent,index);
-//                         } else {
-//                             $('.new_error_info').show();
-//                             $('.edit_box').removeClass('shake');
-//                             setTimeout(()=>{
-//                                 $('.edit_box').addClass('shake');
-//                             })
-//                         }
-//                     })
-//                 }
-//             }
-//         )
-//     })
-// }
-
-// function updateDynamic(oTitle,title,content,index) {   //update dynamic due to old title
-//     var date = new Date();
-//     var d = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
-//     $.post(
-//         '/updateDynamic',
-//         {
-//             oldTitle:oTitle,
-//             title:title,
-//             date:d,
-//             content:content,
-//         },function(res){
-//             if(res){
-//                 $('.new_error_info').show().html('更新成功');
-//                 $('.reset_value').val('');
-//                 $('.dynamic_item').eq(index).find('.title').html(title);
-//                 $('.dynamic_item').eq(index).find('.summary').html(content);
-//                 $('.all_short_article li').eq(index).find('p').html(title);
-//                 setTimeout(()=>{
-//                     $('.edit_box').animate({
-//                         opacity:0
-//                     },500,()=>{
-//                         $('.edit_ul').removeClass('bounceOutRight');
-//                     })
-//                 },800);
-//             }else{
-//                 $('.new_error_info').show().html('更新失败');
-//             }
-//         }
-//     )
-// }
-
-// function updateArticle(oTitle,title,content,index) {   //update article due to old title
-//     var date = new Date();
-//     var d = (date.getMonth()+1)+'-'+date.getDate();
-//     var year = date.getFullYear();
-//     $.post(
-//         '/updateArticle',
-//         {
-//             oldTitle:oTitle,
-//             title:title,
-//             date:d,
-//             content:content,
-//             year:year
-//         },function(res){
-//             if(res){
-//                 $('.new_error_info').show().html('更新成功');
-//                 $('.reset_value').val('');
-//                 $('.article_list .article').eq(index).find('.article_tittle').html(title);
-//                 $('.article_list .article').eq(index).find('.article_summary').html(content);
-//                 $('.o_all_article li').eq(index).find('p').html(title);
-//                 $('.article_list .article').eq(index).find('.article_date').text(date);
-//                 $('.article_list .article').eq(index).find('.article_date p').html(year);
-//                 setTimeout(()=>{
-//                     $('.edit_box').animate({
-//                         opacity:0
-//                     },500,()=>{
-//                         $('.edit_ul').removeClass('bounceOutRight');
-//                     })
-//                 },800);
-//             }else{
-//                 $('.new_error_info').show().html('更新失败');
-//             }
-//         }
-//     )
-// }
-
-//  function editArticle() {  //edit article
-//     $('.o_all_article').on('click', 'a.edit_item_article', function () {
-//         $('.edit_ul').addClass('bounceOutRight');
-//         $('.new_error_info').hide();
-//         $('.edit_box').animate({
-//             opacity: 1
-//         }, 500);
-//         var self = $(this).closest('li');
-//         var index = self.index();
-//         var title = self.find('p').html();
-//         $.post(
-//             '/editArticle',
-//             {
-//                 title: title
-//             }, function (res) {
-//                 if (res) {
-//                     var content = res.content;
-//                     $('.new_title').val(title);
-//                     $('.new_content').val(content);
-//                     $('.new_count').html('' + (180 - content.length));
-//                     var oldTitle = $('.new_title').val();
-//                     var oldContent = $('.new_content').val();
-//                     $('.new_publish').on('click', () => {
-//                         var newTitle = $('.new_title').val();
-//                         var newContent = $('.new_content').val();
-//                         console.log(oldTitle+' + '+newTitle)
-//                         if (newTitle !== oldTitle || newContent !== oldContent) {
-//                             updateArticle(oldTitle,newTitle,newContent,index);
-//                         } else {
-//                             $('.new_error_info').show();
-//                             $('.edit_box').removeClass('shake');
-//                             setTimeout(()=>{
-//                                 $('.edit_box').addClass('shake');
-//                             })
-//                         }
-//                     })
-//                 }
-//             }
-//         )
-//     })
-// }
-
 function hideNewError(){  //hide error info when insert new value
     $('.new_content').focus(()=>{
         $('.new_error_info').hide();
@@ -2506,7 +2283,7 @@ function loadingUI(type){
 function leaveMsg() {  //message board
     $('.leave_msg').on('click  ', () => {
         let msg = escapeMessage($('.msg').val())
-        let name = window.sessionStorage && Base64.decode(sessionStorage.getItem('user'))
+        let name = window.sessionStorage && sessionStorage.getItem('user')
         let date = new Date()
         let minute = date.getMinutes()
         minute < 10 ? minute+1  : '0'+minute
@@ -2539,7 +2316,7 @@ function leaveMsg() {  //message board
                     'content-type': 'application/json',
                     'accept': 'application/json'
                 },
-                body: JSON.stringify( { date: d, content: msg, name } )
+                body: JSON.stringify( { date: d, content: msg, name:Base64.decode(name) } )
             }).then(res => {
                 if(res.status >= 200 && res.status <300 )
                     return res.json()
@@ -2668,7 +2445,7 @@ function changeTheme(){
 	$('.change_theme').on('click  ',function(){
 		$(this).toggleClass('themeapi');
 		$('.theme_containter').toggleClass('theme_show');
-        console.log(111,$('.theme_containter'))
+        // console.log(111,$('.theme_containter'))
 	});
 	$('.theme_containter ul li').on('click  ',function(){
 		var index = $(this).index()+1;
@@ -2890,14 +2667,19 @@ function dynamicMsg(){   //leave a msg on dynamic
         let currentDay = year + "-" + month + '-' + day + '--'+hour + ':'+minute;
         let word = $(this).prev().val();
         let _id = $(this).closest('li')[0].getAttribute('_id');
-        let msg = [{context : word,date : currentDay}];
+        let msg = {context : word,date : currentDay};
+        const name = sessionStorage && sessionStorage.getItem('user')
         // alert(_id)
         if(word === '' || word.trim() === '') {
             infoContainer('评论不能为空' , false)
             return 
         }
-        if(word.length > 50){
-            infoContainer('字数不能超过50个字符', false)
+        if(word.length > 100){
+            infoContainer('字数不能超过100个字符', false)
+            return
+        }
+        if(!name){
+            infoContainer('登录才能评论哦', false)
             return
         }
         fetch('/leave-dynamic-mg', {
@@ -2906,12 +2688,12 @@ function dynamicMsg(){   //leave a msg on dynamic
                 'content-type': 'application/json',
                 'accept': 'application/json' 
             },
-            body: JSON.stringify({ _id, msg })
+            body: JSON.stringify({ _id, msg, name })
         }).then(res => { return res.json() })
         .then(result => {
             if(result && result.success){
-                $(This).prev().val('');
-                count.text(parseInt(count.text()) +1 )
+                 $(This).prev().val('');
+                 count.text(parseInt(count.text()) +1 )
                  const html = template('dynamic_tpl',{dynamics: result.data.reverse()});
                  $('.dynamic').find('li').remove();
                  $(html).appendTo($('.dynamic'));
@@ -3134,7 +2916,8 @@ function randomBgColor(){
         '#ff766e',
         '#1e89bd',
         '#d34694',
-        '#c5d08d'
+        '#c5d08d',
+        '#4ae488'
     ]
     const len = color.length
     $('.random-bg').on('click',()=>{
@@ -3269,7 +3052,7 @@ function allUserAvatar(){
         if(data && data.success)
             for (let item of users)
                 for (let item1 of data.data)
-                    $(item).text() === item1.name && ($(item).parent().prev().find('img')[0].src = item1.avatar)        
+                    $(item).text() === item1.name && ($(item).parent().prev().find('img')[0].src = item1.avatar )        
         else 
             infoContainer(data && data.errorMsg || '网络出错' + data.status, false)   
     })
@@ -3286,6 +3069,7 @@ function openSouceContainer(){
 function entryMoreOperation(){
     const menu = new Mobile({
         target: document.getElementsByClassName('left_container')[0],
+        // menuColor:'white',
         menu: [
             {
                 name: '关于主页',
@@ -3296,7 +3080,7 @@ function entryMoreOperation(){
                 callback: openSouceContainer
             }
         ],
-        bg: './resouce/images/menu.jpg',
+        bg: './resouce/images/menu.jpg'
     })
     const mC = $('.more_operation_container')
     $('.more_operation_entry').on('click' , function(){
@@ -3601,7 +3385,14 @@ $(function () {
     test();
     randomArticleBg();
     mapToArticleList()
+    closeTip()
 });
+
+function closeTip(){
+    $('.closeTip').click(() => {
+        $('.avatarTip').hide()
+    })
+}
 
 function updateArticle(){
     $('.o_all_article').on('click','.update_article_icon',function(){
@@ -3636,7 +3427,7 @@ function editArticle(summary , _id , type){
     // console.log(spans)
     for(let item of spans){
         if(item.innerText === type ) {
-            console.log($(item).prev())
+            // console.log($(item).prev())
             $(item).prev()[0].checked = true
             break
         }

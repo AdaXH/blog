@@ -91,7 +91,7 @@
 <div class="admin">
     <ul class="admin_menu">
         <li class="animated"><a javascript:;><i class="linkfont">&#xe658;</i>发表动态</a></li>
-        <li class="animated"><a javascript:;><i class="linkfont">&#xe633;</i>发表短文</a></li>
+        <li class="animated"><a javascript:;><i class="linkfont">&#xe633;</i>更新介绍</a></li>
         <li class="animated"><a javascript:;><i class="linkfont">&#xe633;</i>发表文章</a></li>
         <li class="animated"><a javascript:;><i class="linkfont">&#xe662;</i>更多操作</a></li>
     </ul>
@@ -100,14 +100,18 @@
     <div class="select_line">
         <div class="dot animated"></div>
     </div>
-    <div class="edit_li temp_operation animated">
+    <div class="edit_li map_li temp_operation animated">
         <input type="text" id="dw_title" class="fl reset_value" placeholder="点击以输入标题">
         <textarea class="edit_textarea reset_value" id="short_article_textarea"></textarea>
         <div class="effect_text"></div>
         <p class="fl word_count">还可输入<span class="count">180</span>字</p>
         <a class="publish-dynamic" id="publish_dw">publish</a>
     </div>
-    <div id='edit-plugin' class="htmleaf-container temp_operation toggleitem animated">
+    <div class="map_li animated introduceContainer">
+        <textarea class="edit_textarea reset_value" id="introduce_textarea"></textarea>
+        <a class="publish-dynamic" id="editIntroduce">update</a>
+    </div>
+    <div id='edit-plugin' class="map_li htmleaf-container temp_operation toggleitem animated">
       <div class="article-type fl">
         <p class="type-info">文章类型：</p>
         <label for="article-type" id='artilce-type-label'>
@@ -175,7 +179,7 @@
         </div>
         <button  class='publish-edit'>publish</button>
       </div>
-    <div class="operation temp_operation animated">
+    <div class="operation map_li temp_operation animated">
           <div class="operation_box fl animated">
               <div class="delete_info"></div>
               <div class="all_short_article_face fl">
@@ -223,6 +227,12 @@
       </div>
 </div>
 <div class="screen tempexit">
+    <div class="avatarTip">
+        <div class="tipBox">
+            <p class="tipText">点击此处以设置头像</p>
+            <a href="javascript: void(0)" class="closeTip">关闭</a>
+        </div>
+    </div>
             <div class="more_operation_entry">
                 更多
             </div>
@@ -473,7 +483,7 @@
                                 <ul class="dynamic-msg-ul">
                                     <% item.msg.reverse().forEach(temp => { %>
                                     <li class="dynamic-msg-item" >
-                                        <i _msgid=<%= item._id %> _id=<%= temp._id %> class="deleteDynamicRepeat linkfont">&#xe603;</i>
+                                        <i _msgid=<%= item._id %> _id=<%= temp._id || 'null' %> class="deleteDynamicRepeat linkfont">&#xe603;</i>
                                         <p class="dynamic-msg-date">
                                             <span class="dynamic-repeat-name"><%= temp.name || '神秘人' %>：</span>
                                             <span class="date"><%= temp.date %></span>

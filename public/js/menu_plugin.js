@@ -15,7 +15,7 @@ class Mobile {
         ] //初始化菜单，以及点击菜单的操作
         this.appendTarget = options && options.target || document.body //插件将插入的容器
         /*手机的背景图*/     
-        this.bg = options && options.bg || 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1531722258196&di=140edea23c7e52fa99beb430904f88bd&imgtype=0&src=http%3A%2F%2Fpic.qiantucdn.com%2F58pic%2F20%2F10%2F39%2F575525d873545_1024.jpg'
+        this.bg = options && options.bg || 'http://www.rui2.net/uploadfile/output/3/2013/1001/4acf64758d420524.jpg'
         this.ul = {} //菜单列表
         this.interval = undefined //刷新时间的定时器
         this.menuColor = options && options.menuColor || 'black' //菜单文字颜色
@@ -42,7 +42,6 @@ class Mobile {
         document.getElementById('_container') && this.appendTarget.removeChild(document.getElementById('_container'))
     }
     init(){ //初始化插件
-        document.body.style.perspective = '1400px'
         this.createOperationUl()
         this.addMouseEnter(this.ul)
         this.appendNodes = [
@@ -134,7 +133,7 @@ class Mobile {
             this.placeholder = ''
         },false)
         input.addEventListener('blur', function(){
-            this.style.width = '30px'
+            this.style.width = '25px'
             this.style.paddingLeft = '0px'
             this.style.textAlign = 'center'
             this.placeholder = 'O'
@@ -167,6 +166,7 @@ class Mobile {
         }
         this.container = container
         this.appendTarget.style.perspective = '1400px'
+        this.appendTarget.style.transformStyle = 'preserve-3d'
         this.appendTarget.appendChild(container)
     }
     createOperation(){ //手机旋转
@@ -185,18 +185,32 @@ class Mobile {
         const closeO = document.createElement('p')
         closeO.innerText = 'x'
         closeO.addEventListener('click', () => {
-            this.container.style.transform = 'rotateX(0deg) rotateZ(0deg) rotateY(0deg) scale(1.3)'
+            this.container.style.transform = 'rotateX(0deg) rotateZ(0deg) rotateY(0deg) scale(1)'
         }, false)
         setStyle(closeO, closeOStyle)
         return { leftO, rightO, closeO }
     }
     createTopface(){ //手机的上面
         const top = document.createElement('div')
+        const barrery = document.createElement('div')
+        const barreryStatus = document.createElement('div')
+        const sign = document.createElement('div')
+        const statusBar = document.createElement('div')
+        sign.innerText = '.....'
+        barreryStatus.innerText = '100%'
+        setStyle(statusBar, statusBarStyle)
+        setStyle(barrery, barreryStyle)
+        setStyle(barreryStatus, barreryStatusStyle)
         setStyle(top, topStyle)
+        setStyle(sign, singStyle)
         top.appendChild(this.ul.ul)
         const lis = this.ul.ul.getElementsByTagName('li')
         top.style.background = `url(${this.bg})`
         top.style.backgroundSize = 'cover'
+        statusBar.appendChild(barreryStatus)
+        statusBar.appendChild(barrery)
+        statusBar.appendChild(sign)
+        top.appendChild(statusBar)
         top.appendChild(this.createClock())
         top.appendChild(this.createSearch())
         return top
@@ -293,6 +307,44 @@ const leftOstyle = {
     'text-shadow': '0px 10px 10px rgba(6, 5, 5, 0.9)',
 }
 
+const statusBarStyle = {
+    position: 'absolute',
+    width: '100%',
+    height: '20px',
+    top: '6x'
+}
+
+const barreryStyle = {
+    position: 'absolute',
+    top: '6px',
+    right: '6px',
+    width: '20px',
+    height: '8px',
+    background: 'white',
+    borderRadius: '3px',
+}
+
+const singStyle = {
+    position: 'absolute',
+    top: '-2px',
+    left: '6px',
+    color: 'white',
+    fontSize: '25px',
+    lineHeight: '8px'
+}
+
+const barreryStatusStyle = {
+    position: 'absolute',
+    width: '20px',
+    top: '6px',
+    right: '35px',
+    lineHeight: '8px',
+    textAligin: 'center',
+    color: 'white',
+    fontSize: '12px',
+    transform: 'scale(0.7)'
+}
+
 const closeOStyle = {
     position : 'absolute',
     bottom: '50px',
@@ -325,11 +377,11 @@ const inputStyle = {
     margin : '0px auto',
     cursor : 'pointer',
     textAlign : 'center',
-    width : '30px',
+    width : '25px',
     transition : 'all .3s',
-    height : '20px',
+    height : '25px',
     background : 'rgba(255,255,255,0.7)',
-    borderRadius : '20px',
+    borderRadius : '12.5px',
     color : '#666',
     fontSize : '12px'
 }
@@ -378,7 +430,7 @@ const li1Style = {
     height: '30px',
     'line-height': '30px',
     width: '200px',
-    'border-bottom': '1px solid #eee',
+    // 'border-bottom': '1px solid #eee',
     fontSize : '12px',
     transition : 'all ease .3s',
     'box-sizing':'border-box',
@@ -445,11 +497,12 @@ const topStyle = {
     height: '400px',
     left: '300px',
     top: '50px',
+    zIndex: '1',
     'transform-origin': 'top',
     'background-size': 'cover',
     border: '0.5px solid white',
     position: 'absolute',
-    borderRadius : '10px',
+    borderRadius : '5px',
     'box-sizing': 'border-box',
     transformStyle : 'preserve-3d',
     transform : 'translateZ(0px)'
