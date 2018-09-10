@@ -2,12 +2,17 @@ body, ul, li, ol, dl, dt, dd, figure, figcaption, a, p, h1, h2, h3, h4, h5, h6, 
   padding: 0;
   margin: 0;
 }
+
+a:link{text-decoration: none !important;}
+a:visited{text-decoration: none !important;}
+a:hover{text-decoration: none !important;}
+a:active{text-decoration: none !important;} 
 html,body,div,pre{
 -moz-user-select: none !important;
 -webkit-user-select: none !important;
     -ms-user-select: none !important;
         user-select: none !important;
-}
+} 
 div::-webkit-scrollbar {
   width: 0px !important;
   display:none !important;
@@ -23,19 +28,8 @@ html{
 body, html {
   height: 100%;
   width:100%;
-  // will-change:transform;
-  // -webkit-transform:translateZ(0);
-  //    -moz-transform:translateZ(0);
-  //         transform:translateZ(0);
   font-family: 'Raleway', sans-serif,"Microsoft Ya hei";
 }
-
-// div , ul ,li{
-//   will-change:transform;
-//   -webkit-transform:translateZ(0);
-//      -moz-transform:translateZ(0);
-//           transform:translateZ(0);
-// }
 
 ul {
   list-style: none;

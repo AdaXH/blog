@@ -46,16 +46,16 @@ app.listen(5050, _ => console.log('server on 5050'))
 
 //connect to mongo
 //mongodb://root:jTPgd5nT8uSdzDRr0sgazdnwan1dB2gMwcQvslUU@koeabpwkfrbs.mongodb.sae.sina.com.cn:10297,zcubkoddktjc.mongodb.sae.sina.com.cn:10297
-// mongoose.connect('mongodb://root:jTPgd5nT8uSdzDRr0sgazdnwan1dB2gMwcQvslUU@koeabpwkfrbs.mongodb.sae.sina.com.cn:10297').then(res=> {
-//     res ?
-//     	console.log('connected to mongo') 
-//     :
-//     	console.log('can not connect to mongo') 
-// }) 
-console.log('6')
-mongoose.connect('mongodb://localhost:27017/graduation', { useNewUrlParser: true }).then(res => {
+mongoose.connect('mongodb://root:jTPgd5nT8uSdzDRr0sgazdnwan1dB2gMwcQvslUU@koeabpwkfrbs.mongodb.sae.sina.com.cn:10297').then(res=> {
     res ?
     	console.log('connected to mongo') 
     :
     	console.log('can not connect to mongo') 
 }) 
+console.log('6')
+// mongoose.connect('mongodb://localhost:27017/graduation', { useNewUrlParser: true }).then(res => {
+//     res ?
+//     	console.log('connected to mongo') 
+//     :
+//     	console.log('can not connect to mongo') 
+// }) 

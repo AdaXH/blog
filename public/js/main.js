@@ -1612,7 +1612,7 @@ function repeatCon(name){
 
 function escapeMessage(str){
     if(!str) return '';
-    else    return str.replace(/<\/?script>+|傻逼+|SB+|sB+|sb+|操+|你妈/g,'*');
+    else    return str.replace(/<\/?script>+|傻逼+|爸爸+|你爸+|SB+|sB+|sb+|操+|你妈/g,'**');
 }
 
 function sendRepeat(callback){
@@ -1647,7 +1647,6 @@ function sendRepeat(callback){
 
 function messageOperation(name){
     name = name || sessionStorage && sessionStorage.getItem('user') || undefined
-    console.log(name)
     if(!name) return
     isAdmin(name, () => {
             $('.message_list').on('click', 'a.delete_msg', function () {
