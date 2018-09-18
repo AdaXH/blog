@@ -26,6 +26,8 @@ class Mobile {
         this.appendNodes = [] //需要插入手机容器的元素集合
     }
     start() {
+        if (this.appendNodes.length !== 0)
+            this.renderTime() //刷新手机屏幕上的时间
         if (document.getElementById('_container') && document.getElementById('_container').childNodes.length !== 0) //判断页面是否已经存在插件
             return
         this.init()
@@ -43,6 +45,12 @@ class Mobile {
             clearInterval(this.searchInterval)
         document.getElementById('_container') && this.appendTarget.removeChild(document.getElementById('_container'))
     }
+    endInterval() { //仅清楚定时器
+        if (this.interval)
+            clearInterval(this.interval)
+        if (this.searchInterval)
+            clearInterval(this.searchInterval)
+    }
     init() { //初始化插件
         this.createOperationUl()
         this.addMouseEnter(this.ul)
@@ -56,7 +64,8 @@ class Mobile {
             this.createOperation
         ]
         this.createContainer(this.appendNodes) //创建手机容器，并将需要插入的元素的集合传递过去，在this.createContainer中插入
-        this.renderTime() //刷新手机屏幕上的时间
+        if(!this.interval)
+            this.renderTime() //刷新手机屏幕上的时间
     }
     addMouseEnter({ ul, ul2, ul3 }) {  //hover菜单时，侧屏hover效果
         const _this = this
@@ -1852,12 +1861,13 @@ function adminToggle() {
                             left: 0
                         }, 300, () => {
                             // ()=>{
-                            $('.edit_ui').animate({
-                                opacity: 1,
-                                right: 0
-                            }, 100, () => {
+                            $('.edit_ui').toggleClass('editToggle')
+                            // $('.edit_ui').animate({
+                            //     opacity: 1,
+                            //     right: 0
+                            // }, 100, () => {
                                 $('.select_line').show();
-                            }).find('.edit_ul').show().addClass('bounceInRight')
+                            $('.edit_ui').find('.edit_ul').show().addClass('bounceInRight')
                             //}
                             $('.admin_menu li').eq(3).stop().animate({
                                 opacity: 1,
@@ -1870,10 +1880,7 @@ function adminToggle() {
         }
         else {
             $('.select_line').hide();
-            $('.edit_ui').animate({
-                opacity: 0,
-                right: -wd
-            }).find('.edit_ul').hide().removeClass('bounceInRight');
+            $('.edit_ui').toggleClass('editToggle').find('.edit_ul').hide().removeClass('bounceInRight');
             $('.admin_menu li').stop().animate({
                 left: -40,
                 opacity: 0
@@ -1950,8 +1957,8 @@ function infoContainer(data , status , callback){
  if($('.result-info').hasClass('tada')){
      setTimeout(() => {
          $('.result-info').hide()
-     }, 2500)
-     callback && callback() 
+         callback && callback()
+     }, 2500) 
  }
 }
 
@@ -2062,7 +2069,7 @@ function publishItem() {  //publish item
             infoContainer('你还没有输入哦' , false);
             return;
           }
-          publishBtn(obj , data)
+          publishBtn(obj , data, window.loadingUI)
     })
 }
 
@@ -2085,7 +2092,7 @@ function setArticleType(){
   return articleType
 }
 
-function publishBtn(obj , data){  //publish edit content
+function publishBtn(obj, data, loadingUI){  //publish edit content
         if(obj.url === null) return;
         const d = new Date();
         if(obj.url === 'saveDw' ){
@@ -2114,7 +2121,7 @@ function publishBtn(obj , data){  //publish edit content
                 return res.json()
             return res.status
           }).then(result => {
-              loadingUI('end')
+              loadingUI('end');
             (result && result.success) ?
                   infoContainer('发布成功', true, () => window.location.reload() )
             :
@@ -3095,6 +3102,7 @@ function entryMoreOperation(){
             },300,_=>mC.animate({width:'100%'}))
         }else{
             // menu.end()
+            menu.endInterval()
             this.innerText = '更多'
             $('.body_overlay').animate({
                 opacity : 0
@@ -3318,7 +3326,21 @@ function innerRepeat(){
     })
 }
 
+function navSelect(){
+    const navs = document.querySelectorAll('.nav a')
+    const select = document.getElementById('navSelect')
+
+    for(let i = 0; i < navs.length; i++){
+        navs[i].addEventListener('click', () => {
+            let w = document.getElementById('navSelect').offsetWidth
+            select.style.transform = `translateX(${i * w}px)`
+        })
+            
+    }
+}
+
 $(function () {
+    navSelect()
     innerRepeat()
     share()
     loginApi()

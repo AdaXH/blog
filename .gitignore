@@ -20,6 +20,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 node_modules/
+public/upload/user_avatar/*
 backup/
+backup.zip
+/public/upload
 
 /public/sass/*.map

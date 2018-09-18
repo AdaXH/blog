@@ -187,7 +187,7 @@
                   <div class="all_short_article_container">
                     <ul class="all_short_article">
                         <% dynamic.forEach(item=>{ %>
-                        <li style='border-bottom : 1px dotted black'>
+                        <li>
                             <a class="delete_item delete_dynamic fl" _id=<%= item._id%> ><i class="fl linkfont">&#xe603;</i></a>
                             <a class="fl edit_item_dynamic" _id=<%= item._id%> ><i class="edit_item_dynamic_icon linkfont fl">&#xe759;</i></a>
                             <p class="fl"><%= item.title %></p>
@@ -196,11 +196,12 @@
                         <% }) %>
                         <script type="text/html" id="dynamic_operation_tpl">
                             {{each dynamics as dynamic}}
-                            <li style='border-bottom : 1px dotted black'>
+                            <li>
                                 <a class="delete_item delete_dynamic fl" _id={{dynamic._id}}><i class="fl linkfont">&#xe603;</i></a>
                                 <a class="fl edit_item_dynamic" _id={{dynamic._id}}><i class="linkfont fl">&#xe759;</i></a>
                                 <p class="fl">{{dynamic.title}}</p>
-                                <span class="fr short_article_date">{{dynamic.date}}</span></li>
+                                <span class="fr short_article_date">{{dynamic.date}}</span>
+                            </li>
                             {{/each}}
                         </script>
                     </ul>
@@ -212,7 +213,7 @@
                   <ul class="o_all_article">
                       <script type="text/html" id="article_operation_tpl">
                           {{each data as article}}
-                          <li _id={{article._id}} style='border-bottom : 1px dotted black'>
+                          <li _id={{article._id}} >
                               <a class="delete_item delete_article"  _id={{article._id}}><i class="fl linkfont">&#xe603;</i></a>
                               <a class="fl edit_item_article" _id={{article._id}}><i _id={{article._id}} class="update_article_icon linkfont">&#xe759;</i></a>
                               <p class="fl">{{article.title}}</p>
@@ -439,6 +440,7 @@
             <li class="fl"><a class="change triggerArticle" href="#/article">文章</a></li>
             <li class="fl"><a class="change" href="#/message">留言板</a></li>
             <li class="fl"><a class="change" href="#/about">关于</a></li>
+            <li id='navSelect'></li>
         </ul>
         <div class="search_container fr">
         	<i class="linkfont fl">&#xe68d;</i>
@@ -550,7 +552,7 @@
                               <div class="customer">
                                 <p class="customer-word">欢迎，您是第<span id='customer_number'>&nbsp;</span>个访客</p>
                               </div>
-                            	<img src="./resouce/images/ly.jpg" alt="glitch特效">
+                            	<img src="./resouce/images/ly.jpg" alt="glitch特效" />
                             </div>
                         </span>
                     </div>
@@ -771,8 +773,8 @@
               <div class="input-con">
             <form action="">
               <input id="username" type="text" name="username" placeholder="用户名">
-              <input id="password" type="password" name="password" placeholder="密码">
-              <input id="check_password" type="password" name="checkpwd" placeholder="确认密码">
+              <input id="password" type="password" name="password" autocomplete='off' placeholder="密码">
+              <input id="check_password" type="password" name="checkpwd" autocomplete='off' placeholder="确认密码">
             </form>
               </div>
               <div class="label-con">
@@ -789,8 +791,8 @@
     <i class="exit_gallery linkfont">&#xe629;</i>
     <canvas id="canvas">你的浏览器不支持HTML5画布技术，请使用谷歌浏览器。</canvas>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js"></script>
-<script  src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+<script src="/js/katex.min.js"></script>
+<script  src="/js/highlight.min.js"></script>
 <script src="/js/quill.min.js"></script>
 <script type="text/javascript">
 var quill = new Quill('#editor-container', {

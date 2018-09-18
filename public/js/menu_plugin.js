@@ -105,11 +105,13 @@ class Mobile {
         const search = document.getElementById('_search')
         this.searchInterval = setInterval(()=>{
             search.style.opacity = '0.2'
+            console.log('searchInterval')
             setTimeout(()=>{
                 search.style.opacity = '1'
             },1500)
         },3000)
         this.interval = setInterval(()=>{
+            console.log('interval')
             const d = new Date()
             const h = d.getHours() < 10 ?  '0' + d.getHours() : d.getHours()
             const m = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes()
