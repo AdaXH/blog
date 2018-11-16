@@ -19,6 +19,14 @@ routerExports.deleteArticle = {
 	}
 }
 
+function callDeleteArticleById(_id){
+	return new Promise((resolve, reject) => {
+		Article.remove({ _id }).then(data => {
+			data.n === 1 ? resolve(true) : reject('删除失败，文章不存在')
+		}).catch(err => reject('删除失败') )
+	})
+}
+
 routerExports.saveArticle = {
 	method: 'post',
 	url: '/saveArticle',
@@ -45,14 +53,6 @@ function callSaveArticle(time, date, year, summary, type){
 			: 
 			reject('发布失败'))
 			.catch(err => reject('发布失败' + err instanceof Object ? JSON.stringify(err) :  err.toString()))
-	})
-}
-
-function callDeleteArticleById(_id){
-	return new Promise((resolve, reject) => {
-		Article.remove({ _id }).then(data => {
-			data.n === 1 ? resolve(true) : reject('删除失败，文章不存在')
-		}).catch(err => reject('删除失败') )
 	})
 }
 

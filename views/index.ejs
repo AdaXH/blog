@@ -6,21 +6,15 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="./sass/main.css">
     <link rel="stylesheet" href="./sass/animate.css">
-    <!-- <link rel="stylesheet" href="./sass/gallery.css"> -->
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-grid.min.css">
-  	<!-- <link rel="stylesheet" type="text/css" href="/css/htmleaf-demo.css"> -->
-  	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css"/> -->
-  	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/monokai-sublime.min.css"/> -->
-    <!-- <link href="/css/themes/quill.snow.css" rel="stylesheet"> -->
-    <script src="./js/jq.js"></script>
     <script src="./js/template.js"></script>
     <script src="./js/ge1doot.js"></script>
     <script src="./js/imageTransform3D.js"></script>
     <script src='./js/buddle.js'></script>
 </head>
-<body style="height:100%">
+<body style="height:100%;bakcground:#333333ba">
     <div id="srcLoading" class="srcLoading">
-        <div id="loading-circle">
+        <div id="loading-circle" class="loading-circle">
             <div class="k-line2 k-line12-1"></div>
             <div class="k-line2 k-line12-2"></div>
             <div class="k-line2 k-line12-3"></div>
@@ -88,24 +82,31 @@
         </div>
     </div>
 </div>
+<div class="adminContainer">
 <div class="admin">
     <ul class="admin_menu">
         <li class="animated"><a javascript:;><i class="linkfont">&#xe658;</i>发表动态</a></li>
         <li class="animated"><a javascript:;><i class="linkfont">&#xe633;</i>更新介绍</a></li>
         <li class="animated"><a javascript:;><i class="linkfont">&#xe633;</i>发表文章</a></li>
         <li class="animated"><a javascript:;><i class="linkfont">&#xe662;</i>更多操作</a></li>
+        <li class="animated">
+            <a javascript:;>
+                <i class="linkfont">&#xe626;</i>退&nbsp;&nbsp;出</a>
+        </li>
     </ul>
 </div>
+
 <div class="edit_ui">
     <div class="select_line">
         <div class="dot animated"></div>
     </div>
     <div class="edit_li map_li temp_operation animated">
         <input type="text" id="dw_title" class="fl reset_value" placeholder="点击以输入标题">
-        <textarea class="edit_textarea reset_value" id="short_article_textarea"></textarea>
+        <textarea class="edit_textarea edit_textarea1 reset_value" id="short_article_textarea"></textarea>
         <div class="effect_text"></div>
         <p class="fl word_count">还可输入<span class="count">180</span>字</p>
         <a class="publish-dynamic" id="publish_dw">publish</a>
+        <a class="update_dw" id="update_dw">update</a>
     </div>
     <div class="map_li animated introduceContainer">
         <textarea class="edit_textarea reset_value" id="introduce_textarea"></textarea>
@@ -178,6 +179,7 @@
           </div>
         </div>
         <button  class='publish-edit'>publish</button>
+        <button  class='update_article'>update</button>
       </div>
     <div class="operation map_li temp_operation animated">
           <div class="operation_box fl animated">
@@ -227,8 +229,9 @@
           </div>
       </div>
 </div>
+</div>
 <div class="screen tempexit">
-    <div class="avatarTip">
+    <div class="avatarTip showLoginSuccess">
         <div class="tipBox">
             <p class="tipText">点击此处以设置头像</p>
             <a href="javascript: void(0)" class="closeTip">关闭</a>
@@ -266,7 +269,7 @@
                 </a>
             </li>
             <li>
-                <a class="fr menu_toggle" href="javascript: void(0);">
+                <a class="fr adminMobile" href="javascript: void(0);">
                     <i class="linkfont">&#xe662;</i>
                     <span>管理员</span>
                 </a>
@@ -360,15 +363,15 @@
         <img src="./resouce/images/load.png">
         <div class="dot"></div>
     </div>
-    <div class="aside_top">
+    <div class="aside_top afterOpen">
         <i class="linkfont menu_toggle">&#xe67e;</i>
         <div class="user fl">
             <img src='' class="user_icon avatar_img" alt='头像加载中' />
             <p class="user_name change">Welcome</p>
-            <input class="upload_avatar" id='avatar' title='点击以设置头像' type='file' />
+            <input class="upload_avatar showLoginSuccess" id='avatar' title='点击以设置头像' type='file' />
         </div>
     </div>
-    <aside>
+    <aside class="afterOpen">
         <ul class="aside_menu">
             <li >
             	<div class="hover_shadow"></div>
@@ -434,7 +437,7 @@
             </li>
         </ul>
     </aside>
-    <header>
+    <header class="afterOpen">
         <ul class="nav">
             <li class="fl"><a class="change index" href="#/index">首页</a></li>
             <li class="fl"><a class="change triggerArticle" href="#/article">文章</a></li>
@@ -459,15 +462,15 @@
                     </div>
               </div>
     </div>
-    <main>
+    <main class="afterOpen">
         <ul class="all">
             <li class="fl menu face glitch_face">
                 <div class="center_bar fl">
                       <ul class="dynamic" id='dynamic_container'>
                         <% dynamic.forEach(item=>{ %>
                         <li class="dynamic_item" _id=<%= item._id %>>
-                            <p class="title fl"><%= item.title %></p>
-                            <p class="summary"><%= item.content %></p>
+                            <p class="title titleShow fl"><%= item.title %></p>
+                            <p class="summary titleShow"><%= item.content %></p>
                             <span class="fl dynamic_date"><%= item.date %></span>
                             <div class="fr dynamic_good">
                                 <i _id=<%= item._id %> class="fr  awesome_dynamic linkfont">&#x349a;</i>
@@ -480,7 +483,7 @@
                             <div class="dynamic-msg-container">
                                <div class="inesrt-text">
                                      <textarea class="animated insert-textarea"></textarea>
-                                     <button class="leave-dynamic-mg">发表</button>
+                                     <button _id=<%= item._id %> class="leave-dynamic-mg">发表</button>
                                 </div>
                                 <ul class="dynamic-msg-ul">
                                     <% item.msg.reverse().forEach(temp => { %>
@@ -501,8 +504,8 @@
                         <script type="text/html" id="dynamic_tpl">
                             {{each dynamics as dynamic}}
                             <li class="dynamic_item" _id={{ dynamic._id }}>
-                                <p class="title fl">{{dynamic.title}}</p>
-                                <p class="summary">{{dynamic.content}}</p>
+                                <p class="title titleShow fl">{{dynamic.title}}</p>
+                                <p class="summary titleShow">{{dynamic.content}}</p>
                                 <span class="fl dynamic_date">{{dynamic.date}}</span>
                                 <div class="fr dynamic_good">
                                     <i class="fr awesome_dynamic linkfont">&#x349a;</i>
@@ -515,7 +518,7 @@
                             <div class="dynamic-msg-container">
                                <div class="inesrt-text">
                                      <textarea class="animated insert-textarea"></textarea>
-                                     <button class="leave-dynamic-mg">发表</button>
+                                     <button _id={{ dynamic._id }} class="leave-dynamic-mg">发表</button>
                                 </div>
                                 <ul class="dynamic-msg-ul">
                                     {{ each dynamic.msg.reverse() as temp }}
@@ -612,18 +615,17 @@
                 </div>
             </li>
             <li class="fl face">
-                <div class="insert_dialog">输入不完整 ~</div>
                 <div class="message_board_input">
                     <form action="">
                         <textarea class="msg animated" name="message" id="msg" name="msg"></textarea>
-                        <input class="leave_msg" type="button" name="submit" value="发表">
-                        <input class="msg_name" style="display:none" type="text" placeholder="your name" disabled='true'>
+                        <input class="leave_msg" type="button" id="saveMsgBtn" name="submit" value="发表">
+                        <input class="msg_name" id='saveMsgName' style="display:none" type="text" placeholder="your name" disabled='true'>
                         <p class="msg_word_count">还可输入<span class="msg_count">280</span>字</p>
                     </form>
                 </div>
                 <ul class="temp_ul">
-                    <li class="fl">0评论</li>
-                    <li class="fr">0人参与</li>
+                    <li class="fl repeatCount">0评论</li>
+                    <li class="fr repeatCount">0人参与</li>
                 </ul>
                 <div class="message_box">
                     <ul class="message_list fl">
@@ -631,7 +633,7 @@
                         <li class='message_item'>
 
                             <a class="user_avatar fl"><img class="user_avatar_img" src="" alt='无头像'></a>
-                            <p class="user fl"><span class='user_name_msg'><%= item.name %></span> : 
+                            <p class="user _user fl"><span class='user_name_msg'><%= item.name %></span> : 
                               <span class="message_date"><%= item.date %></span>
                             </p>
                             <div class="message_operation fr">
@@ -656,7 +658,7 @@
                                         <span class="repeat_date"><%= repeat.date %>
                                             <span>
                                                 回复
-                                                <span style='color:red'><%= repeat.toRepeat %>
+                                                <span style='color:white'><%= repeat.toRepeat %>
                                                     <span>:</span>
                                                 </span>
                                             </span>
@@ -673,7 +675,7 @@
                             {{each messages as message}}
                                 <li class='message_item'>
                                   <a class="user_avatar fl"><img class="user_avatar_img" src="" alt='无头像'></a>
-                                     <p class="user fl"><span class='user_name_msg'>{{message.name}}</span> : 
+                                     <p class="user _user fl"><span class='user_name_msg'>{{message.name}}</span> : 
                                       <span class="message_date">{{message.date}}</span>
                                     </p>
                                                             <div class="message_operation fr">
@@ -741,7 +743,7 @@
         		<script type='text/html' id='search_result_tpl'>
         			{{each searchs as search}}
         			<li _id={{search._id}} type={{search.type}}>
-        				<a class="fl search_summary"><p class="search_title">{{search.title}}</p>
+        				<a _id={{search._id}} type={{search.type}} class="fl search_summary"><p class="search_title">{{search.title}}</p>
 {{search.summary}}
                   </a>
         				<span class="fr search_date">{{search.date}}</span>
@@ -753,6 +755,7 @@
           </div>
         </div>
     </main>
+    <div class="flexDown"></div>
     <div class="login_register">
         <div class="top_bar bar"></div>
         <div class="down_bar bar"></div>
@@ -768,19 +771,19 @@
           </div>
           <div class="register">
               <div class="right-shadow"></div>
-               <button name="login" class="current-api" value="" id="login">登录</button>
+               <button name="login" class="current-api setLoginItem" value="" id="login">登录</button>
               <i class="linkfont exit">&#xe626;</i>
               <div class="input-con">
             <form action="">
               <input id="username" type="text" name="username" placeholder="用户名">
               <input id="password" type="password" name="password" autocomplete='off' placeholder="密码">
-              <input id="check_password" type="password" name="checkpwd" autocomplete='off' placeholder="确认密码">
+              <input id="check_password" class='registerInfo' type="password" name="checkpwd" autocomplete='off' placeholder="确认密码">
             </form>
               </div>
-              <div class="label-con">
-                  <label><input type="checkbox" />记住登录状态</label>
+              <div class="label-con setLoginItem loginInfo">
+                  <label class='setLoginItem'><input type="checkbox" />记住登录状态</label>
               </div>
-              <button name="register" class="registerbtn" lvalue="" id="register">注册</button>
+              <button name="register" class="registerbtn registerInfo" lvalue="" id="register">注册</button>
               <span></span>
               <i class="linkfont login-i">&#xe6ba;</i>
           </div>
