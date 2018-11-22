@@ -16,6 +16,33 @@ routerExports.upvote = {
   }
 } 
 
+routerExports.getDynamic = {
+  method: 'get',
+  url: '/getDynamic',
+  route: async (ctx, next) => {
+    try {
+      const result = await callGetDynamic()
+      ctx.body = { 
+        success: true,
+        data: result.reverse()
+       }
+    } catch (error) {
+      ctx.body = { 
+        success: false,
+        errorMsg: error
+       }
+    }
+  }
+} 
+
+function callGetDynamic(){
+  return new Promise((resolve, reject) => {
+    Dynamic.find({}).then(res => {
+      res ? resolve(res) : reject('无法获取dynamic数据')
+    }).catch(err => reject(err.toString()))
+  })
+}
+
 function callUpvote(_id, upvote){
   return new Promise((resolve, reject) => {
     Dynamic.updateMany({_id }, { $set: { upvote } }).then(res => {
@@ -29,6 +56,7 @@ routerExports.leaveMsg = {
   url: '/leave-dynamic-mg',
   route: async (ctx, next) => {
     const { _id, msg, name } = ctx.request.body
+    console.log(msg)
     try {
       const result = await callLeaveMsgDynamic(_id, msg, name)
       ctx.body = {

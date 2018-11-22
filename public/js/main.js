@@ -82,8 +82,9 @@ class Mobile {
         this.searchInterval = undefined //搜索入口的特效定时器
         this.searchCallback = options && options.searchCallback || function (search) { console.log(search) } //点击搜索触发的操作
         this.appendNodes = [] //需要插入手机容器的元素集合
+        this.param = options.param
     }
-    start() {
+    start(cb) {
         if (this.appendNodes.length !== 0)
             this.renderTime() //刷新手机屏幕上的时间
         if (document.getElementById('_container') && document.getElementById('_container').childNodes.length !== 0) //判断页面是否已经存在插件
@@ -93,8 +94,12 @@ class Mobile {
             this.container.style.transform = 'rotateX(45deg) rotateY(68deg) rotateZ(-45deg) scale(1.3)'
             setTimeout(() => {
                 this.container.style.transform = 'rotateX(60deg) rotateZ(45deg) rotateY(0deg) scale(1.3)'
+                setTimeout(() => {
+                    this.container.style.transform = 'rotateX(0deg) rotateZ(0deg) rotateY(0deg) scale(1)'
+                }, 1000);
             }, 1000);
         }, 1000);
+        cb && cb()
     }
     end() { //清楚定时器，并移除插件
         if (this.interval)
@@ -197,9 +202,9 @@ class Mobile {
         input.addEventListener('focus', function () {
             this.style.width = '140px'
             clearInterval(_this.searchInterval)
-            this.style.paddingLeft = '20px'
+            this.style.paddingLeft = '15px'
             this.style.textAlign = 'left'
-            this.placeholder = ''
+            this.placeholder = '百度一下，你就知道'
         }, false)
         input.addEventListener('blur', function () {
             this.style.width = '25px'
@@ -213,9 +218,9 @@ class Mobile {
                 }, 1500)
             }, 3000)
         }, false)
-        input.addEventListener('keydown', function (e) {
+        input.addEventListener('keyup', function (e) {
             const ev = e || window.event
-            if (ev.keyCode === 13)
+            // if (ev.keyCode === 13)
                 _this.searchCallback(this.value)
         }, false)
         search.appendChild(input)
@@ -261,6 +266,7 @@ class Mobile {
     }
     createTopface() { //手机的上面
         const top = document.createElement('div')
+        top.id = '_mobilrFace'
         const barrery = document.createElement('div')
         const barreryStatus = document.createElement('div')
         const sign = document.createElement('div')
@@ -273,7 +279,7 @@ class Mobile {
         setStyle(top, topStyle)
         setStyle(sign, singStyle)
         top.appendChild(this.ul.ul)
-        const lis = this.ul.ul.getElementsByTagName('li')
+        // const lis = this.ul.ul.getElementsByTagName('li')
         top.style.background = `url(${this.bg})`
         top.style.backgroundSize = 'cover'
         statusBar.appendChild(barreryStatus)
@@ -282,6 +288,11 @@ class Mobile {
         top.appendChild(statusBar)
         top.appendChild(this.createClock())
         top.appendChild(this.createSearch())
+        if(this.param){
+            const temp = document.createElement('div')
+            temp.innerHTML = this.param
+            top.appendChild(temp)
+        }
         return top
     }
     createBackface() { //手机的背面
@@ -462,6 +473,7 @@ const searchStyle = {
     position: 'absolute',
     top: '130px',
     opacity: '0.2',
+    // zIndex: '5',
     filter: 'alpha(opacity = 20)',
     transition: 'all 1s',
     'transform-style': 'preserve-3d',
@@ -478,13 +490,13 @@ const timeStyle = {
 const ul2Style = {
     width: '20px',
     position: 'absolute',
-    bottom: '20px',
+    bottom: '5px',
     minHeight: '70px',
 }
 
 const ul1Style = {
     position: 'absolute',
-    bottom: '20px',
+    bottom: '5px',
     left: '0',
     cursor: 'pointer',
     minHeight: '70px',
@@ -1843,8 +1855,8 @@ function publishItem() {  //publish item
         if (this.getAttribute('type') === 'type') return
         let data = _('.editor-container').innerHTML
         let title = _('.ql-editor')[0]
-        console.log(_('.editor-container'), data)
-        if (!/<h2>\w<\/h2>/.test(title.innerText)) {
+        console.log(title)
+        if (!title.querySelector('h2')) {
             infoContainer('标题需被h2标签包裹', false);
             return;
         }
@@ -2001,12 +2013,15 @@ function leaveMsg() {  //message board
         const name = window.sessionStorage && sessionStorage.getItem('user')
         let date = new Date()
         let minute = date.getMinutes()
-        minute < 10 ? minute + 1 : '0' + minute
+        const m = minute < 10 ? '0' + minute : minute
         let hour = date.getHours()
+        const h = hour < 10 ? '0' + hour : hour
         let year = date.getFullYear()
         let month = date.getMonth() + 1
+        const ms = month < 10 ? '0' + month : month
         let day = date.getDate()
-        let d = year + '-' + month + '-' + day + '-----' + hour + ' : ' + minute
+        const _day = day < 10 ? '0' + day : day
+        let d = year + '-' + ms + '-' + _day + '-----' + h + ' : ' + m
         if (msg === '') {
             infoContainer('留言不能为空 ~', false)
             return
@@ -2336,7 +2351,8 @@ function dynamicMsg() {   //leave a msg on dynamic
         const minute = d.getMinutes()
         const el = ev.target.parentNode.parentNode.parentNode.children[4].children[1]
         // const count = $(This).parent().parent().prev().find('span')
-        const currentDay = year + "-" + month + '-' + (day < 10 ? '0' + day : day) + '--' + hour + ':' + minute
+        // const currentDay = year + "-" + month + '-' + (day < 10 ? '0' + day : day) + '--' + hour + ':' + minute
+        const currentDay = year + "-" + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day) + '--' + (hour < 10 ? '0' + hour : hour) + ':' + (minute < 10 ? '0' + minute : minute)
         const word = ev.target.parentNode.children[0].value
         const _id = ev.target.getAttribute('_id')
         const msg = { context: word, date: currentDay }
@@ -2604,10 +2620,34 @@ function entryMoreOperation() {
             {
                 name: '资源管理',
                 callback: openSouceContainer
+            },
+            {
+                name: '主界面',
+                callback: mainUI
             }
         ],
-        bg: './resouce/images/menu.jpg'
+        searchCallback: wd => search(wd),
+        bg: './resouce/images/menu.jpg',
+        param: `<div class="mobileFace">
+
+        </div>`
     })
+    function mainUI(){
+        _('.left_container').style.transform = 'scale(1)'
+        _('.mobileFace .about_me_container') && (
+            _('.mobileFace').removeChild(_('.about_me_container'))
+        )
+    }
+    function search(wd){
+        (
+            _('#_script') &&
+            _('body').removeChild(_('#_script'))
+        )
+        const script = document.createElement('script')
+        script.id = '_script'
+        script.src = `https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=${wd}&json=1&p=3&sid=1442_21114_20880_27377_27245_20719&req=2&csor=1&cb=callback`
+        _('body').appendChild(script)
+    }
     const mC = _('.more_operation_container')
     _('.more_operation_entry', 'click', function () {
         toggleClass(mC, 'moreContainerToggle')
@@ -2624,7 +2664,27 @@ function entryMoreOperation() {
         }
     })
 }
-
+function callback(result) {
+    if (!result.s) return
+    const ul = document.createElement('ul')
+    ul.addEventListener('click', ev => {
+        if (ev.target.tagName.toUpperCase() === 'LI'){
+            window.open(`https://www.baidu.com/s?wd=${ev.target.innerText}`)
+        }
+    }, false)
+    ul.className = '_searchUl'
+    let html = ''
+   for (let i = 0; i< result.s.length; i++) {
+      const li = document.createElement('li')
+      li.innerText = result.s[i]
+      li.className = 'serchItem'
+      i <= 5 && (
+          ul.appendChild(li)
+        )
+   }
+   if (_('.mobileFace ._searchUl')) _('.mobileFace').removeChild(_('._searchUl'))
+   _('.mobileFace').appendChild(ul)
+}
 function randomAbountMe() {
     const box = _('.about_me_container .box')
     for (let item of box) {
@@ -2636,52 +2696,70 @@ function randomAbountMe() {
             transition: `all ${duration}s`,
             opacity: '0',
             display: 'none',
-            transform: `translateX(${op * x}px) translateY(${op * y}px)`
+            transform: `translateX(${op * x}px) translateZ(${op * (y+x)}px) translateY(${op * y}px)`
         })
     }
 }
 
-function startAnotherFace(bool) {
-    const boxs = _('.right_container .box_')
-    if (bool) {
-        _('.right_container').style.display = 'block'
-        for (let item of boxs) {
-            const duration = (Math.random() * 7)
-            item.style['animation-duration'] = duration + 's'
-            item.style['display'] = 'block'
-            addClass(item, 'bounceIn')
-        }
-    } else {
-        for (let item of boxs) {
-            item.style['display'] = 'none'
-            removeClass(item, 'bounceIn')
-        }
-        boxs.removeClass('bounceIn').hide()
-        _('.right_container').style.display = 'none'
-    }
-}
-
-function initMore() {
-    const menu = new Mobile({
-        target: document.getElementsByClassName('left_container')[0],
-        menu: [
-            {
-                name: '关于主页'
-            },
-            {
-                name: 'menu-test'
-            }
-        ],
-        bg: './resouce/images/menu.jpg',
-    })
-    menu.start()
-}
-
 function entryAboutMe() {
+    _('.mobileFace ._searchUl') && (
+        _('.mobileFace').removeChild(_('._searchUl'))
+    )
+    _('.left_container').style.transform = 'scale(1.5)'
+    const mobileFace = _('.mobileFace')
+    mobileFace.innerHTML = `                    <div class="about_me_container initDisplay">
+    <div class="box fl"></div>
+    <div class="box fl"></div>
+    <div class="box fl"></div>
+    <div class="box fl"></div>
+    <div class="box fl"></div>
+    <div class="box fl"></div>
+    <div class="box fl">
+        <p class="name">Ada</p>
+    </div>
+    <div class="box fl">
+        <p class="name_info">代码爱好者...</p>
+    </div>
+    <div class="box fl"></div>
+    <div class="box fl"></div>
+    <div class="box fl">
+        <p class="info1">
+        </p>
+    </div>
+    <div class="box fl">
+        <p class="info2">
+        </p>
+    </div>
+    <div class="box fl">
+        <p class="info4">业余的</p>
+    </div>
+    <div class="box fl">
+        <p class="info5">纯属爱好</p>
+    </div>
+    <div class="box fl"></div>
+    <div class="box fl">
+        
+    </div>
+    <div class="box fl"></div>
+    <div class="box fl">
+    <p class="info3">
+    生命不息
+    </p>
+    </div>
+    <div class="box fl">
+        <p class="info6">
+        code
+        </p>
+    </div>
+    <div class="box fl">
+        <p class="info7">不止</p>
+    </div>
+    <div class="avatar_container"></div>
+</div>`
+randomAbountMe()
     _('.initDisplay', !1, function () {
         this.style.display = 'none'
     })
-    _('.about_me_container').style.display = 'block'
     const box = _('.about_me_container .box')
     for (let item of box) {
         item.style.display = 'block'
@@ -2692,6 +2770,7 @@ function entryAboutMe() {
             })
         }, 10)
     }
+_('.about_me_container').style.display = 'block'
 }
 
 function mobileEntry() {
@@ -2827,7 +2906,6 @@ window.onload = () => {
     hashRouter()
     mobileEntry()
     randomBg()
-    randomAbountMe()
     entryMoreOperation()
     allUserAvatar()
     toggleRepeatList()
@@ -3068,7 +3146,7 @@ function exitGallery() {  //exit gallery
     _('.exit_gallery', 'click', () => {
         setStyle(_('.canvas_box'), {
             zIndex: '-100',
-            transform: 'scale(0)'
+            transform: 'scale(0)' 
         });
     })
 }

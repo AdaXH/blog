@@ -1,0 +1,43 @@
+.articleContainer {
+    text-align: left;
+}
+.articleItem{
+    max-height: 150px;
+    overflow: hidden;
+    border-radius: 10px;
+    margin: 0 0 20px 0 ;
+    padding: 20px;
+    position: relative;
+    color:rgb(102, 102, 102);
+    /* border: 1px solid #ccc; */
+    font-size: 12px;
+    background: white;
+}
+.articleItem .ql-editor {
+    overflow: hidden;
+}
+.articleItem h2, .articleItem h2 span{
+    font-size: 15px;
+    color:rgb(102, 102, 102) !important;
+}
+/* .operation{
+    position: absolute;
+    right:20px;
+    top:20px;
+    font-size: 23px;
+} */
+.articleStatus{
+    display: flex;
+    position: relative;
+    top:-7px;
+}
+.articleStatus div{
+    flex: 1;
+    text-align: center;
+}
+.articleStatus div:nth-of-type(1){
+    text-align: left;
+}
+.articleStatus .operation div{
+    text-align: right;
+}

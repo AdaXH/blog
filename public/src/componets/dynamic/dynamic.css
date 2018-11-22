@@ -1,0 +1,81 @@
+.dynamicContainer .am-card-header-content img{
+    width:30px;
+    height: 30px;
+}
+.am-card-header-content{
+    /* letter-spacing: 2px; */
+}
+.dynamicContainer .am-card-header .am-card-header-extra{
+    width:100px !important;
+    flex:none;
+}
+.dynamicContainer .am-card-header-content{
+    color: rgb(125, 125, 125)
+}
+.dynamicContainer .am-textarea-control{
+    border: 1px solid rgb(160, 160, 160);
+    border-radius: 5px;
+}
+.dynamicContainer .am-list-item {padding: 0}
+.repeatContainer div:nth-of-type(1){
+    
+}
+.am-card-body{
+    padding: 0 15px 6px;
+}
+.repeatList ul {
+    max-height: 200px;
+    overflow: hidden;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 14px;
+    color: rgb(160, 160, 160);
+    padding: 0 20px 20px 20px;
+}
+.repeatList ul .name{
+    color: rgb(160, 160, 160);
+    font-size: 13px;
+}
+.repeatList ul .name span{
+    font-size: 14px;
+}
+.repeatList .context{
+    text-indent: 2em;
+    font-size: 14px;
+}
+.repeatList ul li {
+    line-height: 24px;
+}
+.repeatList ul li{
+    margin-top:10px;
+    border-bottom: 1px solid #efeff4
+}
+.ql-editor {
+    padding-top: 4px;
+}
+.dynamicTitle div:nth-of-type(2){
+    font-size: 12px;
+}
+.dynamicOperationContainer{
+    display: flex;
+}
+.dynamicOperationContainer div.dynamicDate{
+    flex: 1;
+    white-space: nowrap;
+}
+.dynamicOperationContainer div:nth-of-type(1){
+    text-align: left;
+    font-size: 12px;
+}
+.rightTemp{
+    display: flex;
+    width:100px;
+}
+
+.rightTemp div{
+    flex: 1;
+    text-align: center !important;
+}
+.rightTemp div:nth-of-type(1){
+    margin-top: 2px;
+}

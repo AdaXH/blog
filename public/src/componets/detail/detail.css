@@ -1,0 +1,30 @@
+.detailContainer{
+    text-align: left;
+}
+.detailContainer img{
+    max-width: 300px;
+    display: block;
+    margin: 0 auto;
+}
+.detailContainer h2 , .detailContainer h2 span{
+    font-weight: normal;
+    text-align: center;
+    color:rgb(102, 102, 102) !important
+}
+pre{
+    white-space: pre-wrap;   
+    background-color: #23241f !important;
+    color: #f8f8f2 !important;
+    overflow: visible !important;
+    white-space: pre-wrap;
+    padding: 20px !important;
+}
+.articleStatus1{
+    display: flex;
+    margin-top:15px;
+}
+.articleStatus1 div{
+    flex: 1;
+    text-align: center;
+    line-height: 19px;
+}

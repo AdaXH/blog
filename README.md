@@ -65,17 +65,13 @@ module.exports = mongoose.model('moods', mongoose.Schema({
 ```
 ```ruby
 module.exports = mongoose.model('users', mongoose.Schema({
-    name:String,
+	name:String,
     password:String,
     admin: {
         type: Bollean,
         default: false
-    },
-    avatar: {
-    	type: String,
-	default: '/upload/user_avatar/default_avatar.jpg'
     }
-})) //  **the admin's admin-type must be 'true' or some operation won't be work !**  
+})) //  **the admin's name must be 'Ada' or some operation won't be work !**  
 ```
 
 URL  https://adaxh.applinzi.com

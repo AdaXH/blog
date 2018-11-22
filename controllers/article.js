@@ -19,6 +19,34 @@ routerExports.deleteArticle = {
 	}
 }
 
+routerExports.queryArticleById= {
+	method: 'post',
+	url: '/queryArticleById',
+	route: async (ctx, next) => {
+		const { _id } = ctx.request.body
+		try {
+			const result = await callArticleById(_id)
+			ctx.body = {
+				success: true,
+				data: result
+			}
+		} catch (error) {
+			ctx.body = {
+				success: false,
+				errorMsg: error
+			}
+		}
+	}
+}
+
+function callArticleById(_id){
+	return new Promise((resolve, reject) => {
+		Article.findOne({ _id }).then(res => {
+			res ? resolve(res) : reject('无法获取文章')
+		}).catch(err => reject(err.toString()))
+	})
+}
+
 function callDeleteArticleById(_id){
 	return new Promise((resolve, reject) => {
 		Article.remove({ _id }).then(data => {

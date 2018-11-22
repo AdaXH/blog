@@ -1,0 +1,8 @@
+.view{
+    width:100%;
+    flex:1;
+    overflow: hidden;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    background: aliceblue;
+}

@@ -1,11 +1,10 @@
-const index = require('koa-router')()
 const mongoose = require('mongoose') 
-const moodSchema = require('./../dbmodel/Mood') 
-const Message = require('./../dbmodel/Message') 
-const Article = require('./../dbmodel/Article') 
-const Dynamic = require('./../dbmodel/Dynamic') 
-const Customer = require('./../dbmodel/Customer')
-const Mood = require('./../dbmodel/Mood')
+const moodSchema = require('../dbmodel/Mood') 
+const Message = require('../dbmodel/Message') 
+const Article = require('../dbmodel/Article') 
+const Dynamic = require('../dbmodel/Dynamic') 
+const Customer = require('../dbmodel/Customer')
+const Mood = require('../dbmodel/Mood')
 
 const routerExports = {}
 
@@ -139,26 +138,76 @@ function messageArr(){
         })
     })
 }
+///<h2>+\w{1,}<\/h2>/.exec('aaa11111<h2>title</h2>
+routerExports.getArticles = {
+    method: 'get',
+    url:'/getArticles',
+    route: async (ctx, next) => {
+        try {
+            const article = await articleArr()
+            ctx.body = {
+                success: true,
+                data: article
+            }
+        } catch (error) {
+            ctx.body = {
+                success: false,
+                errorMsg: error
+            }
+        }
+    }
+}
+
+
+function reMapArticle(result){
+    for (let item of result){
+        // const title = /<h2>+\w{1,} +| [\u4e00-\u9fa5]{1,}<\/h2>/.exec(item.summary)
+        const value =item.summary.replace(/[0-9]+|[a-z]+|[A-Z]+|<+|>/g, '')
+        item.title = value.slice(0,5) || ''
+    }
+    return result
+}
+
+routerExports.getAllMessages = {
+    method: 'get',
+    url: '/getAllMessages',
+    route: async (ctx, nect) => {
+        try {
+            const result = await messageArr()
+            ctx.body = {
+                success: true,
+                data: result.reverse()
+            }
+        } catch (err) {
+            ctx.body = {
+                success: false,
+                errorMsg: err
+            }
+        }
+    }
+}
 
 routerExports.routerIndex = {
     method: 'get',
     url: '/*',
     route: async (ctx, next) => {
+        const userAgent = /Windows/.test(ctx.request.header['user-agent']) ? 'windows' : 'Mobile'
+        console.log(userAgent)
         try {
             const mood = await moodArr()
             const article = await articleArr()
             const message = await messageArr()
             const dynamic = await dynamicArr()
-            await ctx.render('index', {
-                title: 'Ada - 个人主页',
+            await ctx.render( userAgent === 'windows' ? 'index' : 'mobile', {
+                title: userAgent === 'windows' ? 'Ada - 个人主页' : 'Ada - Mobile',
                 mood,
                 article,
                 message: message.reverse(),
                 dynamic
             })
         } catch (error) {
-            await ctx.render('index', {
-                title: 'Ada - 个人主页',
+            await ctx.render(userAgent === 'windows' ? 'index' : 'mobile', {
+                title: userAgent === 'windows' ? 'Ada - 个人主页' : 'Ada - Mobile',
                 mood: [],
                 article: [],
                 message: [],

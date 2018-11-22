@@ -1,0 +1,21 @@
+header{
+    height: 80px;
+    background: #3c445e;
+    width:100%;
+    display: flex !important;
+    justify-content: space-between;
+}
+.am-search{
+   background: #3c445e;
+   /* flex: 1; */
+   width:50%;
+   /* width:150px;
+   float:right;  */
+   top:18px;
+}
+.logo{
+    width:100px;
+    line-height: 80px;
+    color:white;
+    font-weight: bold;
+}

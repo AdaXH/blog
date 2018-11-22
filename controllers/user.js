@@ -13,6 +13,7 @@ routerExports.login = {
 		try {
 			const result = await callLogin(name, pwd, state)
 			state && ctx.cookies.set('user', Base64.encode(name), { expires: date, httpOnly: false })
+			result.name = name
 			ctx.body = result
 		} catch (error) {
 			ctx.body = {
@@ -21,6 +22,35 @@ routerExports.login = {
 			}
 		}
 	}
+}
+
+routerExports.getUserInfor = {
+	method: 'post',
+	url: '/getUserInfor',
+	route: async (ctx, next) => {
+		const { name } = ctx.request.body
+		try {
+			const user = await callGerUser(name)
+			delete user._doc.password
+			ctx.body = {
+				success: true, 
+				user
+			}
+		} catch (error) {
+			ctx.body = {
+				success: false,
+				errorMsg: error
+			}
+		}
+	}
+}
+
+function callGerUser(name){
+	return new Promise((resolve, reject) => {
+		User.findOne({ name }).then(res => {
+			res ? resolve(res) : reject('当前用户不存在')
+		}).catch( err => reject('无法获取当前用户信息'))
+	})
 }
 
 function callLogin(name, pwd){
@@ -224,9 +254,10 @@ routerExports.register = {
 	route: async (ctx, nect) => {
 		const { name, pwd } = ctx.request.body
 		try {
-			await callRegister(name, pwd)
+			const data = await callRegister(name, pwd)
 			ctx.body = {
-				success: true
+				success: true,
+				...data
 			}
 		} catch (error) {
 			ctx.body = {
@@ -245,7 +276,7 @@ function callRegister(name, pwd){
 			else{
 				new User({
 					name, password: pwd
-				}).save().then(_ => resolve(true))
+				}).save().then(_ => resolve({ name, admin: false, avatar: '/upload/user_avatar/default_avatar.jpg'}))
 					.catch(err => reject('注册失败' + err instanceof Object ? JSON.stringify(err) : err.toString()))
 			}
 		})

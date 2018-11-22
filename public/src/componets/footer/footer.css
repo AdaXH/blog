@@ -1,0 +1,20 @@
+footer{
+    height: 50px;
+    width:100%;
+}
+footer ul {
+    display: flex;
+    width:100%;
+}
+footer ul li{
+    flex: 1;
+    line-height: 50px;
+    text-align: center;
+}
+footer ul li a { color: black}
+footer ul li a i {
+    /* font-size: 13px; */
+    margin: 5px;
+    position: relative;
+    top:0px;
+}

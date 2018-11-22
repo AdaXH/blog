@@ -80,7 +80,7 @@ body {
     width:100%;
     background:#fcfcfc;
     transition: all 1s; 
-    transform: translate3d(100%,0, 0);
+    transform: translate3d(140%,0, 0);
     z-index: 10;
     p{
       margin: 0;
@@ -89,9 +89,36 @@ body {
       width:590px;
       height: 500px;
       position: absolute;
-      top:100px;
-      left:74px;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      margin: auto;
       z-index: 10;
+      transition: all 1s;
+      .mobileFace{
+        position: absolute;
+        top:25px;
+        width:200px;
+        height:250px;
+        ._searchUl{
+          position: absolute;
+          top: 130px;
+          width: 100%;
+          font-size: 12px;
+          line-height: 22px;
+          transform: translateZ(1px);
+          border-radius:5px;
+          background : rgba(255, 255, 255, 0.7);
+          li{
+            cursor: pointer;
+            padding-left: 50px;
+          }
+          li:hover{
+            background: #ccc;
+          }
+        }
+      }
     }
     .right_container{
       position: absolute;
@@ -172,8 +199,8 @@ body {
         }
       }
       .box_{
-        width:100px;
-        height:100px;
+        width:50px;
+        height:50px;
         float: left;
         display: none;
         transform-style: preserve-3d;
@@ -191,14 +218,15 @@ body {
     // background-size: cover;
     .about_me_container{
       position: absolute;
-      width:400px;
-      height:500px;
+      width:200px;
+      height:250px;
       display: none;
-      transform: scale(0.8) translate3d(-12.4%, -12.5%, 0);
+      z-index: 10;
+      //transform: scale(0.8) translate3d(-12.4%, -12.5%, 0);
       .box{
-        width:100px;
+        width:50px;
         will-change: transform,opacity;
-        height: 100px;
+        height: 50px;
         position: relative;
         transform-style: preserve-3d;
         background:#bdbdbd;
@@ -206,72 +234,65 @@ body {
         color:white;
         .name{
           text-align: center;
-          font-size: 30px;
-          line-height: 100px;
+          font-size: 10px;
+          line-height: 40px;
           font-weight: bold;
         }
         .info1{
-          font-size: 15px;
-          line-height: 140px;
+          font-size: 10px;
+          line-height: 40px;
           text-align: center;
         }
         .info2{
-          font-size: 15px;
+          font-size: 10px;
           text-align: center;
-          line-height: 199px;
+          line-height: 40px;
         }
         .info4{
           position: absolute;
-          bottom:10px;
-          right:3px;
-          font-size: 14px;
+          font-size: 10px;
         }
         .info5{
           position: absolute;
-          bottom:10px;
-          left:0px;
-          font-size: 14px;
+          font-size: 10px;
         }
         .info6{
-          position: absolute;
-          top:10px;
-          right: 3px;
-          font-size: 14px;
+          text-align: right;
+          line-height: 50px;
+          font-size: 10px;
         }
         .info7{
-          position: absolute;
-          top:10px;
-          left:0px;
-          font-size: 14px;
+          // text-align: center;
+          line-height: 50px;
+          font-size: 10px;
         }
         .info3{
-          font-size: 15px;
+          font-size: 10px;
           text-align: center;
-          line-height: 0px;
+          line-height: 40px;
         }
         .name_info{
-          font-size: 14px;
+          font-size: 10px;
           position: absolute;
           bottom: 0;
-          left:3px;
           /*padding-left: 20px;*/
         }
       }
       .box:nth-of-type(5){
         background: url(/upload/user_avatar/lyy.jpg) left top;
-        background-size: 200px 200px;
+        background-size: 100px 100px;
       }
             .box:nth-of-type(6){
         background: url(/upload/user_avatar/lyy.jpg) right top;
-        background-size: 200px 200px;
+        background-size: 100px 100px;
       }
             .box:nth-of-type(9){
         background: url(/upload/user_avatar/lyy.jpg) left bottom;
-        background-size: 200px 200px;
+        background-size: 100px 100px;
       }
             .box:nth-of-type(10){
         background: url(/upload/user_avatar/lyy.jpg) right bottom;
-        background-size: 200px 200px;
+        background-size: 100px 100px;
       }
     }
     .another_entry{

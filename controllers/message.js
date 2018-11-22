@@ -34,7 +34,6 @@ function deleteInnerRepeat(_id, _parent_id, name){
                const repeat = ans.repeat.filter(item => item._id != _id )
                const na = ans.repeat.filter(item => item._id == _id)[0].name
                User.findOne({ name }).then(ans => {
-                   console.log(ans)
                    if(!ans) reject('当前用户不存在')
                    else{
                        if(name === na || ans.admin)
