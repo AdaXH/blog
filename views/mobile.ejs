@@ -7,24 +7,531 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
   <script src="https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
-  <script>"addEventListener" in document && document.addEventListener("DOMContentLoaded", function () { FastClick.attach(document.body) }, !1), window.Promise || document.writeln('<script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"><\/script>')</script>
-  <title>Ada</title>
-  <link href="/static/css/1.e1d8fa00.chunk.css" rel="stylesheet">
-  <link href="/static/css/main.2d74c459.chunk.css" rel="stylesheet">
+  <script src="/js/ge1doot.js"></script>
+  <script src="/js/imageTransform3D.js"></script>
+  <script>!function () { "use strict"; var o, n, a, s, g, l, h, x, c, m, r, i, z; (l = [], h = [], x = 0, c = [1, 2], m = function (t, i) { if (this.parent = t, this.ctx = o, this.color = i.fill || !1, this.points = [], !i.img) { for (var e = 0; e < 4; e++)this.points[e] = new window.ge1doot.transform3D.Point(t.pc.x + i.x[e] * t.normalZ + i.z[e] * t.normalX, t.pc.y + i.y[e], t.pc.z + i.x[e] * t.normalX + -i.z[e] * t.normalZ); this.points[3].next = !1 } }, r = function (t, i, e) { this.img = new window.ge1doot.transform3D.Image(this, t + i.img, 1, { isLoaded: function (t) { t.parent.isLoaded = !0, t.parent.loaded(t) } }), this.visible = !1, this.normalX = i.nx, this.normalZ = i.nz, this.pc = new window.ge1doot.transform3D.Point(i.x, i.y, i.z), this.tx = i.x + i.nx * Math.sqrt(s.focalLength) * 20, this.tz = i.z - i.nz * Math.sqrt(s.focalLength) * 20, this.poly = []; for (var r, o = -1; r = e[++o];)h[o] = !0 === r.img ? 1 : 2, this.poly.push(new m(this, r)) }, i = function (t) { m.prototype.drawPoly = window.ge1doot.transform3D.drawPoly, a = new window.ge1doot.Screen({ container: "canvas" }), o = a.ctx, a.resize(), n = new window.ge1doot.Pointer({ tap: function () { if (s.over) if (s.over === s.target.elem) s.target.x = 0, s.target.z = 0, s.target.elem = !1; else { s.target.elem = s.over, s.target.x = s.over.tx, s.target.z = s.over.tz; for (var t, i = 0; t = l[i++];) { var e = s.target.x - t.pc.x, r = s.target.z - t.pc.z, o = 1500 < Math.sqrt(e * e + r * r) ? c[0] : c[1]; t.img.setLevel(o) } } } }), (s = new window.ge1doot.transform3D.Camera({ focalLength: 10 * Math.sqrt(a.width), easeTranslation: .025, easeRotation: .06, disableRz: !0 }, { move: function () { this.over = !1, n.isDraging ? (this.target.elem = !1, this.target.ry = .01 * -n.Xi, this.target.rx = (n.Y - .5 * a.height) / (.5 * a.height)) : this.target.elem && (this.target.ry = Math.atan2(this.target.elem.pc.x - this.x, this.target.elem.pc.z - this.z)), this.target.rx *= .9 } })).z = -1e4; for (var i, e = s.py = 0; i = t.imgdata[e++];)l.push(new r(t.options.imagesPath, i, t.structure)); setInterval(function () { c = 50 < x ? [2, 3] : [1, 2], x = 0 }, 1e3), z() }, z = function () { o.clearRect(0, 0, a.width, a.height), s.move(); for (var t, i = -1; t = h[++i];) { g = !1; for (var e, r = 0; e = l[r++];)1 === t && e.draw() || e.visible && e.poly[i].draw() } s.over && !n.isDraging ? a.setCursor("pointer") : a.setCursor("move"), x++ , window.requestAnimFrame(z) }, m.prototype.draw = function () { var t = this.color; if (t.light || !g) { var i = t.light ? this.parent.light : 1; g = "rgba(" + Math.round(t.r * i) + "," + Math.round(t.g * i) + "," + Math.round(t.b * i) + "," + (t.a || 1) + ")", o.fillStyle = g } if (!t.light || this.parent.light < 1) { for (var e = 0; this.points[e++].projection();); this.drawPoly(), o.fill() } }, r.prototype.loaded = function (t) { for (var i = [-1, 1, 1, -1, 1, 1, -1, -1], e = .5 * t.texture.width, r = .5 * t.texture.height, o = 0; o < 4; o++)t.points[o] = new window.ge1doot.transform3D.Point(this.pc.x + e * this.normalZ * i[o], this.pc.y + r * i[o + 4], this.pc.z + e * this.normalX * i[o]) }, r.prototype.draw = function () { return this.pc.projection(), this.pc.Z > -(s.focalLength >> 1) && this.img.transform3D(!0) ? (this.light = .5 + .6 * Math.abs(this.normalZ * s.cosY - this.normalX * s.sinY), this.visible = !0, this.img.draw(), (n.hasMoved || n.isDown) && this.img.isPointerInside(n.X, n.Y) && (s.over = this)) : this.visible = !1, !0 }, { load: function (t) { window.addEventListener("load", function () { window.ge1doot.loadJS("./js/imageTransform3D.js", i, t) }, !1) } }).load({ imgdata: [{ img: "./../resouce/gallery/1.jpg", x: -1e3, y: 0, z: 1500, nx: 0, nz: 1 }, { img: "./../resouce/gallery/2.jpg", x: 0, y: 0, z: 1500, nx: 0, nz: 1 }, { img: "./../resouce/gallery/3.jpg", x: 1e3, y: 0, z: 1500, nx: 0, nz: 1 }, { img: "./../resouce/gallery/4.jpg", x: 1500, y: 0, z: 1e3, nx: -1, nz: 0 }, { img: "./../resouce/gallery/5.jpg", x: 1500, y: 0, z: 0, nx: -1, nz: 0 }, { img: "./../resouce/gallery/6.jpg", x: 1500, y: 0, z: -1e3, nx: -1, nz: 0 }, { img: "./../resouce/gallery/7.jpg", x: 1e3, y: 0, z: -1500, nx: 0, nz: -1 }, { img: "./../resouce/gallery/8.jpg", x: 0, y: 0, z: -1500, nx: 0, nz: -1 }, { img: "./../resouce/gallery/9.jpg", x: -1e3, y: 0, z: -1500, nx: 0, nz: -1 }, { img: "./../resouce/gallery/10.jpg", x: -1500, y: 0, z: -1e3, nx: 1, nz: 0 }, { img: "./../resouce/gallery/11.jpg", x: -1500, y: 0, z: 0, nx: 1, nz: 0 }, { img: "./../resouce/gallery/12.jpg", x: -1500, y: 0, z: 1e3, nx: 1, nz: 0 }], structure: [{ fill: { r: 255, g: 255, b: 255, light: 1 }, x: [-1001, -490, -490, -1001], z: [-500, -500, -500, -500], y: [500, 500, -500, -500] }, { fill: { r: 255, g: 255, b: 255, light: 1 }, x: [-501, 2, 2, -500], z: [-500, -500, -500, -500], y: [500, 500, -500, -500] }, { fill: { r: 255, g: 255, b: 255, light: 1 }, x: [0, 502, 502, 0], z: [-500, -500, -500, -500], y: [500, 500, -500, -500] }, { fill: { r: 255, g: 255, b: 255, light: 1 }, x: [490, 1002, 1002, 490], z: [-500, -500, -500, -500], y: [500, 500, -500, -500] }, { fill: { r: 0, g: 0, b: 0, a: .2 }, x: [-420, 420, 420, -420], z: [-500, -500, -500, -500], y: [150, 150, -320, -320] }, { fill: { r: 0, g: 0, b: 0, a: .2 }, x: [-20, 20, 20, -20], z: [-500, -500, -500, -500], y: [250, 250, 150, 150] }, { fill: { r: 0, g: 0, b: 0, a: .2 }, x: [-20, 20, 20, -20], z: [-500, -500, -500, -500], y: [-320, -320, -500, -500] }, { fill: { r: 0, g: 0, b: 0, a: .2 }, x: [-20, 20, 10, -10], z: [-500, -500, -100, -100], y: [-500, -500, -500, -500] }, { fill: { r: 32, g: 32, b: 32 }, x: [-50, 50, 50, -50], z: [-150, -150, -50, -50], y: [-500, -500, -500, -500] }, { fill: { r: 16, g: 16, b: 16 }, x: [-10, 10, 10, -10], z: [-100, -100, -100, -100], y: [300, 300, -500, -500] }, { fill: { r: 255, g: 255, b: 255 }, x: [-320, -320, -320, -320], z: [0, -20, -20, 0], y: [-190, -190, 190, 190] }, { fill: { r: 255, g: 255, b: 255 }, x: [320, 320, 320, 320], z: [0, -20, -20, 0], y: [-190, -190, 190, 190] }, { img: !0 }, { fill: { r: 255, g: 128, b: 0 }, x: [-50, 50, 50, -50], z: [450, 450, 550, 550], y: [500, 500, 500, 500] }, { fill: { r: 255, g: 128, b: 0 }, x: [-50, 50, 50, -50], z: [450, 450, 550, 550], y: [-500, -500, -500, -500] }], options: { imagesPath: "" } }) }()</script>
+  <script>window.debug = () => {
+      return /localhost/.test(window.location.href)
+    }
+    window.Glitch = class Glitch {
+      constructor(img, container, options) {
+        this.img = img
+        this.container = container
+        this.options = options
+      }
+      init() {
+        const style = document.createElement('style')
+        style.innerHTML = `.content__title,
+         .content__text {
+            animation-name: glitch-anim-text;
+            animation-duration: var(--time-anim);
+            animation-timing-function: linear;
+            animation-iteration-count: infinite
+        }
+        .content__title {
+            font-size: 20px;
+            color:white;
+            text-align:left;
+            position: relative;
+            animation-delay: calc(var(--delay-anim) + var(--time-anim) * 0.2)
+        }
+        .content__text {
+            position: absolute;
+            font-size: 15px;
+            bottom: 1px;
+            color: white;
+            right: 6px;
+            max-width: 500px;
+            text-align: right;
+            animation-delay: calc(var(--delay-anim) + var(--time-anim) * 0.25);
+        }
+        .glitch {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--glitch-width);
+            height: var(--glitch-height);
+            overflow: hidden
+        }
+
+        .glitch__img {
+            position: absolute;
+            top: calc(-1 * var(--gap-vertical));
+            left: calc(-1 * var(--gap-horizontal));
+            width: calc(100% + var(--gap-horizontal) * 2);
+            height: calc(100% + var(--gap-vertical) * 2);
+            width:100%;
+            height:100%;
+            background: url(../img/img1.jpg) no-repeat 50% 0;
+            background-color: var(--blend-color-1);
+            background-size: cover;
+            transform: translate3d(0, 0, 0);
+            background-blend-mode: var(--blend-mode-1)
+        }
+
+        .glitch__img:nth-child(n+2) {
+            opacity: 0
+        }
+         .glitch__img:nth-child(n+2) {
+            animation-duration: var(--time-anim);
+            animation-delay: var(--delay-anim);
+            animation-timing-function: linear;
+            animation-iteration-count: infinite
+        }
+         .glitch__img:nth-child(2) {
+            background-color: var(--blend-color-2);
+            background-blend-mode: var(--blend-mode-2);
+            animation-name: glitch-anim-1
+        }
+         .glitch__img:nth-child(3) {
+            background-color: var(--blend-color-3);
+            background-blend-mode: var(--blend-mode-3);
+            animation-name: glitch-anim-2
+        }
+         .glitch__img:nth-child(4) {
+            background-color: var(--blend-color-4);
+            background-blend-mode: var(--blend-mode-4);
+            animation-name: glitch-anim-3
+        }
+         .glitch__img:nth-child(5) {
+            background-color: var(--blend-color-5);
+            background-blend-mode: var(--blend-mode-5);
+            animation-name: glitch-anim-flash
+        }
+        @keyframes glitch-anim-1 {
+            0% {
+                opacity: 1;
+                transform: translate3d(var(--gap-horizontal), 0, 0);
+                -webkit-clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%);
+                clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%)
+            }
+
+            2% {
+                -webkit-clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%);
+                clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%)
+            }
+
+            4% {
+                -webkit-clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+                clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%)
+            }
+
+            6% {
+                -webkit-clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%);
+                clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%)
+            }
+
+            8% {
+                -webkit-clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%);
+                clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%)
+            }
+
+            10% {
+                -webkit-clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%);
+                clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%)
+            }
+
+            12% {
+                -webkit-clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%);
+                clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%)
+            }
+
+            14% {
+                -webkit-clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%);
+                clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%)
+            }
+
+            16% {
+                -webkit-clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%);
+                clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%)
+            }
+
+            18% {
+                -webkit-clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%);
+                clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%)
+            }
+
+            20% {
+                -webkit-clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%);
+                clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%)
+            }
+
+            21.9% {
+                opacity: 1;
+                transform: translate3d(var(--gap-horizontal), 0, 0)
+            }
+
+            22%,
+            100% {
+                opacity: 0;
+                transform: translate3d(0, 0, 0);
+                -webkit-clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+                clip-path: polygon(0 0, 0 0, 0 0, 0 0)
+            }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% {
+                opacity: 1;
+                transform: translate3d(calc(-1 * var(--gap-horizontal)), 0, 0);
+                -webkit-clip-path: polygon(0 25%, 100% 25%, 100% 30%, 0 30%);
+                clip-path: polygon(0 25%, 100% 25%, 100% 30%, 0 30%)
+            }
+
+            3% {
+                -webkit-clip-path: polygon(0 3%, 100% 3%, 100% 3%, 0 3%);
+                clip-path: polygon(0 3%, 100% 3%, 100% 3%, 0 3%)
+            }
+
+            5% {
+                -webkit-clip-path: polygon(0 5%, 100% 5%, 100% 20%, 0 20%);
+                clip-path: polygon(0 5%, 100% 5%, 100% 20%, 0 20%)
+            }
+
+            7% {
+                -webkit-clip-path: polygon(0 20%, 100% 20%, 100% 20%, 0 20%);
+                clip-path: polygon(0 20%, 100% 20%, 100% 20%, 0 20%)
+            }
+
+            9% {
+                -webkit-clip-path: polygon(0 40%, 100% 40%, 100% 40%, 0 40%);
+                clip-path: polygon(0 40%, 100% 40%, 100% 40%, 0 40%)
+            }
+
+            11% {
+                -webkit-clip-path: polygon(0 52%, 100% 52%, 100% 59%, 0 59%);
+                clip-path: polygon(0 52%, 100% 52%, 100% 59%, 0 59%)
+            }
+
+            13% {
+                -webkit-clip-path: polygon(0 60%, 100% 60%, 100% 60%, 0 60%);
+                clip-path: polygon(0 60%, 100% 60%, 100% 60%, 0 60%)
+            }
+
+            15% {
+                -webkit-clip-path: polygon(0 75%, 100% 75%, 100% 75%, 0 75%);
+                clip-path: polygon(0 75%, 100% 75%, 100% 75%, 0 75%)
+            }
+
+            17% {
+                -webkit-clip-path: polygon(0 65%, 100% 65%, 100% 40%, 0 40%);
+                clip-path: polygon(0 65%, 100% 65%, 100% 40%, 0 40%)
+            }
+
+            19% {
+                -webkit-clip-path: polygon(0 45%, 100% 45%, 100% 50%, 0 50%);
+                clip-path: polygon(0 45%, 100% 45%, 100% 50%, 0 50%)
+            }
+
+            20% {
+                -webkit-clip-path: polygon(0 14%, 100% 14%, 100% 33%, 0 33%);
+                clip-path: polygon(0 14%, 100% 14%, 100% 33%, 0 33%)
+            }
+
+            21.9% {
+                opacity: 1;
+                transform: translate3d(calc(-1 * var(--gap-horizontal)), 0, 0)
+            }
+
+            22%,
+            100% {
+                opacity: 0;
+                transform: translate3d(0, 0, 0);
+                -webkit-clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+                clip-path: polygon(0 0, 0 0, 0 0, 0 0)
+            }
+        }
+
+        @keyframes glitch-anim-3 {
+            0% {
+                opacity: 1;
+                transform: translate3d(0, calc(-1 * var(--gap-vertical)), 0) scale3d(-1, -1, 1);
+                -webkit-clip-path: polygon(0 1%, 100% 1%, 100% 3%, 0 3%);
+                clip-path: polygon(0 1%, 100% 1%, 100% 3%, 0 3%)
+            }
+
+            1.5% {
+                -webkit-clip-path: polygon(0 10%, 100% 10%, 100% 9%, 0 9%);
+                clip-path: polygon(0 10%, 100% 10%, 100% 9%, 0 9%)
+            }
+
+            2% {
+                -webkit-clip-path: polygon(0 5%, 100% 5%, 100% 6%, 0 6%);
+                clip-path: polygon(0 5%, 100% 5%, 100% 6%, 0 6%)
+            }
+
+            2.5% {
+                -webkit-clip-path: polygon(0 20%, 100% 20%, 100% 20%, 0 20%);
+                clip-path: polygon(0 20%, 100% 20%, 100% 20%, 0 20%)
+            }
+
+            3% {
+                -webkit-clip-path: polygon(0 10%, 100% 10%, 100% 10%, 0 10%);
+                clip-path: polygon(0 10%, 100% 10%, 100% 10%, 0 10%)
+            }
+
+            5% {
+                -webkit-clip-path: polygon(0 30%, 100% 30%, 100% 25%, 0 25%);
+                clip-path: polygon(0 30%, 100% 30%, 100% 25%, 0 25%)
+            }
+
+            5.5% {
+                -webkit-clip-path: polygon(0 15%, 100% 15%, 100% 16%, 0 16%);
+                clip-path: polygon(0 15%, 100% 15%, 100% 16%, 0 16%)
+            }
+
+            7% {
+                -webkit-clip-path: polygon(0 40%, 100% 40%, 100% 39%, 0 39%);
+                clip-path: polygon(0 40%, 100% 40%, 100% 39%, 0 39%)
+            }
+
+            8% {
+                -webkit-clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%);
+                clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%)
+            }
+
+            9% {
+                -webkit-clip-path: polygon(0 60%, 100% 60%, 100% 55%, 0 55%);
+                clip-path: polygon(0 60%, 100% 60%, 100% 55%, 0 55%)
+            }
+
+            10.5% {
+                -webkit-clip-path: polygon(0 30%, 100% 30%, 100% 31%, 0 31%);
+                clip-path: polygon(0 30%, 100% 30%, 100% 31%, 0 31%)
+            }
+
+            11% {
+                -webkit-clip-path: polygon(0 70%, 100% 70%, 100% 69%, 0 69%);
+                clip-path: polygon(0 70%, 100% 70%, 100% 69%, 0 69%)
+            }
+
+            13% {
+                -webkit-clip-path: polygon(0 40%, 100% 40%, 100% 41%, 0 41%);
+                clip-path: polygon(0 40%, 100% 40%, 100% 41%, 0 41%)
+            }
+
+            14% {
+                -webkit-clip-path: polygon(0 80%, 100% 80%, 100% 75%, 0 75%);
+                clip-path: polygon(0 80%, 100% 80%, 100% 75%, 0 75%)
+            }
+
+            14.5% {
+                -webkit-clip-path: polygon(0 50%, 100% 50%, 100% 51%, 0 51%);
+                clip-path: polygon(0 50%, 100% 50%, 100% 51%, 0 51%)
+            }
+
+            15% {
+                -webkit-clip-path: polygon(0 90%, 100% 90%, 100% 90%, 0 90%);
+                clip-path: polygon(0 90%, 100% 90%, 100% 90%, 0 90%)
+            }
+
+            16% {
+                -webkit-clip-path: polygon(0 60%, 100% 60%, 100% 60%, 0 60%);
+                clip-path: polygon(0 60%, 100% 60%, 100% 60%, 0 60%)
+            }
+
+            18% {
+                -webkit-clip-path: polygon(0 100%, 100% 100%, 100% 99%, 0 99%);
+                clip-path: polygon(0 100%, 100% 100%, 100% 99%, 0 99%)
+            }
+
+            20% {
+                -webkit-clip-path: polygon(0 70%, 100% 70%, 100% 71%, 0 71%);
+                clip-path: polygon(0 70%, 100% 70%, 100% 71%, 0 71%)
+            }
+
+            21.9% {
+                opacity: 1;
+                transform: translate3d(0, calc(-1 * var(--gap-vertical)), 0) scale3d(-1, -1, 1)
+            }
+
+            22%,
+            100% {
+                opacity: 0;
+                transform: translate3d(0, 0, 0);
+                -webkit-clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+                clip-path: polygon(0 0, 0 0, 0 0, 0 0)
+            }
+        }
+
+        @keyframes glitch-anim-text {
+            0% {
+                transform: translate3d(calc(-1 * var(--gap-horizontal)), 0, 0) scale3d(-1, -1, 1);
+                -webkit-clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%);
+                clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%)
+            }
+
+            2% {
+                -webkit-clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%);
+                clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%)
+            }
+
+            4% {
+                -webkit-clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%);
+                clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%)
+            }
+
+            5% {
+                -webkit-clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%);
+                clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%)
+            }
+
+            6% {
+                -webkit-clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%);
+                clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%)
+            }
+
+            7% {
+                -webkit-clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%);
+                clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%)
+            }
+
+            8% {
+                -webkit-clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%);
+                clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%)
+            }
+
+            9% {
+                -webkit-clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%);
+                clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%)
+            }
+
+            9.9% {
+                transform: translate3d(calc(-1 * var(--gap-horizontal)), 0, 0) scale3d(-1, -1, 1)
+            }
+
+            10%,
+            100% {
+                transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+                -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%)
+            }
+        }
+
+        @keyframes glitch-anim-flash {
+            0%,
+            5% {
+                opacity: .2;
+                transform: translate3d(var(--gap-horizontal), var(--gap-vertical), 0)
+            }
+
+            5.5%,
+            100% {
+                opacity: 0;
+                transform: translate3d(0, 0, 0)
+            }
+        }
+
+        .glitch__img {
+            position: absolute;
+            top: calc(-1 * var(--gap-vertical));
+            left: calc(-1 * var(--gap-horizontal));
+            width: calc(100% + var(--gap-horizontal) * 2);
+            height: calc(100% + var(--gap-vertical) * 2);
+            background-image: url(http://adaxh.applinzi.com/resouce/images/lyy.jpg);
+            background-position-x: 50%;
+            background-position-y: 0px;
+            background-repeat-x: no-repeat;
+            background-repeat-y: no-repeat;
+            background-attachment: initial;
+            background-origin: initial;
+            background-clip: initial;
+            background-color: transparent;
+            background-size: cover;
+            transform: translate3d(0px, 0px, 0px);
+            background-blend-mode: var(--blend-mode-1);
+        }
+
+        .glitchContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--glitch-width);
+            height: var(--glitch-height);
+            overflow: hidden;
+        }
+
+        ._glitchContent {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        ._glitchContent{
+            --color-text: #fff;
+            --color-bg: #000;
+            --color-link: #f9d77e;
+            --color-link-hover: #fff;
+            --color-info: #efc453;
+            --glitch-width: ${this.options.width || '500px'};
+            --glitch-height: ${this.options.height || '400px'};
+            --gap-horizontal: 10px;
+            --gap-vertical: 5px;
+            --time-anim: 4s;
+            --delay-anim: 2s;
+            --blend-mode-1: none;
+            --blend-mode-2: none;
+            --blend-mode-3: none;
+            --blend-mode-4: none;
+            --blend-mode-5: overlay;
+            --blend-color-1: transparent;
+            --blend-color-2: transparent;
+            --blend-color-3: transparent;
+            --blend-color-4: transparent;
+            --blend-color-5: #af4949;
+        }`
+        document.head.appendChild(style)
+        this.container.className += ' _glitchContent'
+        const glitchContainer = document.createElement('div')
+        glitchContainer.className = 'glitchContainer'
+        const p = document.createElement('p')
+        const info = document.createElement('p')
+        info.innerText = this.options.info || 'info'
+        info.className = 'content__text'
+        p.className = 'content__title'
+        p.innerText = this.options.title || 'Title'
+        for (let i = 0; i < 4; i++) {
+          const glitchImg = document.createElement('div')
+          glitchImg.className = 'glitch__img'
+          glitchImg.style.backgroundImage = `url(${this.img})`
+          glitchContainer.appendChild(glitchImg)
+        }
+        this.container.appendChild(glitchContainer)
+        glitchContainer.appendChild(p)
+        glitchContainer.appendChild(info)
+
+      }
+    }
+    // window.addEventListener('touchmove', e => e.preventDefault(), { passive: true })
+    if ('addEventListener' in document) {
+      document.addEventListener('DOMContentLoaded', function () {
+        FastClick.attach(document.body);
+      }, false);
+    }
+    if (!window.Promise) {
+      document.writeln('<script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"' + '>' + '<' + '/' + 'script>');
+    }</script>
+  <title>Ada - Mobile</title>
+  <link href="/static/css/1.bf98eff5.chunk.css" rel="stylesheet">
+  <link href="/static/css/main.626f086a.chunk.css" rel="stylesheet">
 </head>
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
   <script>!function (l) { function e(e) { for (var r, t, n = e[0], o = e[1], u = e[2], f = 0, i = []; f < n.length; f++)t = n[f], p[t] && i.push(p[t][0]), p[t] = 0; for (r in o) Object.prototype.hasOwnProperty.call(o, r) && (l[r] = o[r]); for (s && s(e); i.length;)i.shift()(); return c.push.apply(c, u || []), a() } function a() { for (var e, r = 0; r < c.length; r++) { for (var t = c[r], n = !0, o = 1; o < t.length; o++) { var u = t[o]; 0 !== p[u] && (n = !1) } n && (c.splice(r--, 1), e = f(f.s = t[0])) } return e } var t = {}, p = { 2: 0 }, c = []; function f(e) { if (t[e]) return t[e].exports; var r = t[e] = { i: e, l: !1, exports: {} }; return l[e].call(r.exports, r, r.exports, f), r.l = !0, r.exports } f.m = l, f.c = t, f.d = function (e, r, t) { f.o(e, r) || Object.defineProperty(e, r, { enumerable: !0, get: t }) }, f.r = function (e) { "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(e, "__esModule", { value: !0 }) }, f.t = function (r, e) { if (1 & e && (r = f(r)), 8 & e) return r; if (4 & e && "object" == typeof r && r && r.__esModule) return r; var t = Object.create(null); if (f.r(t), Object.defineProperty(t, "default", { enumerable: !0, value: r }), 2 & e && "string" != typeof r) for (var n in r) f.d(t, n, function (e) { return r[e] }.bind(null, n)); return t }, f.n = function (e) { var r = e && e.__esModule ? function () { return e.default } : function () { return e }; return f.d(r, "a", r), r }, f.o = function (e, r) { return Object.prototype.hasOwnProperty.call(e, r) }, f.p = "/"; var r = window.webpackJsonp = window.webpackJsonp || [], n = r.push.bind(r); r.push = e, r = r.slice(); for (var o = 0; o < r.length; o++)e(r[o]); var s = n; a() }([])</script>
-  <script src="/static/js/1.6b574a02.chunk.js"></script>
-  <script src="/static/js/main.17bbc687.chunk.js"></script>
+  <script src="/static/js/1.a894b35a.chunk.js"></script>
+  <script src="/static/js/main.db6d9dd2.chunk.js"></script>
 </body>
-<script>const con = document.getElementById('root')
+<script>const style = document.createElement('style');
+  style.innerHTML = ".am-button::before{border:none !important} .am-list-line::after,.am-card-body::before{background:none !important} .am-card::before{border:none !important}"
+  document.head.appendChild(style);
+  const con = document.getElementById('root')
   con.style.height = window.innerHeight + 'px'
   window.addEventListener('resize', () => {
     con.style.height = window.innerHeight + 'px'
-    // document.getElementsByTagName('body')[0].style.height = window.innerHeight + 'px'
   })</script>
 
 </html>

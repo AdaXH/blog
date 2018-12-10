@@ -1,0 +1,198 @@
+.indeContainer{
+    width:100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.IndexVIew{
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+    overflow-y: scroll;
+    position: absolute;
+    background: #22282c;
+    width: 100%;
+    height: 100%;
+}
+ div.saerchContainer{
+    background: #21282c;
+    width: 350px;
+    height: 30px;
+    line-height: 30px;
+    /* position: relative; */
+    border-radius: 5px;
+    /* top: 187px; */
+    margin: 0 auto;
+    /* left: 16px; */
+    opacity: 0;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    will-change: transform,opacity;
+    overflow: hidden;
+    margin-top: 182px;
+}
+div.flyItem{
+    transition-property: all;
+}
+ div.saerchContainer div.am-search-cancel{
+    color:#21282c;
+    font-size: 13px;
+}
+ div.saerchContainer .am-search div{
+    transition: all .3s !important;
+    background: none;
+     height: 30px !important;
+     line-height: 30px;
+}
+ div.saerchContainer .am-search{
+    height: 30px !important;
+}
+.flyContainer{
+    width: 350px;
+    height: 200px;
+    margin: 10px auto;
+    /* margin-top: 60px; */
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+.bannerCOntainer{
+    height: 172px;
+    width:100%;
+    background: #22282c;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    margin-bottom: 10px;
+}
+.bannerCOntainer p {
+    color:white;
+    left:10px;
+}
+.blog{
+    top:0px;
+    font-size: 20px;
+}
+.bannerCOntainer p:nth-of-type(2){
+    /* bottom:25px; */
+    font-size: 12px;
+}
+p.rate3{
+    left:300px;
+    bottom: 0px;
+}
+.bannerCOntainer p:nth-of-type(3){
+    bottom:5px;
+    font-size: 12px;
+}
+.glitchContainer{
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}
+.glitchContainer img{
+    display: block;
+    width:100%;
+    height: 100%;
+}
+.flyContainer div{
+    float:left;
+    height: 23px;
+    text-align: center;
+    line-height: 23px;
+    width:87.5px;
+    height: 50px;
+    opacity: 0;
+    transform-style: preserve-3d;
+    will-change: transform,opacity;
+    color:white;
+    position: relative;
+    font-size: 13px;
+    background-size: 350px 200px;
+}
+.flyContainer div p {
+    position: absolute;
+    left:18px;
+    font-size: 12px;
+}
+.flyContainer div:nth-of-type(1){
+    background-position:0 0;
+    line-height: 50px;
+    /* font-weight: bold;
+     */
+     font-size: 18px;
+    color:white;
+}
+.flyContainer div:nth-of-type(2){
+    background-position: -87.5px 0; 
+}
+.flyContainer div:nth-of-type(3){
+    background-position: -175px 0;
+}
+.flyContainer div:nth-of-type(4){
+    background-position: -262.5px 0;
+}
+.flyContainer div:nth-of-type(5){
+    background-position: 0 -50px;
+}
+.flyContainer div:nth-of-type(6){
+    background-position: -87.5px -50px;
+}
+.flyContainer div:nth-of-type(7){
+    background-position: -175px -50px;
+}
+.flyContainer div:nth-of-type(8){
+    background-position: -262.5px -50px;
+}
+.flyContainer div:nth-of-type(9){
+    background-position: -0px -100px;
+}
+.flyContainer div:nth-of-type(10){
+    background-position: -87.5px -100px;
+}
+.flyContainer div:nth-of-type(11){
+    background-position: -175px -100px;
+}
+.flyContainer div:nth-of-type(12){
+    background-position: -262.5px -100px;
+}
+.flyContainer div:nth-of-type(13){
+    background-position: -0px -150px;
+}
+.flyContainer div:nth-of-type(14){
+    background-position: -87.5px -150px;
+}
+.flyContainer div:nth-of-type(15){
+    background-position: -175px -150px;
+}
+.flyContainer div:nth-of-type(16){
+    background-position: -262.5px -150px;
+}
+.picContainer{
+    display: flex;
+    height: 500px;
+    flex-direction: column;
+}
+.picContainer div.itemPic{
+    flex: 1;
+    margin: 10px;
+    position: relative;
+}
+.imgContainer{
+    width:100%;
+    height:240px;
+    position: absolute;
+    top:0;
+    z-index: 0;
+    left:0;
+}
+.handlePicInput {
+    position: absolute;
+    width:100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0;
+    top:0;
+    left:0;
+}

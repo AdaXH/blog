@@ -1,0 +1,84 @@
+.editDialog{
+    position: fixed;
+    width: 340px;
+    height: auto;
+    top:50%;
+    left:50%;
+    background:white;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 100;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+.dialogFooter{
+    display: flex;
+}
+.dialogFooter a {
+    display: block;
+    flex: 1;
+    color:#40a9ff;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+}
+.dialogFooter a:nth-of-type(1){
+    color:rgba(0,0,0,0.25)
+}
+.inputTitle{
+    font-size: 14px;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+div.dialogAnimation{
+    will-change: opacity, transform;
+    transform-style: preserve-3d;
+    transform-origin: center;
+    animation: dialogAnimation .45s;
+    animation-fill-mode: forwards;
+}
+div.am-modal-button-group-h a:nth-of-type(2){
+    color:#ff4e4e
+}
+
+@keyframes dialogAnimation {
+    from {
+    transform: translate3d(-50%,-50%,0)scale3d(1.3,1.3,1.3);
+    opacity: 0;
+    }
+    to {
+    transform: translate3d(-50%,-50%,0) scale3d(1,1,1);
+    opacity: 1;
+    }
+}
+.editBg{
+    width:100%;
+    height: 100%;
+    position: fixed;
+    z-index: 100;
+    background: rgba(0,0,0,0.25);
+}.editDialog .am-textarea-count{
+    bottom: 0px;
+    right: 24px;
+}
+.editDialog .am-list-item{
+    padding: 0;
+    background: white;
+}
+.editDialog .am-textarea-control{
+    padding: 0;
+    background: white;
+}
+.editDialog .am-textarea-control textarea{
+    width: 300px;
+    height: 220px;
+    padding: 20px;
+    display: block;
+    margin: 0 auto;
+    background: white;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    font-size: 13px;
+}

@@ -13,7 +13,7 @@ footer ul li{
 }
 footer ul li a { color: black}
 footer ul li a i {
-    /* font-size: 13px; */
+    font-size: 18px !important;
     margin: 5px;
     position: relative;
     top:0px;

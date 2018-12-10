@@ -3,6 +3,41 @@ const User = require('./../dbmodel/User')
 const fs = require('fs')
 const Base64 = require('js-base64').Base64
 
+routerExports.setPics = {
+	method: 'post',
+	url: '/setPics',
+	route: async ctx => {
+		const { type, binary } = ctx.request.body
+		try {
+			await callHandlePic(type, binary)
+			ctx.body = { success: true }
+		} catch (error) {
+			ctx.body = {
+				success: false,
+				errorMsg: error
+			}	
+		}
+	}
+}
+
+const callHandlePic = (type, binary) => {
+	return new Promise((resolve , reject) => {
+		const bf = Buffer(binary, 'binary')
+		fs.writeFile(`./public/resouce/images/${type}.jpg`, bf, err => {
+			if (err === null ){
+				User.findOne({ name: 'Ada' }).then(result => {
+					if (result ){
+						const picData = result.pics || { glitchUrl: ' ', flyUrl: '' }
+						picData[type === 'glitch' ? 'glitchUrl' : 'flyUrl'] = `resouce/imagses/${type}.jpg`
+						User.updateOne({ name: 'Ada' }, { $set: { pics: { ...picData } } }).then(res => res ? resolve() : reject('更新出错')).catch(err => reject(err instanceof Object ? JSON.stringify(err) : err.toString()))
+					}
+				}).catch(err => reject(err instanceof Object ? JSON.stringify(err) : err.toString()))
+			}else
+				reject('保存文件时出错' + err instanceof Object ? JSON.stringify(err) : err.toString())
+		})
+	})
+}
+
 routerExports.login = { 
 	method: 'post',
 	url: '/login',

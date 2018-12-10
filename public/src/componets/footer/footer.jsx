@@ -4,43 +4,58 @@ import { Icon } from 'antd'
 import './footer.css'
 import { connect } from 'react-redux';
 const UI = props => {
-    return(
-        <footer>
+    const nav = [
+        {
+            type: 'fund',
+            text: '动态',
+            url: '/dynamic'
+        },
+        {
+            type: 'file-text',
+            text: '文章',
+            url: '/article'
+        },
+        {
+            type: 'home',
+            text: '首页',
+            url: '/index'
+        },
+        {
+            type: 'message',
+            text: '留言',
+            url: '/message'
+        },
+        {
+            type: 'tag',
+            text: '关于',
+            url: '/about'
+        }
+    ]
+    return (
+        <footer style={{ background: props.type === 'home' ? "#22282c" : '' }}>
             <ul>
-                <li>
-                    <div>
-                        <NavLink to='/index' onClick={() => props.set('home', '首页')}><Icon type="home" />首页</NavLink> 
-                        
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <NavLink to='/article' onClick={() => props.set('file-text', '文章')}><Icon type="file-text" />文章</NavLink> 
-                        
-                    </div>
-                    
-                </li>
-                <li>
-                    <div>
-                        <NavLink to='/message' onClick={() => props.set('message', '留言')}><Icon type="message" />留言板</NavLink> 
-                        
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <NavLink to='/about' onClick={() => props.set('tag', '关于')}><Icon type="tag" />关于</NavLink> 
-                        
-                    </div>
-                </li>
+                {
+                    nav.map(item => {
+                        return (
+                            <li key={item.url} onClick={() => props.set(item.type, item.text)}>
+                                <NavLink style={{ display:'block', color: props.type === 'home' ? "white" : '' }} to={item.url}>
+                                    <Icon type={item.type} />
+                                </NavLink>
+                            </li>
+                        )
+                    })
+                }
             </ul>
         </footer>
     )
 }
 export const Footer = connect(state => {
-    return { }
+    return {
+        type: state.logo.src
+    }
 }, dispatch => {
     return {
-        set(src, item){
+        set(src, item) {
             dispatch({ type: 'LOGO', payload: { src, item } })
         }
     }

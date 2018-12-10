@@ -101,7 +101,11 @@ ge1doot.Pointer = function (setup) {
 	// prevent default behavior
 	if (setup.tap) this.elem.onclick = function () { return false; }
 	if (!setup.documentMove) {
-		document.ontouchmove = function(e) { e.preventDefault(); }
+		// document.addEventListener('touchmove', e => {
+		// 	e.preventDefault()
+		// }, { passive: true })
+		// document.ontouchmove = function(e) { e.preventDefault() }
+		//{ passive: false }
 	}
 	document.addEventListener("MSHoldVisual", function(e) { e.preventDefault(); }, false);
 	if (typeof this.elem.style.msTouchAction != 'undefined') this.elem.style.msTouchAction = "none";

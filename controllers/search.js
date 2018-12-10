@@ -77,6 +77,54 @@ function getArticle(reg , data){
 	})
 }
 
+function getArticle1(reg, data) {
+	return new Promise((resolve, reject) => {
+		const result = []
+		Article.find({
+			summary: reg
+		}).then(res => {
+			if (res) {
+				for (let item of res) {
+					let summary = item.summary
+					let _id = item._id
+					let obj = {
+						date: item.year + '-' + item.date,
+						type: '文章',
+						summary,
+						_id
+					}
+					result.push(obj)
+				}
+				resolve(result)
+			} else resolve([])
+		}).catch(err => {
+			resolve([])
+		})
+	})
+}
+
+routerExports.search1 = {
+	method: 'post',
+	url: '/search1',
+	route: async (ctx, next) => {
+		const { data } = ctx.request.body
+		const regEx = new RegExp(data + '|(\\b' + data + '\\b)')
+		try {
+			const dynamics = await getDynamic(regEx, data)
+			const articles = await getArticle1(regEx, data)
+			ctx.body = {
+				success: true,
+				result: dynamics.concat(articles)
+			}
+		} catch (error) {
+			ctx.body = {
+				success: false,
+				errorMsg: error
+			}
+		}
+	}
+}
+
 routerExports.search = { 
 	method: 'post',
 	url: '/search',

@@ -221,7 +221,7 @@ class Mobile {
         input.addEventListener('keyup', function (e) {
             const ev = e || window.event
             // if (ev.keyCode === 13)
-                _this.searchCallback(this.value)
+            _this.searchCallback(this.value)
         }, false)
         search.appendChild(input)
         return search
@@ -288,7 +288,7 @@ class Mobile {
         top.appendChild(statusBar)
         top.appendChild(this.createClock())
         top.appendChild(this.createSearch())
-        if(this.param){
+        if (this.param) {
             const temp = document.createElement('div')
             temp.innerHTML = this.param
             top.appendChild(temp)
@@ -688,7 +688,7 @@ function check(len) {
     document.getElementById('percentText').innerText = '' + (parseFloat(len / l) * 100).toFixed(0)
     if (len === l) {
         const childEle = document.getElementById('srcLoading')
-        setTimeout(() => childEle.parentNode.removeChild(childEle), 800)
+        setTimeout(() => childEle.parentNode.removeChild(childEle), 500)
     }
 }
 
@@ -966,7 +966,7 @@ class RegisterClass {  //register fn
                     'content-type': 'application/json',
                     'accept': 'application/json'
                 },
-                body: JSON.stringify({ name, pwd: Base64.encode(pwd) })
+                body: JSON.stringify({ name, pwd: window.Base64.encode(pwd) })
             }).then(res => {
                 if (res.status >= 200 && res.status < 300)
                     return res.json()
@@ -994,6 +994,7 @@ class RegisterClass {  //register fn
                 infoContainer('请输入密码', false)
                 return;
             }
+            // loadingUI('start')
             fetch('/login', {
                 method: 'POST',
                 headers: {
@@ -1001,28 +1002,32 @@ class RegisterClass {  //register fn
                     'accept': 'application/json'
                 },
                 credentials: "include",
-                body: JSON.stringify({ name: na, pwd: Base64.encode(password), state })
+                body: JSON.stringify({ name: na, pwd: window.Base64.encode(password), state })
             }).then(res => {
                 if (res.status >= 200 && res.status < 300)
                     return res.json()
                 return res
             }).then(data => {
                 if (data && data.success) {
+                    // loadingUI('end')
                     const naText = document.getElementsByClassName('user_name')[0]
                     const showLoginSuccess = document.getElementsByClassName('showLoginSuccess')
                     window.sessionStorage && sessionStorage.getItem('user') && sessionStorage.removeItem('user')
-                    sessionStorage && sessionStorage.setItem('user', Base64.encode(na))
+                    sessionStorage && sessionStorage.setItem('user', window.Base64.encode(na))
                     naText.innerText = na
+                    for (let el of _('._new_register'))
+                        el.style.display = 'none'
                     exitLoginRegFace()
                     repeatCon(na)
-                    uploadAvatar(Base64.decode(sessionStorage.getItem('user')))
-                    getAvatar(Base64.decode(sessionStorage.getItem('user')))
-                    if ((window.innerWidth > 750)) 
+                    uploadAvatar(window.Base64.decode(sessionStorage.getItem('user')))
+                    getAvatar(window.Base64.decode(sessionStorage.getItem('user')))
+                    if ((window.innerWidth > 750))
                         for (let item of showLoginSuccess)
                             item.style.display = 'block'
                     if (data.avatar)
                         for (let el of document.getElementsByClassName('.avatar_img'))
                             el.src = data.avatar
+                    _('.avatarTip').style.display = /default_avatar.jpg/.test(data.avatar) ? 'block' : 'none'
                     messageOperation(na)
                     if (data.admin) {
                         adminToggle()
@@ -1036,6 +1041,7 @@ class RegisterClass {  //register fn
                         adminUI()
                     }
                     document.querySelectorAll('.new_login span')[0].innerText = '注销'
+                    document.querySelectorAll('.new_login span')[1].innerText = '注销'
                     loginFn();
                 } else infoContainer(data && data.errorMsg || '网络错误' + data.status)
             })
@@ -1344,7 +1350,7 @@ function getAvatar(name) {
             'accept': 'application/json'
         },
         body: JSON.stringify({
-            name: Base64.encode(JSON.stringify({ name: name })
+            name: window.Base64.encode(JSON.stringify({ name: name })
             )
         })
     }).then(res => {
@@ -1352,29 +1358,40 @@ function getAvatar(name) {
             return res.json()
         return res
     }).then(data => {
-        if (data && data.success)
+        if (data && data.success){
             for (let item of img)
                 item.src = data.data
+            _('.avatarTip').style.display = /default_avatar.jpg/.test(data.data) ? 'block' : 'none'            
+        }
         else
             infoContainer(data && data.errorMsg || '网络出错' + data.status, false)
     })
 }
 
-function repeatCon(name) {
+function repeatCon(_name) {
     const p = document.querySelectorAll('.message_list')[0]
-    const users = document.getElementsByClassName('_user')
-    const ps = document.getElementsByClassName('message_content')
     p.addEventListener('click', function (e) {
         const ev = e || window.event
         if (/repeat_msg/.test(ev.target.className)) {
+            const toRepeat = ev.target.getAttribute('_to_repeat')
+            const name = window.sessionStorage && sessionStorage.getItem('user') && window.Base64.decode(sessionStorage.getItem('user')) || _name
             if (name === undefined || name.length >= 30) {
                 infoContainer('你还没有登陆', false)
                 return
             }
+            if (name === toRepeat) {
+                infoContainer('自己回复自己不太好吧', false)
+                return
+            }
             const _id = ev.target.getAttribute('_id')
-            const toRepeat = ev.target.getAttribute('_to_repeat')
             if (name) {
                 sendRepeat((d, word) => {
+                    console.log({
+                        info: word,
+                        name,
+                        date: d,
+                        toRepeat
+                    })
                     fetch('/repeatMsg', {
                         method: 'POST',
                         headers: {
@@ -1399,10 +1416,6 @@ function repeatCon(name) {
                         if (result && result.success) {
                             document.querySelectorAll('.repeat_word')[0].value = ''
                             reRenderMsg(result.data)
-                            for (let i = 0; i < users.length; i++) {
-                                addClass(users[i], 'titleShow')
-                                addClass(ps[i], 'titleShow')
-                            }
                             document.querySelectorAll('.cancel_repeat')[0].click()
                         } else
                             infoContainer(result && result.errorMsg || '网络繁忙' + result)
@@ -1422,24 +1435,24 @@ function escapeMessage(str) {
 }
 
 function sendRepeat(callback) {
-    const overLay = document.querySelectorAll('.repeat_over')[0]
-    overLay.style.display = 'block'
+    const overLay = document.querySelectorAll('.repeat_con')[0]
+    _('.repeat_over').style.display = 'block'
     addClass(overLay, 'bounceIn')
     document.querySelectorAll('.cancel_repeat')[0].onclick = () => {
-        overLay.style.display = 'none'
+        _('.repeat_over').style.display = 'none'
         removeClass(overLay, 'bounceIn')
     }
     document.querySelectorAll('.submit_repeat')[0].onclick = function () {
         const word = escapeMessage(document.querySelectorAll('.repeat_word')[0].value)
         let date = new Date()
         let minute = date.getMinutes()
-        minute < 10 ? minute + 1 : '0' + minute
+        let m = minute < 10 ? minute + 1 : '0' + minute
         let seconds = date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()
         let hour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()
         let year = date.getFullYear()
         let month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
         let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
-        let d = year + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + seconds
+        let d = year + '/' + month + '/' + day + ' ' + hour + ':' + m + ':' + seconds
         if (word === '' || word.trim() === '') {
             infoContainer('回复内容不能为空', false)
             return
@@ -1457,8 +1470,16 @@ function sendRepeat(callback) {
 function messageOperation(name) {
     name = name || sessionStorage && sessionStorage.getItem('user') || undefined
     const p = document.querySelectorAll('.message_list')[0]
-
-    if (!name) return
+    p.onclick = function (e) {
+        const ev = e || window.event
+        if (/delete_msg/.test(ev.target.className)) {
+            if (!sessionStorage.getItem('user')) {
+                infoContainer('你还没有登录', false)
+                return
+            }
+        }
+    }
+    // if (!name) return
 
     isAdmin(name, () => {
         p.addEventListener('click', function (e) {
@@ -1467,6 +1488,10 @@ function messageOperation(name) {
                 const _id = ev.target.getAttribute('_id')
                 const _this = ev.target
                 const li = this
+                if (!sessionStorage.getItem('user')) {
+                    infoContainer('你还没有登录', false)
+                    return
+                }
                 loadingUI('start')
                 fetch('/deleteMsgById', {
                     method: 'POST',
@@ -1492,12 +1517,26 @@ function messageOperation(name) {
                 })
             }
         }, false)
-    }).catch(err => { })
+    }).catch(err => {
+        p.addEventListener('click', function (e) {
+            const ev = e || window.event
+            if (/delete_msg/.test(ev.target.className)) {
+                if (!sessionStorage.getItem('user')) {
+                    infoContainer('你还没有登录', false)
+                    return
+                }
+                    infoContainer('只能删除自己的留言哦', false)
+                    return
+            }
+        }, false)
+    }
+    )
 }
 
 function isAdmin(name, callback) {
-    if (!name || name === '') return
     return new Promise((resolve, reject) => {
+        if (!name || name === '') reject()
+        return
         fetch('/checkAdmin', {
             method: 'POST',
             headers: {
@@ -1505,7 +1544,7 @@ function isAdmin(name, callback) {
                 'accept': 'application/json'
             },
             body: JSON.stringify({
-                name: Base64.encode(JSON.stringify({ name: name })
+                name: window.Base64.encode(JSON.stringify({ name: name })
                 )
             })
         }).then(res => {
@@ -1523,7 +1562,7 @@ function isAdmin(name, callback) {
 }
 
 function checkPerssion(name) {
-    if (!name || Base64.decode(name) == undefined) {
+    if (!name || window.Base64.decode(name) == undefined) {
         deleteDynamicRepeat(false)
         return
     }
@@ -1602,18 +1641,20 @@ function loginState() {
     for (let i in arr)
         b.push(arr[i].split('='))
     let count = 0
-    loginFn(name)
+    loginFn()
     for (let item of b) {
         if (item[0] === 'user' || window.sessionStorage && sessionStorage.getItem('user')) {
+            for (let el of _('._new_register'))
+                el.style.display = 'none'
             if (window.sessionStorage && !sessionStorage.getItem('user')) sessionStorage.setItem('user', item[1])
-            rememberLoginState(Base64.decode(sessionStorage.getItem('user') || item[1]));
+            rememberLoginState(window.Base64.decode(sessionStorage.getItem('user') || item[1]));
             for (let el of spans) el.innerText = '注销'
-            getAvatar(Base64.decode(sessionStorage.getItem('user') || item[1]))
-            repeatCon(Base64.decode(sessionStorage.getItem('user') || item[1]))
-            uploadAvatar(Base64.decode(sessionStorage.getItem('user') || item[1]))
+            getAvatar(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
+            repeatCon(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
+            uploadAvatar(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
             document.querySelector('#avatar').style.display = 'block'
-            messageOperation(Base64.decode(sessionStorage.getItem('user') || item[1]))
-            checkPerssion(Base64.decode(sessionStorage.getItem('user') || item[1]))
+            messageOperation(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
+            checkPerssion(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
             return
         } else count++
     }
@@ -1625,7 +1666,7 @@ function loginState() {
         document.querySelector('#avatar').style.display = 'none'
         for (let el of spans) el.innerText = '登陆'
         document.querySelector('.user_name').innerText = 'Ada'
-        const name = sessionStorage && sessionStorage.getItem('user') && Base64.decode(sessionStorage.getItem('user')) || undefined
+        const name = sessionStorage && sessionStorage.getItem('user') && window.Base64.decode(sessionStorage.getItem('user')) || undefined
         checkPerssion(name)
     }
 }
@@ -2038,7 +2079,7 @@ function leaveMsg() {  //message board
                     'content-type': 'application/json',
                     'accept': 'application/json'
                 },
-                body: JSON.stringify({ date: d, content: msg, name: Base64.decode(name) })
+                body: JSON.stringify({ date: d, content: msg, name: window.Base64.decode(name) })
             }).then(res => {
                 if (res.status >= 200 && res.status < 300)
                     return res.json()
@@ -2046,7 +2087,6 @@ function leaveMsg() {  //message board
             }).then(result => {
                 loadingUI('end')
                 if (result && result.success) {
-                    // randomUserAvatar()
                     reRenderMsg(result.data, true)
                 }
                 else
@@ -2064,9 +2104,9 @@ function reRenderMsg(res, cb) {
         l.parentNode.removeChild(l)
     const html = template('message-tpl', { messages: res instanceof Array && res.reverse() });
     _('.message_list').innerHTML = html
-    if (cb){
-        _('.temp_ul li:first-of-type').innerText = res.length  + '评论'
-        _('.temp_ul li:last-of-type').innerText = res.length  + '人参与'
+    if (cb) {
+        _('.temp_ul li:first-of-type').innerText = res.length + '评论'
+        _('.temp_ul li:last-of-type').innerText = res.length + '人参与'
     }
     _('.message_content', !1, function () {
         addClass(this, 'titleShow')
@@ -2370,6 +2410,7 @@ function dynamicMsg() {   //leave a msg on dynamic
             infoContainer('登录才能评论哦', false)
             return
         }
+        loadingUI('start')
         fetch('/leave-dynamic-mg', {
             method: 'POST',
             headers: {
@@ -2379,13 +2420,14 @@ function dynamicMsg() {   //leave a msg on dynamic
             body: JSON.stringify({ _id, msg, name })
         }).then(res => { return res.json() })
             .then(result => {
+                loadingUI('end')
                 if (result && result.success) {
                     el.innerText = (Number(el.innerText) + 1)
                     ev.target.previousElementSibling.value = ''
                     const html = `<li class="dynamic-msg-item">
                                         <i _msgid={{dynamic._id}} _id={{ temp._id }} class="deleteDynamicRepeat linkfont">&#xe603;</i>
                                         <p class="dynamic-msg-date">
-                                            <span class="dynamic-repeat-name">${Base64.decode(name)}：</span>
+                                            <span class="dynamic-repeat-name">${window.Base64.decode(name)}：</span>
                                             <span class="date">${currentDay}</span>
                                         </p>
                                         <p class="dynamic-msg-context">${word}</p>
@@ -2419,14 +2461,19 @@ function getCustomer() {
 
 function customer() {
     getCustomer().then(number => {
-        fetch('/add-customer', {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-                'accept': 'application.json'
-            },
-            body: JSON.stringify({ number })
-        })
+        const d = new Date()
+        d.setDate(d.getDate() + 2)
+        if (!/customer/.test(document.cookie)) {
+            fetch('/add-customer', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    'accept': 'application.json'
+                },
+                body: JSON.stringify({ number })
+            })
+            document.cookie = 'customer=customer; path=/; expires=' + d
+        }
     }).catch(err => infoContainer(err, false))
 }
 
@@ -2485,28 +2532,6 @@ function contextMenu() {
     window.onclick = () => {
         menu.style.display === 'block' && (menu.style.display = 'none')
     }
-}
-
-function randomUserAvatar() {
-    const color = [
-        '#abd0bc',
-        '#62cf8e',
-        '#f46c3c',
-        '#b2b2b2',
-        '#ddc49c',
-        '#62b78d',
-        '#d1f9f1',
-        '#c4c4c4',
-        '#b89168',
-        '#ff766e',
-        '#1e89bd',
-        '#d34694',
-        '#c5d08d'
-    ]
-    const len = color.length
-    const avatars = document.getElementsByClassName('user_avatar')
-    for (let item of avatars)
-        item.style.background = color[Math.floor(Math.random() * len)]
 }
 
 function randomBgColor() {
@@ -2632,13 +2657,13 @@ function entryMoreOperation() {
 
         </div>`
     })
-    function mainUI(){
+    function mainUI() {
         _('.left_container').style.transform = 'scale(1)'
         _('.mobileFace .about_me_container') && (
             _('.mobileFace').removeChild(_('.about_me_container'))
         )
     }
-    function search(wd){
+    function search(wd) {
         (
             _('#_script') &&
             _('body').removeChild(_('#_script'))
@@ -2668,22 +2693,22 @@ function callback(result) {
     if (!result.s) return
     const ul = document.createElement('ul')
     ul.addEventListener('click', ev => {
-        if (ev.target.tagName.toUpperCase() === 'LI'){
+        if (ev.target.tagName.toUpperCase() === 'LI') {
             window.open(`https://www.baidu.com/s?wd=${ev.target.innerText}`)
         }
     }, false)
     ul.className = '_searchUl'
     let html = ''
-   for (let i = 0; i< result.s.length; i++) {
-      const li = document.createElement('li')
-      li.innerText = result.s[i]
-      li.className = 'serchItem'
-      i <= 5 && (
-          ul.appendChild(li)
+    for (let i = 0; i < result.s.length; i++) {
+        const li = document.createElement('li')
+        li.innerText = result.s[i]
+        li.className = 'serchItem'
+        i <= 5 && (
+            ul.appendChild(li)
         )
-   }
-   if (_('.mobileFace ._searchUl')) _('.mobileFace').removeChild(_('._searchUl'))
-   _('.mobileFace').appendChild(ul)
+    }
+    if (_('.mobileFace ._searchUl')) _('.mobileFace').removeChild(_('._searchUl'))
+    _('.mobileFace').appendChild(ul)
 }
 function randomAbountMe() {
     const box = _('.about_me_container .box')
@@ -2696,7 +2721,7 @@ function randomAbountMe() {
             transition: `all ${duration}s`,
             opacity: '0',
             display: 'none',
-            transform: `translateX(${op * x}px) translateZ(${op * (y+x)}px) translateY(${op * y}px)`
+            transform: `translateX(${op * x}px) translateZ(${op * (y + x)}px) translateY(${op * y}px)`
         })
     }
 }
@@ -2756,7 +2781,7 @@ function entryAboutMe() {
     </div>
     <div class="avatar_container"></div>
 </div>`
-randomAbountMe()
+    randomAbountMe()
     _('.initDisplay', !1, function () {
         this.style.display = 'none'
     })
@@ -2770,7 +2795,7 @@ randomAbountMe()
             })
         }, 10)
     }
-_('.about_me_container').style.display = 'block'
+    _('.about_me_container').style.display = 'block'
 }
 
 function mobileEntry() {
@@ -2821,6 +2846,10 @@ function innerRepeat() {
             infoContainer('你还没有登录哦', false)
             return
         }
+        if (window.Base64.decode(name) === toRepeat) {
+            infoContainer('自己回复自己不太好吧', false)
+            return
+        }
         sendRepeat((d, word) => {
             fetch('/repeatMsg', {
                 method: 'post',
@@ -2831,7 +2860,7 @@ function innerRepeat() {
                 body: JSON.stringify({
                     _id,
                     msg: {
-                        name: Base64.decode(name),
+                        name: window.Base64.decode(name),
                         toRepeat,
                         info: word,
                         date: d,
@@ -2868,7 +2897,7 @@ function innerRepeat() {
                 'content-type': 'application/json',
                 'accept': 'application/json'
             },
-            body: JSON.stringify({ _id, _parent_id, name: Base64.decode(name) })
+            body: JSON.stringify({ _id, _parent_id, name: window.Base64.decode(name) })
         }).then(res => {
             if (res.status >= 200 && res.status < 300)
                 return res.json()
@@ -2898,7 +2927,14 @@ function navSelect() {
     }
 }
 
+function handleEnterKey() {
+    _('.enterDown', 'keydown', function (ev) {
+        ev.keyCode === 13 && _('.login-i').click()
+    }, false)
+}
+
 window.onload = () => {
+    handleEnterKey()
     navSelect()
     innerRepeat()
     share()
@@ -2909,7 +2945,6 @@ window.onload = () => {
     entryMoreOperation()
     allUserAvatar()
     toggleRepeatList()
-    randomUserAvatar()
     editEffect()
     turnToSummary()
     bugReporter()
@@ -3047,7 +3082,7 @@ function setText(obj) {
     _('#dw_title').value = obj.title
     _('.edit_textarea1').value = obj.content
     _('span.count').innerHTML = '' + (180 - obj.content.length)
-    _('#update_dw').onclick =  () => {
+    _('#update_dw').onclick = () => {
         const val = _('.edit_textarea1').value
         const title = _('#dw_title').value
         if (val === obj.content && title === obj.title) {
@@ -3090,8 +3125,6 @@ function editDynamic() {
 function mapToArticleList() {
     const articles = _('.article_list li.article')
     if (articles.length === 1) return
-    let datas = []
-    let temp = {}
     let lis = ''
     for (let item of articles) {
         const date = item.children[item.children.length - 2].innerText
@@ -3146,14 +3179,13 @@ function exitGallery() {  //exit gallery
     _('.exit_gallery', 'click', () => {
         setStyle(_('.canvas_box'), {
             zIndex: '-100',
-            transform: 'scale(0)' 
+            transform: 'scale(0)'
         });
     })
 }
 
 function galleryApi() {  //gallery
     _('.gallery_api', 'click', () => {
-        // history.pushState('','','/gallery');
         setStyle(_('.canvas_box'), {
             zIndex: '1000',
             transform: 'scale(1)'
@@ -3161,10 +3193,16 @@ function galleryApi() {  //gallery
     })
 }
 
+function insertGallery() {
+    _('body').innerHTML += `<div class="canvas_box">
+    <i class="exit_gallery linkfont">&#xe629;</i>
+    <canvas id="canvas">你的浏览器不支持HTML5画布技术，请使用谷歌浏览器。</canvas>
+</div>`
+}
+
 //gallery
 (function () {
-    "use strict";
-
+    console.log('start');
     (function () {
         /* ==== definitions ==== */
         var diapo = [], layers = [], ctx, pointer, scr, camera, light, fps = 0, quality = [1, 2],

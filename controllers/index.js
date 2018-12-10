@@ -191,28 +191,33 @@ routerExports.routerIndex = {
     method: 'get',
     url: '/*',
     route: async (ctx, next) => {
-        const userAgent = /Windows/.test(ctx.request.header['user-agent']) ? 'windows' : 'Mobile'
+        console.log(ctx.request.header['user-agent'])
+        const userAgent = /Mobile+|iPhone+|Android/.test(ctx.request.header['user-agent']) ? 'Mobile' : 'windows'
         console.log(userAgent)
         try {
             const mood = await moodArr()
             const article = await articleArr()
             const message = await messageArr()
             const dynamic = await dynamicArr()
-            await ctx.render( userAgent === 'windows' ? 'index' : 'mobile', {
+            const date = new Date()
+            date.setDate(date.getDate() + 2)
+            console.log(ctx.cookies.get('customer'))
+            !(ctx.cookies.get('customer')) && ctx.cookies.set('customer', 'customer', { expires: date, httpOnly: false })
+            await ctx.render(userAgent === 'windows' ? 'index' : 'mobile', {
                 title: userAgent === 'windows' ? 'Ada - 个人主页' : 'Ada - Mobile',
                 mood,
                 article,
                 message: message.reverse(),
                 dynamic
-            })
+            } )
         } catch (error) {
-            await ctx.render(userAgent === 'windows' ? 'index' : 'mobile', {
+            await ctx.render(userAgent === 'windows' ? 'index' : 'mobile', userAgent === 'windows' ? {
                 title: userAgent === 'windows' ? 'Ada - 个人主页' : 'Ada - Mobile',
-                mood: [],
-                article: [],
-                message: [],
-                dynamic: []
-            })
+                mood,
+                article,
+                message: message.reverse(),
+                dynamic
+            } : {})
         } 
     }   
 } 

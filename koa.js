@@ -45,7 +45,7 @@ app.use(router.routes(), router.allowedMethods())
 app.listen(5050, _ => console.log('server on 5050'))
 
 
-const env = 'dev'
+const env = '_dev'
 //connect to mongo
 //mongodb://root:jTPgd5nT8uSdzDRr0sgazdnwan1dB2gMwcQvslUU@koeabpwkfrbs.mongodb.sae.sina.com.cn:10297,zcubkoddktjc.mongodb.sae.sina.com.cn:10297
 env !== 'dev' ?

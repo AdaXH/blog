@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="./sass/main.css">
     <link rel="stylesheet" href="./sass/animate.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-grid.min.css">
+    <script>
+        if (!window.Promise) {
+                document.writeln('<script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"' + '>' + '<' + '/' + 'script>');
+            }
+    </script>
     <script src="./js/template.js"></script>
     <script src="./js/ge1doot.js"></script>
     <script src="./js/imageTransform3D.js"></script>
@@ -92,7 +97,7 @@
         <li class="animated"><a javascript:;><i class="linkfont">&#xe662;</i>更多操作</a></li>
         <li class="animated">
             <a javascript:;>
-                <i class="linkfont">&#xe626;</i>退&nbsp;&nbsp;出</a>
+                <i class="linkfont">&#xe626;</i>取消操作</a>
         </li>
     </ul>
 </div>
@@ -251,7 +256,7 @@
                 <span></span>
             </a>
         </li>
-            <li>
+            <li class='_new_register'> 
                 <a class="animated fr add_article_api new_register" href="javascript: void(0);">
                     <i class="linkfont">&#xe6a3;</i>
                     <span>注册</span>
@@ -383,7 +388,7 @@
             	<a class="animated fr all_user new_login" href="javascript: void(0);">
             		<i class="linkfont shake">&#xe6ba;</i><span></span></a>
             </li>
-            <li >
+            <li class='_new_register'>
             	<div class="hover_shadow"></div>
             	<a class="animated fr add_article_api new_register" href="javascript: void(0);">
                     <i class="linkfont shake">&#xe6a3;</i>
@@ -458,8 +463,8 @@
  <iframe width="450" scrolling="no" height="20" frameborder="0" allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=1&color=%23FFFFFF&icon=1&wind=1&num=1&site=15"></iframe>
         </div>
     </header>
-    <div class="repeat_over animated">
-              <div class="repeat_con">
+    <div class="repeat_over ">
+              <div class="repeat_con animated">
                     <textarea class="repeat_word" placeholder="点此以输入内容"></textarea>
                     <div class="btn_con">
                         <a class="cancel_repeat" href="javascript: void(0);">取消</a>
@@ -560,7 +565,7 @@
                               <div class="customer">
                                 <p class="customer-word">欢迎，您是第<span id='customer_number'>&nbsp;</span>个访客</p>
                               </div>
-                            	<img src="./resouce/images/ly.jpg" alt="glitch特效" />
+                            	<img src="./resouce/images/glitch.jpg" alt="glitch特效" />
                             </div>
                         </span>
                     </div>
@@ -655,15 +660,15 @@
                                 <li class="repeat_item">
                                     <div class="innerRepeat fr">
                                         <a class="innerRepeatAPI fl" _id=
-                                        <%= repeat._id %> _to_repeat=<%= repeat.name %> _parent_id=<%= item._id %>>[回复]</a>
+                                        <%= repeat._id %> _to_repeat=<%= repeat.name %> _parent_id=<%= item._id %>>[回复 - <%= repeat.name %>]</a>
                                         <a class="innerDeleteMsg fr" _name=<%= repeat.name %> _parent_id=
                                         <%= item._id%> _id=<%= repeat._id %>>[删除]</a>
                                     </div>
                                     <p class="repeat_user fl"><%= repeat.name %>
                                         <span class="repeat_date"><%= repeat.date %>
                                             <span>
-                                                回复
-                                                <span style='color:white'><%= repeat.toRepeat %>
+                                                <!-- @ -->
+                                                <span style='color:white'>@ <%= repeat.toRepeat %>
                                                     <span>:</span>
                                                 </span>
                                             </span>
@@ -701,8 +706,8 @@
                                   <p class="repeat_user fl">{{repeat.name }}
                                     <span class="repeat_date">{{repeat.date }}
                                         <span>
-                                            回复
-                                        <span style='color:red'>{{repeat.toRepeat}}
+                                            <!-- 回复 -->
+                                        <span>@ {{repeat.toRepeat}}
                                             <span>:</span>
                                         </span></span></span>
                                   </p>
@@ -780,9 +785,9 @@
               <i class="linkfont exit">&#xe626;</i>
               <div class="input-con">
             <form action="">
-              <input id="username" type="text" name="username" placeholder="用户名">
-              <input id="password" type="password" name="password" autocomplete='off' placeholder="密码">
-              <input id="check_password" class='registerInfo' type="password" name="checkpwd" autocomplete='off' placeholder="确认密码">
+              <input id="username" type="text" name="username" class="enterDown" placeholder="用户名">
+              <input id="password" class="enterDown" type="password" name="password" autocomplete='off' placeholder="密码">
+              <input id="check_password" class='registerInfo enterDown' type="password" name="checkpwd" autocomplete='off' placeholder="确认密码">
             </form>
               </div>
               <div class="label-con setLoginItem loginInfo">

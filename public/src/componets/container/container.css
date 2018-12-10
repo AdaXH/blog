@@ -6,3 +6,26 @@
     overflow: hidden;
     position: absolute;
 }
+.galleryContainer{
+    position: absolute;
+    width:100%;
+    height: 100%;
+    transform: translateX(100%);
+    background: white;
+    transition: all .5s;
+    z-index: 999;
+}
+.galleryContainer canvas{
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+.exitGallery{
+  position: absolute;
+  bottom:70px;
+  left:50%;
+  font-size: 20px;
+  color:black;
+  transform: translateX(-50%);
+  z-index: 10;
+}

@@ -2397,6 +2397,7 @@ p.toggleP {
   width:100%;
   height:100%;
   position:fixed;
+  background: rgba(0,0,0,0.5);
   z-index:999;
   display:none;
   .repeat_con{
@@ -2537,7 +2538,7 @@ p.toggleP {
                 text-align: center;
                 margin:0 10px;
                 transition: all .3s;
-                font-size: 12px;
+                font-size: 14px;
                 cursor: pointer;
               }
               a:hover{
@@ -2545,11 +2546,11 @@ p.toggleP {
               }
             }
             .repeat_date{
-                font-size:12px;
+                font-size:14px;
                 color:#ccc;
               }
             .repeat_user{
-              font-size:13px;
+              font-size:14px;
               font-weight:bold;
               margin-bottom:0;
             }
@@ -2558,7 +2559,7 @@ p.toggleP {
               padding-right:55px;
               text-indent: 2em;
               clear:both;
-              font-size:12px;
+              font-size:14px;
               white-space: pre-line;
               word-break:break-all;
             }
@@ -2619,7 +2620,7 @@ p.toggleP {
             margin-left:70px;
         }
         p.message_content{
-            font-size: 13px;
+            font-size: 14px;
             padding: 5px 50px 0px 20px;
             white-space: pre-line;
             clear: both;

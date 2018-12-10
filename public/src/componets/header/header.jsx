@@ -1,22 +1,24 @@
 import React from 'react'
 import './header.css'
-import { SearchBar } from 'antd-mobile'
+// import { NoticeBar } from 'antd-mobile'
 import { Icon } from 'antd'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 const UI = props => {
-    return(
+    return (
         <header>
             <div className="logo">
-            <span> <Icon style={{position:'relative', top:'-1px'}} type={props.logo.src}/> </span>
-                Ada - {props.logo.item}
+                <span> <Icon style={{ position: 'relative', top: '-1px' }} type={props.logo.src} /> Ada- {props.logo.item}</span>
             </div>
-            <SearchBar className='headerItem' placeholder="搜索" maxLength={8} />
+            <div className="welcome">
+                <p>Welcome</p> 
+            </div>
         </header>
     )
 }
 
 export const Header = connect(state => {
     return {
-        logo: state.logo
+        logo: state.logo,
+        user: state.user
     }
-}, () => { return { } })(UI)
+}, () => { return {} })(UI)

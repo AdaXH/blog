@@ -1,0 +1,38 @@
+.searchList{
+    width: 100%;
+    margin:0 auto;
+    height: 100%;
+}
+.searchContainer{
+    height: 100%;
+    padding: 20px;
+}
+.searchItem{
+    max-height: 200px;
+    margin: 10px auto;
+    border-radius: 5px;
+    border: 1px solid #22282c;
+    padding: 10px;
+}
+.searchHeader{
+    display: flex;
+    font-size: 13px;
+    justify-content: space-between;
+}
+.searchHeader div{
+    flex: 1;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+}
+.searchSummary{
+    text-align: left;
+    white-space: pre-wrap;
+}
+.searchSummary h2{
+    font-size: 14px !important;
+    font-weight: normal;
+}
+.searchSummary *{
+    color: rgba(0, 0, 0, 0.65) !important;
+}

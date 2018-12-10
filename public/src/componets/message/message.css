@@ -6,6 +6,13 @@
     color: rgb(102, 102, 102);
     letter-spacing: 0;
 }
+.repeatInner{
+    float: right;
+    margin-right: 23px;
+}
+.messageContainer .am-card-footer-extra{
+    margin-right: 22px;
+}
 .messageItem .am-card-header-content img {
     width:40px;
     height:40px;
@@ -17,14 +24,19 @@
     float: right;
     justify-content: space-between;
 }
-.messageOperationContainer div:nth-of-type(1){
+.messageOperationContainer div {
+    flex: 1;
+    text-align: center;
+    padding-right: 10px;
+}
+/* .messageOperationContainer div:nth-of-type(1){
     width:50%;
     text-align: center;
 }
 .messageOperationContainer div:nth-of-type(2){
     width:50%;
     text-align: center;
-}
+} */
 .messageContainer .messageDate {
     font-size: 12px;
     letter-spacing: 0;
@@ -33,22 +45,13 @@
     color: rgb(125, 125, 125);
 }
 .repeatItemContainer{
-    background: #ccc;
+    background: white;
     text-align: left;
     color: rgb(125, 125, 125);
     font-size: 12px;
     padding-left: 61px;
     position: relative;
     -webkit-overflow-scrolling: touch;
-}
-.dot{
-    position: absolute;
-    top: 0px;
-    height: 20px;
-    width: 20px;
-    right: 46px;
-    transform: rotate(45deg);
-    background:#ccc;
 }
 .repeatItemContainer div{
     border: none !important;
@@ -66,10 +69,7 @@ div.open{
 }
 .sendMsg{
     position: fixed;
-    /* left: 50%; */
-    right: -23px;
-    /* margin-left: -25px; */
-    /* bottom: 60px; */
+    right: -32px;
     margin-top: -25px;
     top: 50%;
     background: #ccc;
@@ -85,6 +85,8 @@ div.open{
 }
 .sendMsg .sendMsgI {
     -webkit-transform: rotate(0deg);
+    position: relative;
+    left:-7px;
     transform: rotate(0deg);
         transition: all .4s;
 }

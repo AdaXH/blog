@@ -56,7 +56,6 @@ routerExports.leaveMsg = {
   url: '/leave-dynamic-mg',
   route: async (ctx, next) => {
     const { _id, msg, name } = ctx.request.body
-    console.log(msg)
     try {
       const result = await callLeaveMsgDynamic(_id, msg, name)
       ctx.body = {

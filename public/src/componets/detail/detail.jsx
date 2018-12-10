@@ -3,6 +3,7 @@ import { Toast } from 'antd-mobile'
 import ReactHtmlParser from 'react-html-parser'
 import { Icon } from 'antd'
 import './detail.css'
+import { API } from '../../request/request';
 export class ArticleDetail extends React.PureComponent {
     constructor() {
         super()
@@ -11,46 +12,28 @@ export class ArticleDetail extends React.PureComponent {
         }
     }
     componentDidMount() {
-        Toast.loading('加载中...', this.state.time, () => {
+        Toast.loading('加载中...', 30, () => {
         });
         const _id = this.props.match.params.id
-        fetch('/queryArticleById', {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-                accept: 'application/json'
-            },
-            body: JSON.stringify({ _id })
-        }).then(res => {
-            if (res.status >= 200 && res.status < 300) return res.json()
-            return res.status
-        }).then(result => {
-            if (result.success) {
-                this.setState({
-                    data: result.data
-                },() => Toast.hide())
-            } else {
-                Toast.loading(result.errorMsg || '网络繁忙' + result, 3);
-            }
-        })
+        API('/queryArticleById', 'POST', { _id }).then(result => result.success ? this.setState({ data: result.data }, Toast.hide()) : Toast.offline('无法读取文章内容'))
     }
     render() {
         return (
-            <div className="detailContainer">
-                <div className="articleStatus1">
+            <div className="detailContainer contentSlideFromLeft">
+                <div className="articleStatus1 itemFromLeft">
                     <div className="articleStatus1">
                         <div>
-                            <Icon style={{position:'relative',top:'1px'}} type="clock-circle" /><span style={{ marginLeft: '4px' }}>{this.state.data.year}-{this.state.data.date}</span>
+                            <Icon style={{ position: 'relative', top: '1px' }} type="clock-circle" /><span style={{ marginLeft: '4px' }}>{this.state.data.year}-{this.state.data.date}</span>
                         </div>
                         <div>
-                            <Icon style={{position:'relative',top:'2px'}} type='tag' /><span style={{ marginLeft: '4px' }}>{this.state.data.type}</span>
+                            <Icon style={{ position: 'relative', top: '2px' }} type='tag' /><span style={{ marginLeft: '4px' }}>{this.state.data.type}</span>
                         </div>
                         <div>
-                            <Icon style={{position:'relative',top:'1px'}} type='like' /><span style={{ marginLeft: '4px'}}>{this.state.data.viewer}</span>
+                            <Icon style={{ position: 'relative', top: '1px' }} type='like' /><span style={{ marginLeft: '4px' }}>{this.state.data.viewer}</span>
                         </div>
                     </div>
                 </div>
-                {ReactHtmlParser(this.state.data.summary)}
+                {ReactHtmlParser(this.state.data.summary && this.state.data.summary.replace(/contenteditable="true"/g, ''))}
             </div>
         )
     }

@@ -14,5 +14,9 @@ module.exports = mongoose.model('users', mongoose.Schema({
     introduce: {
         type: String,
         default: undefined
-    }
+    },
+    pics: {
+        type: Object({ glitchUrl: String, flyUrl: String }),
+        default: { glitchUrl: 'no permission', flyUrl: 'no permission' }
+    } 
 }))
