@@ -2,6 +2,37 @@ const routerExports = {}
 const User = require('./../dbmodel/User') 
 const fs = require('fs')
 const Base64 = require('js-base64').Base64
+const jwt = require('jsonwebtoken')
+const svgCaptcha = require('svg-captcha')
+const session = require('koa-session')
+
+const secret = 'secret'
+/* 通过token获取JWT的payload部分 */
+function getJWTPayload(token) {
+  // 验证并解析JWT
+  if (!token) return
+  return jwt.verify(token, 'secret');
+}
+
+function getToken(payload = {}) {
+	return jwt.sign(payload, secret, { expiresIn: '48h' });
+}
+
+routerExports.getCaptcha = {
+	method: 'post',
+	url: '/getCaptcha',
+	route: async ctx => {
+		const captcha = svgCaptcha.create({
+			size: 4,
+			ignoreChars: '',
+			noise: 2,
+			color: true,
+			background: 'transparent'
+		})
+		ctx.session.captcha = captcha.text
+		ctx.body = captcha.data
+	}
+}
 
 routerExports.setPics = {
 	method: 'post',
@@ -9,6 +40,14 @@ routerExports.setPics = {
 	route: async ctx => {
 		const { type, binary } = ctx.request.body
 		try {
+			const payload = getJWTPayload(ctx.headers.authorization)     
+            if (!payload) throw 'token认证失败'
+            else {
+                const { _id } = payload
+                const user = await User.findOne({ _id })
+                if (!user.admin) 
+                throw '当前用户无权限'
+			}
 			await callHandlePic(type, binary)
 			ctx.body = { success: true }
 		} catch (error) {
@@ -44,12 +83,16 @@ routerExports.login = {
 	route: async (ctx, next) => {
 		const { name, pwd, state } = ctx.request.body
 		const date = new Date()
-		date.setDate(date.getDate() + 5)
+		date.setDate(date.getDate() + 2)
 		try {
 			const result = await callLogin(name, pwd, state)
-			state && ctx.cookies.set('user', Base64.encode(name), { expires: date, httpOnly: false })
+			state && ctx.cookies.set('user', Base64.encode(name), { expires: date, httpOnly: false, overwrite:false })
+			ctx.cookies.set('token', getToken({ _id: result._id }), { expires: date, httpOnly: false, overwrite:false })
 			result.name = name
-			ctx.body = result
+			ctx.body = { 
+				...result,
+				token: getToken({ _id: result._id })
+			}
 		} catch (error) {
 			ctx.body = {
 				success: false,
@@ -80,6 +123,28 @@ routerExports.getUserInfor = {
 	}
 }
 
+routerExports.getUserInfoByToken = {
+	method: 'post',
+	url: '/getUserInfoByToken',
+	route: async (ctx, next) => {
+		try {
+			const payload = getJWTPayload(ctx.headers.authorization)
+			if (!payload) throw 'token认证失败'
+			const user = await User.findOne({ _id: payload._id })
+			delete user._doc.password
+			ctx.body = {
+				success: true,
+				user
+			}
+		} catch (error) {
+			ctx.body = {
+				success: false,
+				errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+			}
+		}
+	}
+}
+
 function callGerUser(name){
 	return new Promise((resolve, reject) => {
 		User.findOne({ name }).then(res => {
@@ -98,6 +163,7 @@ function callLogin(name, pwd){
 					res ?
 						resolve({
 							success: true,
+							_id: res._id,
 							admin : res.admin || false,
 							avatar : res.avatar || false
 						})
@@ -143,6 +209,14 @@ routerExports.updateIntroduce = {
 	route: async (ctx, next) => {
 		const { introduce } = ctx.request.body
 		try {
+			const payload = getJWTPayload(ctx.headers.authorization)     
+            if (!payload) throw 'token认证失败'
+            else {
+                const { _id } = payload
+                const user = await User.findOne({ _id })
+                if (!user.admin || user.name !== 'Ada') 
+                throw '当前用户无权限'
+			}
 			const success = await callUpdateIntroduce(introduce)
 			ctx.body = {
 				success: true
@@ -239,6 +313,15 @@ routerExports.allAvatar = {
 
 function getAvatar(names){
 	const result = []
+	if (names === 'all'){
+		return new Promise((resolve, reject) => {
+			User.find({ }).then(data => {
+				const imgs = data.map(item => item.avatar)
+				imgs ? resolve(imgs) : reject('头像获取失败')
+			}).catch(err => reject(err))
+		})
+	}
+	else
 	return new Promise((reslove, reject) => {
 		User.find({}).then(data => {
 			for(let item of names)
@@ -256,6 +339,8 @@ routerExports.setAvatar = {
 		async (ctx, res) => {
 			const { avatar, name, fileName } = ctx.request.body
 			try {
+			const payload = getJWTPayload(ctx.headers.authorization)     
+            if (!payload) throw 'token认证失败'
 				await callSaveAvatar(avatar, name, fileName)
 				ctx.body = {
 					success: true
@@ -263,7 +348,7 @@ routerExports.setAvatar = {
 			} catch (error) {
 				ctx.body = {
 					success: false,
-					errorMsg: error
+					errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
 				}
 			}
 		}
@@ -287,8 +372,10 @@ routerExports.register = {
 	method: 'post',
 	url: '/register',
 	route: async (ctx, nect) => {
-		const { name, pwd } = ctx.request.body
+		const { name, pwd, captchaCode } = ctx.request.body
+		const { session: { captcha } } = ctx
 		try {
+			if (captcha.toLowerCase() !== captchaCode.toLowerCase()) throw '验证码不正确'
 			const data = await callRegister(name, pwd)
 			ctx.body = {
 				success: true,
