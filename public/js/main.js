@@ -1,3 +1,182 @@
+(function (factory) {
+    var registeredInModuleLoader = false;
+    if (typeof define === 'function' && define.amd) {
+        define(factory);
+        registeredInModuleLoader = true;
+    }
+    if (typeof exports === 'object') {
+        module.exports = factory();
+        registeredInModuleLoader = true;
+    }
+    if (!registeredInModuleLoader) {
+        var OldCookies = window.Cookies;
+        var api = window.Cookies = factory();
+        api.noConflict = function () {
+            window.Cookies = OldCookies;
+            return api;
+        };
+    }
+}(function () {
+    function extend() {
+        var i = 0;
+        var result = {};
+        for (; i < arguments.length; i++) {
+            var attributes = arguments[i];
+            for (var key in attributes) {
+                result[key] = attributes[key];
+            }
+        }
+        return result;
+    }
+
+    function init(converter) {
+        function api(key, value, attributes) {
+            var result;
+            if (typeof document === 'undefined') {
+                return;
+            }
+
+            // Write
+
+            if (arguments.length > 1) {
+                attributes = extend({
+                    path: '/'
+                }, api.defaults, attributes);
+
+                if (typeof attributes.expires === 'number') {
+                    var expires = new Date();
+                    expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
+                    attributes.expires = expires;
+                }
+
+                // We're using "expires" because "max-age" is not supported by IE
+                attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
+
+                try {
+                    result = JSON.stringify(value);
+                    if (/^[\{\[]/.test(result)) {
+                        value = result;
+                    }
+                } catch (e) { }
+
+                if (!converter.write) {
+                    value = encodeURIComponent(String(value))
+                        .replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+                } else {
+                    value = converter.write(value, key);
+                }
+
+                key = encodeURIComponent(String(key));
+                key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+                key = key.replace(/[\(\)]/g, escape);
+
+                var stringifiedAttributes = '';
+
+                for (var attributeName in attributes) {
+                    if (!attributes[attributeName]) {
+                        continue;
+                    }
+                    stringifiedAttributes += '; ' + attributeName;
+                    if (attributes[attributeName] === true) {
+                        continue;
+                    }
+                    stringifiedAttributes += '=' + attributes[attributeName];
+                }
+                return (document.cookie = key + '=' + value + stringifiedAttributes);
+            }
+
+            // Read
+
+            if (!key) {
+                result = {};
+            }
+
+            // To prevent the for loop in the first place assign an empty array
+            // in case there are no cookies at all. Also prevents odd result when
+            // calling "get()"
+            var cookies = document.cookie ? document.cookie.split('; ') : [];
+            var rdecode = /(%[0-9A-Z]{2})+/g;
+            var i = 0;
+
+            for (; i < cookies.length; i++) {
+                var parts = cookies[i].split('=');
+                var cookie = parts.slice(1).join('=');
+
+                if (!this.json && cookie.charAt(0) === '"') {
+                    cookie = cookie.slice(1, -1);
+                }
+
+                try {
+                    var name = parts[0].replace(rdecode, decodeURIComponent);
+                    cookie = converter.read ?
+                        converter.read(cookie, name) : converter(cookie, name) ||
+                        cookie.replace(rdecode, decodeURIComponent);
+
+                    if (this.json) {
+                        try {
+                            cookie = JSON.parse(cookie);
+                        } catch (e) { }
+                    }
+
+                    if (key === name) {
+                        result = cookie;
+                        break;
+                    }
+
+                    if (!key) {
+                        result[name] = cookie;
+                    }
+                } catch (e) { }
+            }
+
+            return result;
+        }
+
+        api.set = api;
+        api.get = function (key) {
+            return api.call(api, key);
+        };
+        api.getJSON = function () {
+            return api.apply({
+                json: true
+            }, [].slice.call(arguments));
+        };
+        api.defaults = {};
+
+        api.remove = function (key, attributes) {
+            api(key, '', extend(attributes, {
+                expires: -1
+            }));
+        };
+
+        api.withConverter = init;
+
+        return api;
+    }
+    return init(function () { });
+}));
+const Cookies = window.Cookies
+const API = (url, method = 'GET', data) => {
+    const options = {
+        method,
+        headers: {
+            'content-type': 'application/json',
+            accept: 'application/json',
+            authorization: Cookies.get('token') || 'no-permission'
+        }
+    }
+    method === 'POST' && (options.body = JSON.stringify(data))
+    return fetch(url, options).then(res => {
+        if (res.status >= 200 && res.status < 300)
+            return res.json()
+        return res.status === 401 ? res.json() : res.status
+    }).then(result => {
+        return result.success ? result : result.errorMsg || result
+    }).catch(err => {
+        return err
+    })
+}
+
 //Base64
 (function (global, factory) { typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(global) : typeof define === "function" && define.amd ? define(factory) : factory(global) })(typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : this, function (global) { "use strict"; var _Base64 = global.Base64; var version = "2.4.8"; var buffer; if (typeof module !== "undefined" && module.exports) { if (typeof navigator != "undefined" && navigator.product == "ReactNative") { } else { try { buffer = require("buffer").Buffer } catch (err) { } } } var b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; var b64tab = function (bin) { var t = {}; for (var i = 0, l = bin.length; i < l; i++)t[bin.charAt(i)] = i; return t }(b64chars); var fromCharCode = String.fromCharCode; var cb_utob = function (c) { if (c.length < 2) { var cc = c.charCodeAt(0); return cc < 128 ? c : cc < 2048 ? fromCharCode(192 | cc >>> 6) + fromCharCode(128 | cc & 63) : fromCharCode(224 | cc >>> 12 & 15) + fromCharCode(128 | cc >>> 6 & 63) + fromCharCode(128 | cc & 63) } else { var cc = 65536 + (c.charCodeAt(0) - 55296) * 1024 + (c.charCodeAt(1) - 56320); return fromCharCode(240 | cc >>> 18 & 7) + fromCharCode(128 | cc >>> 12 & 63) + fromCharCode(128 | cc >>> 6 & 63) + fromCharCode(128 | cc & 63) } }; var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g; var utob = function (u) { return u.replace(re_utob, cb_utob) }; var cb_encode = function (ccc) { var padlen = [0, 2, 1][ccc.length % 3], ord = ccc.charCodeAt(0) << 16 | (ccc.length > 1 ? ccc.charCodeAt(1) : 0) << 8 | (ccc.length > 2 ? ccc.charCodeAt(2) : 0), chars = [b64chars.charAt(ord >>> 18), b64chars.charAt(ord >>> 12 & 63), padlen >= 2 ? "=" : b64chars.charAt(ord >>> 6 & 63), padlen >= 1 ? "=" : b64chars.charAt(ord & 63)]; return chars.join("") }; var btoa = global.btoa ? function (b) { return global.btoa(b) } : function (b) { return b.replace(/[\s\S]{1,3}/g, cb_encode) }; var _encode = buffer ? buffer.from && Uint8Array && buffer.from !== Uint8Array.from ? function (u) { return (u.constructor === buffer.constructor ? u : buffer.from(u)).toString("base64") } : function (u) { return (u.constructor === buffer.constructor ? u : new buffer(u)).toString("base64") } : function (u) { return btoa(utob(u)) }; var encode = function (u, urisafe) { return !urisafe ? _encode(String(u)) : _encode(String(u)).replace(/[+\/]/g, function (m0) { return m0 == "+" ? "-" : "_" }).replace(/=/g, "") }; var encodeURI = function (u) { return encode(u, true) }; var re_btou = new RegExp(["[À-ß][-¿]", "[à-ï][-¿]{2}", "[ð-÷][-¿]{3}"].join("|"), "g"); var cb_btou = function (cccc) { switch (cccc.length) { case 4: var cp = (7 & cccc.charCodeAt(0)) << 18 | (63 & cccc.charCodeAt(1)) << 12 | (63 & cccc.charCodeAt(2)) << 6 | 63 & cccc.charCodeAt(3), offset = cp - 65536; return fromCharCode((offset >>> 10) + 55296) + fromCharCode((offset & 1023) + 56320); case 3: return fromCharCode((15 & cccc.charCodeAt(0)) << 12 | (63 & cccc.charCodeAt(1)) << 6 | 63 & cccc.charCodeAt(2)); default: return fromCharCode((31 & cccc.charCodeAt(0)) << 6 | 63 & cccc.charCodeAt(1)) } }; var btou = function (b) { return b.replace(re_btou, cb_btou) }; var cb_decode = function (cccc) { var len = cccc.length, padlen = len % 4, n = (len > 0 ? b64tab[cccc.charAt(0)] << 18 : 0) | (len > 1 ? b64tab[cccc.charAt(1)] << 12 : 0) | (len > 2 ? b64tab[cccc.charAt(2)] << 6 : 0) | (len > 3 ? b64tab[cccc.charAt(3)] : 0), chars = [fromCharCode(n >>> 16), fromCharCode(n >>> 8 & 255), fromCharCode(n & 255)]; chars.length -= [0, 0, 2, 1][padlen]; return chars.join("") }; var atob = global.atob ? function (a) { return global.atob(a) } : function (a) { return a.replace(/[\s\S]{1,4}/g, cb_decode) }; var _decode = buffer ? buffer.from && Uint8Array && buffer.from !== Uint8Array.from ? function (a) { return (a.constructor === buffer.constructor ? a : buffer.from(a, "base64")).toString() } : function (a) { return (a.constructor === buffer.constructor ? a : new buffer(a, "base64")).toString() } : function (a) { return btou(atob(a)) }; var decode = function (a) { return _decode(String(a).replace(/[-_]/g, function (m0) { return m0 == "-" ? "+" : "/" }).replace(/[^A-Za-z0-9\+\/]/g, "")) }; var noConflict = function () { var Base64 = global.Base64; global.Base64 = _Base64; return Base64 }; global.Base64 = { VERSION: version, atob: atob, btoa: btoa, fromBase64: decode, toBase64: encode, utob: utob, encode: encode, encodeURI: encodeURI, btou: btou, decode: decode, noConflict: noConflict }; if (typeof Object.defineProperty === "function") { var noEnum = function (v) { return { value: v, enumerable: false, writable: true, configurable: true } }; global.Base64.extendString = function () { Object.defineProperty(String.prototype, "fromBase64", noEnum(function () { return decode(this) })); Object.defineProperty(String.prototype, "toBase64", noEnum(function (urisafe) { return encode(this, urisafe) })); Object.defineProperty(String.prototype, "toBase64URI", noEnum(function () { return encode(this, true) })) } } if (global["Meteor"]) { Base64 = global.Base64 } if (typeof module !== "undefined" && module.exports) { module.exports.Base64 = global.Base64 } else if (typeof define === "function" && define.amd) { define([], function () { return global.Base64 }) } return { Base64: global.Base64 } });
 
@@ -688,7 +867,100 @@ function check(len) {
     document.getElementById('percentText').innerText = '' + (parseFloat(len / l) * 100).toFixed(0)
     if (len === l) {
         const childEle = document.getElementById('srcLoading')
-        setTimeout(() => childEle.parentNode.removeChild(childEle), 500)
+        loadingDynamic(0, 6, 'dynamic1').then(result => {
+            _('#dynamic_container').innerHTML = (window.template('dynamic_tpl', { dynamics: result.data }))
+            setTimeout(() => childEle.parentNode.removeChild(childEle), 500)
+        }).catch(err => infoContainer(err))
+    }
+}
+
+function loadDynamicByPageSize() {
+    _('.dynamicPageSizeList').addEventListener('click', ev => {
+        if (!/dynamicPageSizeItem/.test(ev.target.className) || ev.target.getAttribute('current') === 'true') return
+        // viewImg()
+        const dots = _('.dynamicPageSizeItem')
+        for (let el of dots) {
+            el.className = 'dynamicPageSizeItem'
+            el.setAttribute('current', false)
+        }
+        ev.target.className = 'dynamicPageSizeItem currentPage'
+        ev.target.setAttribute('current', true)
+        //1 0 - 6, 2 6 - 12 , 3 12 - 18, 4 18 - 24
+        loadingUI('start')
+        let index = (Number(ev.target.innerText) - 1) * 6
+        let pageSize = index + 6
+        loadingDynamic(index, pageSize, 'dynamic' + ev.target.innerText).then(result => {
+            loadingUI('end')
+            _('#dynamic_container').innerHTML = (window.template('dynamic_tpl', { dynamics: result.data }))
+            _('.center_bar').scrollTop = 0
+        })
+    }, !1)
+}
+
+//load basic data before entry main face
+function loadingDynamic(index = 0, pageSize = 6, dynamic) {
+    return new Promise((resolve, reject) => {
+        if (!!dynamic && !!sessionStorage.getItem(dynamic)) {
+            resolve(JSON.parse(sessionStorage.getItem(dynamic)))
+            if (!_('.dynamicPageSizeItem') || _('.dynamicPageSizeItem').length === 0) {
+                const pageSize = []
+                for (let i = 0; i < Math.round(JSON.parse(sessionStorage.getItem(dynamic)).total / 6); i++)
+                    pageSize.push(i + 1)
+                _('.dynamicPageSizeList').innerHTML = window.template('dynamicPageSize', { list: pageSize })
+            }
+            return
+        }
+        // API('/getDynamicByPageSize', 'POST', { index, pageSize }).then(result => {
+        //     if (result.success) {
+        //         if (!_('.dynamicPageSizeItem') || _('.dynamicPageSizeItem').length === 0) {
+        //             const pageSize = []
+        //             for (let i = 0; i < Math.round(result.total / 6); i++)
+        //                 pageSize.push(i + 1)
+        //             _('.dynamicPageSizeList').innerHTML = window.template('dynamicPageSize', { list: pageSize })
+        //         }
+        //         resolve(result)
+        //         sessionStorage && sessionStorage.setItem(dynamic, JSON.stringify(result))
+        //     }
+        //     else
+        //         reject(result && result.errorMsg || result)
+        // })
+
+        fetch('/getDynamicByPageSize', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json', authorization: Cookies.get('token'),
+                accept: 'application/json'
+            },
+            body: JSON.stringify({ index, pageSize })
+        }).then(res => {
+            if (res.status >= 200 && res.status < 300)
+                return res.json()
+            return res.status
+        }).then(result => {
+            if (result.success) {
+                if (!_('.dynamicPageSizeItem') || _('.dynamicPageSizeItem').length === 0) {
+                    const pageSize = []
+                    for (let i = 0; i < Math.round(result.total / 6); i++)
+                        pageSize.push(i + 1)
+                    _('.dynamicPageSizeList').innerHTML = window.template('dynamicPageSize', { list: pageSize })
+                }
+                resolve(result)
+                sessionStorage && sessionStorage.setItem(dynamic, JSON.stringify(result))
+            }
+            else
+                reject(result && result.errorMsg || result)
+        }).catch(err => reject(err))
+    })
+}
+
+function getCurrentPageSize(type) {
+    if (type === 'dynamic') {
+        const dynamics = _('.dynamicPageSizeList li')
+        for (let item of dynamics) {
+            if (item.getAttribute('current') === 'true') {
+                return item.innerText
+            }
+        }
     }
 }
 
@@ -758,14 +1030,20 @@ class Glitch {
     init() {
         const el1 = this.option.el.cloneNode(true)
         el1.style.zIndex = '' + this.option.zIndexDefault
+        el1.style.position = 'absolute'
+        el1.style.top = '0'
         this.option.el.parentNode.appendChild(el1)
 
         const el2 = this.option.el.cloneNode(true)
+        el2.style.position = 'absolute'
+        el2.style.top = '0'
         this.option.el.parentNode.appendChild(el2)
         el2.className += ' front-3'
         el2.style['z-index'] = '' + (this.option.zIndexDefault + 1);
 
         const el3 = this.option.el.cloneNode(true)
+        el3.style.position = 'absolute'
+        el3.style.top = '0'
         this.option.el.parentNode.appendChild(el3)
         el3.style['z-index'] = '' + (this.option.zIndexDefault + 2);
     }
@@ -963,7 +1241,7 @@ class RegisterClass {  //register fn
             fetch('/register', {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
                     'accept': 'application/json'
                 },
                 body: JSON.stringify({ name, pwd: window.Base64.encode(pwd) })
@@ -998,7 +1276,7 @@ class RegisterClass {  //register fn
             fetch('/login', {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
                     'accept': 'application/json'
                 },
                 credentials: "include",
@@ -1069,7 +1347,7 @@ function exitLoginRegFace() {
 
 function setLogin() {
     const setLoginItem = document.getElementsByClassName('setLoginItem')
-
+    _('#register').style.display = 'none'
     for (let el of setLoginItem)
         el.style.display = 'block'
     document.getElementById("check_password").style.display = 'none'
@@ -1106,6 +1384,10 @@ function showArticle() {  //show full article when click article's summary
             removeClass(el.childNodes[7], 'toggleP')
             removeClass(el.childNodes[3], 'showClose')
         }
+        _('.articleDetalContainer').style.display = 'block'
+        _('.articleDetail').innerHTML = this.innerHTML
+        _('.articleDetail').style.background = this.style.background
+        _('.articleDetail').scrollTop = 0
         const _id = this.getAttribute('_id')
         const viewer = this.childNodes[1].children[1]
         updateViewer(_id, Number(viewer.innerText), viewer.childNodes[1], this)
@@ -1116,6 +1398,9 @@ function showArticle() {  //show full article when click article's summary
         closeArticle(this)
         e.stopPropagation()
     })
+    _('.articleDetalContainer').addEventListener('click', function (ev) {
+        /articleDetalContainer/.test(ev.target.className) && (this.style.display = 'none')
+    })
 }
 
 function updateViewer(_id, viewer, el, _this) {
@@ -1123,7 +1408,7 @@ function updateViewer(_id, viewer, el, _this) {
     fetch('/updateArticleViewerById', {
         method: 'POST',
         headers: {
-            'content-type': 'application/json',
+            'content-type': 'application/json', authorization: Cookies.get('token'),
             'accept': 'application'
         },
         body: JSON.stringify({ _id, viewer })
@@ -1209,7 +1494,7 @@ function selectNav() {      //nav
                         method: 'POST',
                         headers: {
                             'accept': 'application/json',
-                            'content-type': 'application/json'
+                            'content-type': 'application/json', authorization: Cookies.get('token')
                         }
                     }
                     ).then(res => {
@@ -1321,7 +1606,7 @@ function uploadAvatar(name) {
                     body: JSON.stringify({ avatar, name, fileName }),
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
+                        'content-type': 'application/json', authorization: Cookies.get('token'),
                     }
                 }).then(res => {
                     if (res.status <= 200 && res.status < 300)
@@ -1346,7 +1631,7 @@ function getAvatar(name) {
     fetch('/get-avatar', {
         method: 'POST',
         headers: {
-            'content-type': 'application/json',
+            'content-type': 'application/json', authorization: Cookies.get('token'),
             'accept': 'application/json'
         },
         body: JSON.stringify({
@@ -1358,10 +1643,10 @@ function getAvatar(name) {
             return res.json()
         return res
     }).then(data => {
-        if (data && data.success){
+        if (data && data.success) {
             for (let item of img)
                 item.src = data.data
-            _('.avatarTip').style.display = /default_avatar.jpg/.test(data.data) ? 'block' : 'none'            
+            _('.avatarTip').style.display = /default_avatar.jpg/.test(data.data) ? 'block' : 'none'
         }
         else
             infoContainer(data && data.errorMsg || '网络出错' + data.status, false)
@@ -1395,7 +1680,7 @@ function repeatCon(_name) {
                     fetch('/repeatMsg', {
                         method: 'POST',
                         headers: {
-                            'content-type': 'application/json',
+                            'content-type': 'application/json', authorization: Cookies.get('token'),
                             'accept': 'application/json'
                         },
                         body: JSON.stringify({
@@ -1477,11 +1762,41 @@ function messageOperation(name) {
                 infoContainer('你还没有登录', false)
                 return
             }
+            const _id = ev.target.getAttribute('_id')
+            const _this = ev.target
+            const li = this
+            if (!sessionStorage.getItem('user')) {
+                infoContainer('你还没有登录', false)
+                return
+            }
+            loadingUI('start')
+            fetch('/deleteMsgById', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
+                    'accept': 'application/json'
+                },
+                body: JSON.stringify({ _id, operator: window.Base64.decode(sessionStorage.getItem('user')) })
+            }).then(res => {
+                if (res.status >= 200 && res.status < 300)
+                    return res.json()
+                return res.status
+            }).then(result => {
+                loadingUI('end')
+                if (result && result.success) {
+                    const defaultV = _('.temp_ul li:first-of-type')
+                    _('.temp_ul li:first-of-type').innerText = (parseInt(defaultV.innerText) - 1) + '评论'
+                    _('.temp_ul li:last-of-type').innerText = (parseInt(defaultV.innerText) - 1) + '人参与'
+                    infoContainer('删除成功', true)
+                    li.removeChild(_this.parentNode.parentNode)
+                } else
+                    infoContainer(result && result.errorMsg || '网络繁忙' + result, false)
+            })
         }
     }
     // if (!name) return
 
-    isAdmin(name, () => {
+    function delete_msg() {
         p.addEventListener('click', function (e) {
             const ev = e || window.event
             if (/delete_msg/.test(ev.target.className)) {
@@ -1496,7 +1811,7 @@ function messageOperation(name) {
                 fetch('/deleteMsgById', {
                     method: 'POST',
                     headers: {
-                        'content-type': 'application/json',
+                        'content-type': 'application/json', authorization: Cookies.get('token'),
                         'accept': 'application/json'
                     },
                     body: JSON.stringify({ _id })
@@ -1517,18 +1832,22 @@ function messageOperation(name) {
                 })
             }
         }, false)
+    }
+
+    isAdmin(name, () => {
+        delete_msg()
     }).catch(err => {
-        p.addEventListener('click', function (e) {
-            const ev = e || window.event
-            if (/delete_msg/.test(ev.target.className)) {
-                if (!sessionStorage.getItem('user')) {
-                    infoContainer('你还没有登录', false)
-                    return
-                }
-                    infoContainer('只能删除自己的留言哦', false)
-                    return
-            }
-        }, false)
+        // p.addEventListener('click', function (e) {
+        //     const ev = e || window.event
+        //     if (/delete_msg/.test(ev.target.className)) {
+        //         if (!sessionStorage.getItem('user')) {
+        //             infoContainer('你还没有登录', false)
+        //             return
+        //         }
+        //         infoContainer('只能删除自己的留言哦', false)
+        //         return
+        //     }
+        // }, false)
     }
     )
 }
@@ -1536,11 +1855,11 @@ function messageOperation(name) {
 function isAdmin(name, callback) {
     return new Promise((resolve, reject) => {
         if (!name || name === '') reject()
-        return
+        // return
         fetch('/checkAdmin', {
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 'accept': 'application/json'
             },
             body: JSON.stringify({
@@ -1613,7 +1932,7 @@ function deleteDynamicRepeat(perrsion) {
                 fetch('/deleteDynamicMsg', {
                     method: 'POST',
                     headers: {
-                        'content-type': 'application/json',
+                        'content-type': 'application/json', authorization: Cookies.get('token'),
                         'accept': 'application/json'
                     },
                     body: JSON.stringify({ _id, msgId })
@@ -1699,7 +2018,7 @@ function adminToggle() {
         fetch('/updateIntroduce', {
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 'accept': 'application/json'
             },
             body: JSON.stringify({ introduce: val })
@@ -1764,38 +2083,58 @@ function rememberLoginState(name) { //user select remember login state
 }
 
 function infoContainer(data, status, callback) {
-    _('.result-info p').innerText = data
+    _('._result-info p').innerText = data
     setTimeout(() => {
         if (status) {
-            _('.result-info', !1, function () {
+            _('._result-info', !1, function () {
                 removeClass(this, 'false_dialog')
                 addClass(this, 'true_dialog')
             })
-            _('.result-info i', !1, function () {
+            _('._result-info i', !1, function () {
                 this.style.color = '#52c41a'
                 this.innerHTML = '&#xe6b3;'
             })
         } else {
-            _('.result-info i', !1, function () {
+            _('._result-info i', !1, function () {
                 this.style.color = '#f5222d'
                 this.innerHTML = '&#xe67a;'
             })
-            _('.result-info', !1, function () {
+            _('._result-info', !1, function () {
                 removeClass(this, 'true_dialog')
                 addClass(this, 'false_dialog')
             })
         }
     }, 0);
-    _('.result-info').style.display = 'block'
-    if (/tada/.test(_('.result-info').className)) {
-        setTimeout(() => {
-            _('.result-info').style.display = 'none'
-            callback && callback()
-        }, 2500)
-    }
+    _('.result_info_mask').style.display = 'block'
+    // if (/tada/.test(_('._result-info').className)) {
+    setTimeout(() => {
+        _('.result_info_mask').style.display = 'none'
+        callback && callback()
+    }, 2500)
+    // }
+}
+
+function handleDynamicImg() {
+    _('.dynamicUpload').addEventListener('change', function () {
+        const file = this.files[0]
+        const fileName = file.name
+        if (!/image\/\w+/.test(file.type)) {
+            infoContainer("请确保文件为图像类型", false)
+            return
+        }
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = function () {
+            // console.log(this.result)
+            _('.uploadView').src = this.result
+            _('.uploadView').setAttribute('name', fileName)
+            //replace(/^data:image\/\w+;base64,/, "")
+        }
+    }, false)
 }
 
 function publishDynamic() {
+    handleDynamicImg()
     _('#publish_dw', 'click', function () {
         const title = _('#dw_title').value
         const content = _('#short_article_textarea').value
@@ -1806,6 +2145,62 @@ function publishDynamic() {
             title: title,
             summary: content
         };
+        const dataUrl = _('.uploadView').src
+        // console.log(dataUrl)
+        const name = _('.uploadView').getAttribute('name')
+        if (dataUrl.length > 300) {
+            loadingUI('start')
+            fetch('/setDynamicImg', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
+                    'accept': 'application/json'
+                },
+                body: JSON.stringify({ name, dataUrl })
+            }).then(res => {
+                loadingUI('end')
+
+                if (res.status >= 200 && res.status < 300)
+                    return res.json()
+                return res
+            }).then(result => {
+                if (result.success) {
+                    if (checkBeforePublish(temp)) {
+                        if (count < 0) {
+                            infoContainer('文字超出限制', false);
+                            return;
+                        }
+                        loadingUI('start')
+                        fetch('/addDynamic', {
+                            method: 'POST',
+                            headers: {
+                                'content-type': 'application/json', authorization: Cookies.get('token'),
+                                'accept': 'application/json'
+                            },
+                            body: JSON.stringify({ img: result.img, title, content, date: d, upvote: 1 })
+                        }).then(res => {
+                            if (res.status >= 200 && res.status < 300)
+                                return res.json()
+                            return res
+                        }).then(result => {
+                            loadingUI('end')
+                            if (result && result.success) {
+                                _('.uploadView').src = ''
+                                infoContainer('成功,你可以继续发布', true)
+                                reRenderDynamic(result.data.reverse())
+                                _('#dw_title').value = ''
+                                _('#short_article_textarea').value = ''
+                            } else
+                                infoContainer(result && result.errorMsg || '网络繁忙' + result.status)
+                        })
+                    }
+                    else {
+                        infoContainer('输入不完整', false)
+                    }
+                } else infoContainer(result && result.errorMsg || result)
+            })
+            return
+        }
         if (checkBeforePublish(temp)) {
             if (count < 0) {
                 infoContainer('文字超出限制', false);
@@ -1815,7 +2210,7 @@ function publishDynamic() {
             fetch('/addDynamic', {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
                     'accept': 'application/json'
                 },
                 body: JSON.stringify({ title, content, date: d, upvote: 1 })
@@ -1944,7 +2339,7 @@ function publishBtn(obj, data, loadingUI) {  //publish edit content
         fetch('/' + obj.url, {
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 'accept': 'application/json'
             },
             body: JSON.stringify({ time, date, year, summary: escapeData(data), type: setArticleType() })
@@ -1986,7 +2381,7 @@ function deleteDynamic() {  //delete dynamic
             fetch('/deleteDynamic', {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
                     'accept': 'application/json'
                 },
                 body: JSON.stringify({ _id })
@@ -2016,7 +2411,7 @@ function deleteArticle() {  //delete article
             fetch('/deleteArticle', {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
                     'accept': 'application/json'
                 },
                 body: JSON.stringify({ _id })
@@ -2041,10 +2436,10 @@ function loadingUI(type) {
         addClass(_('.screen'), 'blurBg')
         _('.loadingUI').style.display = 'block'
     } else if (type === 'end') {
-        setTimeout(() => {
-            removeClass(_('.screen'), 'blurBg')
-            _('.loadingUI').style.display = 'none'
-        }, 1500)
+        // setTimeout(() => {
+        removeClass(_('.screen'), 'blurBg')
+        _('.loadingUI').style.display = 'none'
+        // }, 100)
     }
 }
 
@@ -2076,7 +2471,7 @@ function leaveMsg() {  //message board
             fetch('/leaveMessage', {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
                     'accept': 'application/json'
                 },
                 body: JSON.stringify({ date: d, content: msg, name: window.Base64.decode(name) })
@@ -2133,7 +2528,7 @@ function wordLimited() {
 }
 
 function slidePhoto() { //slide photo
-    const glitch = new Glitch(document.getElementsByClassName('glitch_effect')[0])
+    const glitch = new Glitch(_('.glitch_effect'))
     glitch.start()
 }
 
@@ -2149,7 +2544,7 @@ function upvoteDynamic() {
                 fetch('/upvoteDynamic', {
                     method: 'POST',
                     headers: {
-                        'content-type': 'application/json',
+                        'content-type': 'application/json', authorization: Cookies.get('token'),
                         'accept': 'application/json'
                     },
                     body: JSON.stringify({ _id, upvote })
@@ -2256,7 +2651,7 @@ function search() {  //search global
         fetch('/search', {
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 'accept': 'application/json'
             },
             body: JSON.stringify({ data })
@@ -2378,7 +2773,7 @@ function dynamicMsg() {   //leave a msg on dynamic
         ev.stopPropagation();
         if (/dynamic-msg-icon/.test(ev.target.className)) {
             ev.stopPropagation()
-            toggleClass(ev.target.parentNode.parentNode.children[5], 'showMsg')
+            toggleClass(ev.target.parentNode.parentNode.children[6], 'showMsg')
         }
         if (!/leave-dynamic-mg/.test(ev.target.className)) return
         const d = new Date()
@@ -2414,7 +2809,7 @@ function dynamicMsg() {   //leave a msg on dynamic
         fetch('/leave-dynamic-mg', {
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 'accept': 'application/json'
             },
             body: JSON.stringify({ _id, msg, name })
@@ -2423,6 +2818,13 @@ function dynamicMsg() {   //leave a msg on dynamic
                 loadingUI('end')
                 if (result && result.success) {
                     el.innerText = (Number(el.innerText) + 1)
+                    // console.log(_('.dynamicPageSizeItem'))
+                    for (let item of _('.dynamicPageSizeItem')) {
+                        if (item.getAttribute('current') === 'true') {
+                            sessionStorage && sessionStorage.removeItem('dynamic' + item.innerText)
+                            break
+                        }
+                    }
                     ev.target.previousElementSibling.value = ''
                     const html = `<li class="dynamic-msg-item">
                                         <i _msgid={{dynamic._id}} _id={{ temp._id }} class="deleteDynamicRepeat linkfont">&#xe603;</i>
@@ -2443,7 +2845,7 @@ function getCustomer() {
     return new Promise((resolve, reject) => {
         fetch('/get-customer', {
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 'accept': 'application/json'
             }
         }).then(res => {
@@ -2463,17 +2865,16 @@ function customer() {
     getCustomer().then(number => {
         const d = new Date()
         d.setDate(d.getDate() + 2)
-        if (!/customer/.test(document.cookie)) {
-            fetch('/add-customer', {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    'accept': 'application.json'
-                },
-                body: JSON.stringify({ number })
-            })
-            document.cookie = 'customer=customer; path=/; expires=' + d
-        }
+        if (/user/.test(document.cookie)) return
+        fetch('/add-customer', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json', authorization: Cookies.get('token'),
+                'accept': 'application.json'
+            },
+            body: JSON.stringify({ number })
+        })
+        document.cookie = 'customer=customer; path=/; expires=' + d
     }).catch(err => infoContainer(err, false))
 }
 
@@ -2599,13 +3000,14 @@ function toggleRepeatList() {
 function allUserAvatar() {
     const users = _('.user_name_msg')
     const names = []
+    if (!users) return
     for (let item of users)
         names.push(item.innerText)
     const noRepeatName = [...new Set(names)]
     fetch('/all_user_avatar', {
         method: 'POST',
         headers: {
-            'content-type': 'application/json',
+            'content-type': 'application/json', authorization: Cookies.get('token'),
             'accept': 'application/json'
         },
         body: JSON.stringify({ name: noRepeatName })
@@ -2804,11 +3206,11 @@ function mobileEntry() {
 
 function loginApi() {
     _('.login-i', 'click', () => {
-        const type = _('.registerbtn').style['display']
-        type === 'block' ?
-            _('.registerbtn').click()
+        const type = _('#login').style.display
+        type === 'none' ?
+            _('#register').click()
             :
-            _('.current-api').click()
+            _('#login').click()
     })
 }
 
@@ -2854,7 +3256,7 @@ function innerRepeat() {
             fetch('/repeatMsg', {
                 method: 'post',
                 headers: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json', authorization: Cookies.get('token'),
                     'accept': 'application/json'
                 },
                 body: JSON.stringify({
@@ -2894,7 +3296,7 @@ function innerRepeat() {
         fetch('/deleteInnerRepeat', {
             method: 'post',
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 'accept': 'application/json'
             },
             body: JSON.stringify({ _id, _parent_id, name: window.Base64.decode(name) })
@@ -2927,13 +3329,26 @@ function navSelect() {
     }
 }
 
+function viewImg(){
+    _('#dynamic_container', 'click', ev => {
+        if (/dynamicImg/.test(ev.target.className)){
+            _('.dynamicImgView').style.display = 'block'
+            _('.dynamicImgView img').src = ev.target.getAttribute('src')
+        }
+    })
+    _('.dynamicImgView img', 'click', () => _('.dynamicImgView').style.display = 'none' )
+}
+
 function handleEnterKey() {
     _('.enterDown', 'keydown', function (ev) {
-        ev.keyCode === 13 && _('.login-i').click()
+        ev.keyCode === 13 &&
+            _('.login-i').click()
     }, false)
 }
 
 window.onload = () => {
+    viewImg()
+    loadDynamicByPageSize()
     handleEnterKey()
     navSelect()
     innerRepeat()
@@ -2993,7 +3408,7 @@ function updateArticle() {
         fetch('/queryArticleById', {
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 'accept': 'application/json'
             },
             body: JSON.stringify({ _id })
@@ -3040,7 +3455,7 @@ function updateArticleById(_id, summary) {
     fetch('/updateArticleById', {
         method: 'POST',
         headers: {
-            'content-type': 'application/json',
+            'content-type': 'application/json', authorization: Cookies.get('token'),
             'accept': 'application/json'
         },
         body: JSON.stringify({ _id, summary, type })
@@ -3059,7 +3474,7 @@ function getDynamic(_id) {
         fetch('/dynamicQueryById', {
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
+                'content-type': 'application/json', authorization: Cookies.get('token'),
                 accept: 'application/json'
             },
             body: JSON.stringify({ _id })
@@ -3082,6 +3497,7 @@ function setText(obj) {
     _('#dw_title').value = obj.title
     _('.edit_textarea1').value = obj.content
     _('span.count').innerHTML = '' + (180 - obj.content.length)
+    _('.uploadView').src = obj.img
     _('#update_dw').onclick = () => {
         const val = _('.edit_textarea1').value
         const title = _('#dw_title').value
@@ -3094,21 +3510,53 @@ function setText(obj) {
 }
 
 function updateDynamicById(_id, content, title) {
-    fetch('/updateDynamic', {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json',
-            accept: 'application/json'
-        },
-        body: JSON.stringify({ _id, content, title })
-    }).then(res => {
-        if (res.status >= 200 && res.status < 300) return res.json()
-        return res.status
-    }).then(res => {
-        res ? infoContainer('更新成功', true, () => {
-            window.location.reload()
-        }) : infoContainer('更新失败，请稍后重试', false)
-    }).catch(_ => infoContainer(_, !1))
+    const dataUrl = _('.uploadView').src
+    // console.log(dataUrl)
+    const name = _('.uploadView').getAttribute('name')
+    if (dataUrl.length > 300) {
+        loadingUI('start')
+        fetch('/setDynamicImg', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json', authorization: Cookies.get('token'),
+                'accept': 'application/json'
+            },
+            body: JSON.stringify({ name, dataUrl })
+        }).then(res => {
+            loadingUI('end')
+
+            if (res.status >= 200 && res.status < 300)
+                return res.json()
+            return res
+        }).then(result => {
+            if (result.success) {
+                senDynamic(_id, content, title, result.img)
+            } else infoContainer(result && result.errorMsg || result)
+        })
+        return
+    }
+    senDynamic(_id, content, title)
+    function senDynamic(_id, content, title, img) {
+        fetch('/updateDynamic', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json', authorization: Cookies.get('token'),
+                accept: 'application/json'
+            },
+            body: JSON.stringify({ _id, content, title, img })
+        }).then(res => {
+            if (res.status >= 200 && res.status < 300) return res.json()
+            return res.status
+        }).then(res => {
+            res ? infoContainer('更新成功', true, () => {
+                if (window.sessionStorage) {
+                    sessionStorage.removeItem('dynamic' + getCurrentPageSize('dynamic'))
+                }
+                window.location.reload()
+            }) : infoContainer('更新失败，请稍后重试', false)
+        }).catch(_ => infoContainer(_, !1))
+    }
+
 }
 
 function editDynamic() {
