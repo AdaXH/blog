@@ -1,6 +1,7 @@
 const Dynamic = require('./../dbmodel/Dynamic')
 const User = require('./../dbmodel/User')
 const Base64 = require('js-base64').Base64
+const Customer = require('../dbmodel/Customer')
 const fs = require('fs')
 const jwt = require('jsonwebtoken')
 
@@ -65,6 +66,9 @@ routerExports.getDynamic = {
         }
         return _result
       })
+      const customer = await Customer.findOne({})
+      if (customer.number)
+        await Customer.updateOne({}, { $set: { number: customer.number + 1 } })
       ctx.body = {
         success: true,
         data: temp
@@ -258,15 +262,15 @@ routerExports.deleDynamic = {
       const payload = getJWTPayload(ctx.headers.authorization)
       if (!payload) throw 'token认证失败'
       else {
-        const { _id } = payload
-        const user = await User.findOne({ _id })
+        const user = await User.findOne({ _id: payload._id })
         if (!user.admin)
           throw '当前用户无权限'
+        const deleteRes = await Dynamic.deleteOne({ _id })
+        if (deleteRes.ok !== 1) 
+          throw '删除失败'
       }
-      const result = await callDeleteDynamicById(_id)
       ctx.body = {
         success: true,
-        data: result,
         ...payload
       }
     } catch (error) {
@@ -278,9 +282,9 @@ routerExports.deleDynamic = {
   }
 }
 
-function callDeleteDynamicById(_id) {
+function callDeleteDynamicById(_id) { // 废弃
   return new Promise((resolve, reject) => {
-    Dynamic.remove({ _id }, err => {
+    Dynamic.deleteOne({ _id }, err => {
       if (err) reject('删除失败' + err instanceof Object ? JSON.stringify(err) : err.toString())
       else {
         Dynamic.find({}, (err, result) => {

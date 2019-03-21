@@ -43,12 +43,14 @@ routerExports.addCustomer = {
     url: '/add-customer',
     route: async (ctx, next) => {
         const { number } = ctx.request.body
-        await Customer.updateOne({}, { $set: { number } })
-            .then(data => {
-                ctx.body = true
-            }).catch(err => {
-                ctx.body = false
-            })
+        try {
+            const customer = await Customer.findOne({})
+            if (customer.number)
+             await Customer.updateOne({}, { $set: { number: customer.number + 1 } })
+            ctx.body = true
+        } catch (error) {
+            ctx.body = false            
+        }
     }
 }
 
@@ -210,15 +212,20 @@ routerExports.routerIndex = {
     url: '/*',
     route: async (ctx, next) => {
         const userAgent = /Mobile+|iPhone+|Android/.test(ctx.request.header['user-agent']) ? 'Mobile' : 'pc'
+        const { request: { url } } = ctx
         const date = new Date()
-        // console.log(ctx.request.header)
-        const time = `${ctx.request.header.referer || ''} : ${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}号 : ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`
-        if (/newVersion/.test(ctx.request.header.referer) && userAgent === 'pc') {
-            console.log('dva:    ' + time)
-            await ctx.render('dva-version')
-        }
-        else {
-            if (userAgent === 'pc') { // native
+        const time = `${url|| ''} : ${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}号 : ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`
+        
+        // Mobile
+        if (userAgent === 'Mobile') {
+                console.log('Mobile: ' + time)
+                await ctx.render('mobile')
+            }
+        
+        
+        else if(/native/.test(url)){
+            console.log('Native:  ' + time )
+            if (userAgent === 'pc') { // native-version
                 try {
                     const mood = await moodArr(time)
                     const article = await articleArr()
@@ -258,10 +265,11 @@ routerExports.routerIndex = {
                     })
                 }
             }
-            else {
-                console.log('Mobile: ' + time)
-                await ctx.render('mobile')
-            }
+        }
+        // Dva
+        else{
+            console.log('dva:    ' + time)
+            await ctx.render('dva-version')
         }
 
     }
