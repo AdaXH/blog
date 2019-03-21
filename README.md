@@ -74,6 +74,6 @@ module.exports = mongoose.model('users', mongoose.Schema({
 })) //  **the admin's property 'admin' must be 'true' or some operation won't be work !**  
 ```
 
-URL  https://adaxh.applinzi.com
+URL  http://www.adaxh.site
  
 ![screenshot](http://wx2.sinaimg.cn/mw690/a99a6e98ly1fox9b9l44ij20sg0lc457.jpg)  
