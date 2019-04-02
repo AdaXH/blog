@@ -4,11 +4,12 @@
   "description": "",
   "main": "koa.js",
   "engines": {
-    "node": "8.11.3"
+    "node": "8.11.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node koa.js"
+    "start": "NODE_ENV=production node koa.js",
+    "dev": "NODE_ENV=development node koa.js"
   },
   "author": "Ada",
   "license": "ISC",
@@ -27,8 +28,8 @@
   "dependencies": {
     "ejs": "^2.6.1",
     "js-base64": "^2.4.8",
-    "jsonwebtoken": "^8.4.0",
-    "koa": "^2.5.2",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
     "koa-json": "^2.0.2",
     "koa-jwt": "^3.5.1",

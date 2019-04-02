@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title><%= title %></title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="./sass/main.css">
+    <link rel="stylesheet" href="./sass/animate.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-grid.min.css">
+    <script>
+        if (!window.Promise) {
+            document.writeln('<script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"' + '>' + '<' + '/' + 'script>');
+        }
+    </script>
+    <script>
+        (function () {
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+    <script src="./js/template.js"></script>
+    <script src="./js/ge1doot.js"></script>
+    <script src="./js/imageTransform3D.js"></script>
+    <script src='./js/buddle.js'></script>
+</head>
+
+<body style="height:100%;bakcground:#333333ba">
+    <div id="srcLoading" class="srcLoading">
+        <div id="loading-circle" class="loading-circle">
+            <div class="k-line2 k-line12-1"></div>
+            <div class="k-line2 k-line12-2"></div>
+            <div class="k-line2 k-line12-3"></div>
+            <div class="k-line2 k-line12-4"></div>
+            <div class="k-line2 k-line12-5"></div>
+            <div class="k-line2 k-line12-6"></div>
+            <div class="k-line2 k-line12-7"></div>
+            <div class="k-line2 k-line12-8"></div>
+        </div>
+        <p>
+            <span id='percentText' class="percent">
+                0
+            </span>
+            <span>%</span>
+        </p>
+    </div>
+    <div class="context-menu tempexit animated">
+        <ul>
+            <li class="menu-reload"><i class="linkfont">&#xe662;</i>重新栽入</li>
+            <li class="random-bg"><i class="linkfont">&#xe663;</i>随机背景</li>
+            <li class="bug-reporter">
+                <img src="/resouce/images/qq.png" alt='png'>
+                <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=3532371088&site=qq&menu=yes">Bug？点击反馈</a>
+            </li>
+            <li class="close-blog"><i class="linkfont">&#xe626;</i>退出</li>
+        </ul>
+    </div>
+    <div class="result-info animated tada">
+        <i class="dialog_font fl">&#xe6b3;</i>
+        <p class="fr">test message</p>
+    </div>
+    <div class="loadingUI">
+        <div class="loadingContainer">
+            <div class="k-ball7a"></div>
+            <div class="k-ball7b"></div>
+            <div class="k-ball7c"></div>
+            <div class="k-ball7d"></div>
+        </div>
+    </div>
+    <div class="body_overlay">
+        <div class="left_overlay"></div>
+    </div>
+    <div class="loading">
+        <div class="loading_top loadingY">
+            <h3 class="loading_title tempexit">Welcome</h3>
+            <p class="loading_paragraph tempexit">Maybe you can't save the world , but you can change the world.</p>
+            <h4 class="unlock tempexit">Slide down to unlock</h4>
+        </div>
+        <div class="loading_down loadingY"></div>
+        <div class="loading_center_box tempexit">
+            <div class="loading_btn">
+                <div class="btn"></div>
+                <div class="btn_inner"></div>
+                <i class="linkfont direction">&#xe63a;</i>
+            </div>
+            <div class="loading_dot">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+    <div class="adminContainer">
+        <div class="admin">
+            <ul class="admin_menu">
+                <li class="animated"><a javascript:;><i class="linkfont">&#xe658;</i>发表动态</a></li>
+                <li class="animated"><a javascript:;><i class="linkfont">&#xe633;</i>更新介绍</a></li>
+                <li class="animated"><a javascript:;><i class="linkfont">&#xe633;</i>发表文章</a></li>
+                <li class="animated"><a javascript:;><i class="linkfont">&#xe662;</i>更多操作</a></li>
+                <li class="animated">
+                    <a javascript:;>
+                        <i class="linkfont">&#xe626;</i>取消操作</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="edit_ui">
+            <div class="select_line">
+                <div class="dot animated"></div>
+            </div>
+            <div class="edit_li map_li temp_operation animated">
+                <input type="text" id="dw_title" class="fl reset_value" placeholder="点击以输入标题">
+                <textarea class="edit_textarea edit_textarea1 reset_value" id="short_article_textarea"></textarea>
+                <div class="effect_text"></div>
+                <p class="fl word_count">还可输入<span class="count">180</span>字</p>
+                <a class="publish-dynamic" id="publish_dw">publish</a>
+                <a class="update_dw" id="update_dw">update</a>
+            </div>
+            <div class="map_li animated introduceContainer">
+                <textarea class="edit_textarea reset_value" id="introduce_textarea"></textarea>
+                <a class="publish-dynamic" id="editIntroduce">update</a>
+            </div>
+            <div id='edit-plugin' class="map_li htmleaf-container temp_operation toggleitem animated">
+                <div class="article-type fl">
+                    <p class="type-info">文章类型：</p>
+                    <label for="article-type" id='artilce-type-label'>
+                        <input type="radio" name='article-type' value='HTML' checked><span>HTML</span>
+                        <input type="radio" name='article-type' value='CSS'><span>CSS</span>
+                        <input type="radio" name='article-type' value='JavaScript'><span>JavaScript</span>
+                        <input type="radio" name='article-type' value='React'><span>React</span>
+                        <input type="radio" name='article-type' value='Vue'><span>Vue</span>
+                        <input type="radio" name='article-type' value='NodeJs'><span>NodeJS</span>
+                    </label>
+                </div>
+                <div class="container toggleitem" id="container">
+                    <div class="row" id="row">
+                        <div class="col-md-12 mt50">
+                            <div id="standalone-container">
+                                <div id="toolbar-container">
+                                    <span class="ql-formats">
+                                        <select class="ql-font"></select>
+                                        <select class="ql-size"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-color"></select>
+                                        <select class="ql-background"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-script" value="sub"></button>
+                                        <button class="ql-script" value="super"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-header" value="1"></button>
+                                        <button class="ql-header" value="2"></button>
+                                        <button class="ql-blockquote"></button>
+                                        <button class="ql-code-block"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-list" value="ordered"></button>
+                                        <button class="ql-list" value="bullet"></button>
+                                        <button class="ql-indent" value="-1"></button>
+                                        <button class="ql-indent" value="+1"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-direction" value="rtl"></button>
+                                        <select class="ql-align"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-link"></button>
+                                        <button class="ql-image"></button>
+                                        <button class="ql-video"></button>
+                                        <button class="ql-formula"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-clean"></button>
+                                    </span>
+                                </div>
+                                <div class="editor-container" id="editor-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class='publish-edit'>publish</button>
+                <button class='update_article'>update</button>
+            </div>
+            <div class="operation map_li temp_operation animated">
+                <div class="operation_box fl animated">
+                    <div class="delete_info"></div>
+                    <div class="all_short_article_face fl">
+                        <p class="operation_name">所有动态</p>
+                        <div class="all_short_article_container">
+                            <ul class="all_short_article">
+                                <% dynamic.forEach(item=>{ %>
+                                <li>
+                                    <a class="delete_item delete_dynamic fl" _id=<%= item._id%>><i
+                                            class="fl linkfont">&#xe603;</i></a>
+                                    <a class="fl edit_item_dynamic" _id=<%= item._id%>><i
+                                            class="edit_item_dynamic_icon linkfont fl">&#xe759;</i></a>
+                                    <p class="fl"><%= item.title %></p>
+                                    <span class="fr short_article_date"><%= item.date %></span>
+                                </li>
+                                <% }) %>
+                                <script type="text/html" id="dynamic_operation_tpl">
+                            {{each dynamics as dynamic}}
+                            <li>
+                                <a class="delete_item delete_dynamic fl" _id={{dynamic._id}}><i class="fl linkfont">&#xe603;</i></a>
+                                <a class="fl edit_item_dynamic" _id={{dynamic._id}}><i class="linkfont fl">&#xe759;</i></a>
+                                <p class="fl">{{dynamic.title}}</p>
+                                <span class="fr short_article_date">{{dynamic.date}}</span>
+                            </li>
+                            {{/each}}
+                        </script>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="all_article_face fr">
+                        <p class="operation_name">所有文章</p>
+                        <div class="o_all_article_con">
+                            <ul class="o_all_article">
+                                <script type="text/html" id="article_operation_tpl">
+                          {{each data as article}}
+                          <li _id={{article._id}} >
+                              <a class="delete_item delete_article"  _id={{article._id}}><i class="fl linkfont">&#xe603;</i></a>
+                              <a class="fl edit_item_article" _id={{article._id}}><i _id={{article._id}} class="update_article_icon linkfont">&#xe759;</i></a>
+                              <p class="fl">{{article.title}}</p>
+                              <span class="fr short_article_date">{{article.date}}</span>
+                          </li>
+                          {{/each}}
+                      </script>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="screen tempexit">
+        <div class="avatarTip showLoginSuccess">
+            <div class="tipBox">
+                <p class="tipText">点击此处以设置头像</p>
+                <a href="javascript: void(0)" class="closeTip">关闭</a>
+            </div>
+        </div>
+        <div class="more_operation_entry">
+            更多
+        </div>
+        <div class="mobile_entry">
+            <div class="entry_mibile"></div>
+            <img src='' class="user_icon avatar_img" alt='头像加载中' />
+            <ul class="operation_mobile">
+                <li>
+                    <a class="animated fr all_user new_login" href="javascript: void(0);">
+                        <i class="linkfont">&#xe6ba;</i>
+                        <span></span>
+                    </a>
+                </li>
+                <li class='_new_register'>
+                    <a class="animated fr add_article_api new_register" href="javascript: void(0);">
+                        <i class="linkfont">&#xe6a3;</i>
+                        <span>注册</span>
+                    </a>
+                </li>
+                <li>
+                    <a class='gallery_api fr' href="javascript: void(0);">
+                        <i class="linkfont">&#xe632;</i>
+                        <span>图库走廊</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="fr" href="https://github.com/AdaXH/blog">
+                        <i class="linkfont">&#xe6a4;</i>
+                        <span>github</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="fr adminMobile" href="javascript: void(0);">
+                        <i class="linkfont">&#xe662;</i>
+                        <span>管理员</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="more_operation_container">
+            <div class="left_container">
+                <!-- <div class="mobileFace">
+
+                </div> -->
+            </div>
+            <!-- <div class="right_container">
+                <div class="top_bar_op">
+                  <ul class="fl">
+                    <li class="fl"></li>
+                    <li class="fl"></li>
+                    <li class="fl"></li>
+                  </ul> 
+                </div>
+                <div class="down_bar_con">
+                    <div class="about_me_container initDisplay">
+                        <div class="box fl"></div>
+                        <div class="box fl"></div>
+                        <div class="box fl"></div>
+                        <div class="box fl"></div>
+                        <div class="box fl"></div>
+                        <div class="box fl"></div>
+                        <div class="box fl">
+                            <p class="name">Ada</p>
+                        </div>
+                        <div class="box fl">
+                            <p class="name_info">代码爱好者...</p>
+                        </div>
+                        <div class="box fl"></div>
+                        <div class="box fl"></div>
+                        <div class="box fl">
+                            <p class="info1">
+                                其实。。。
+                            </p>
+                        </div>
+                        <div class="box fl">
+                            <p class="info2">
+                                啥也不会 = =
+                            </p>
+                        </div>
+                        <div class="box fl">
+                            <p class="info4">这是我的</p>
+                        </div>
+                        <div class="box fl">
+                            <p class="info5">个人主页</p>
+                        </div>
+                        <div class="box fl"></div>
+                        <div class="box fl">
+                            <p class="info3">
+                                啥也不会 = =
+                            </p>
+                        </div>
+                        <div class="box fl"></div>
+                        <div class="box fl"></div>
+                        <div class="box fl">
+                            <p class="info6">生命不息</p>
+                        </div>
+                        <div class="box fl">
+                            <p class="info7">优化不止...</p>
+                        </div>
+                        <div class="avatar_container"></div>
+                    </div>
+                    <div class="sourceContainer initDisplay">
+                        <ul class="fl soureUl">
+                            <li>
+                                <i class="linkfont">&#xe632;</i>
+                                <span>相册资源</span>
+                            </li>
+                            <li>
+                                <i class="linkfont">&#xe663;</i>
+                                <span>背景资源</span>
+                            </li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                        <ul class="fr sourceOperation">
+                            <li class="operationItem">
+                                <div class="photoManage"></div>
+                            </li>
+                            <li class="operationItem"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+        <div class="leavemsg_loading load">
+        </div>
+        <div class="loadimg load">
+            <img src="./resouce/images/load.png">
+            <div class="dot"></div>
+        </div>
+        <div class="aside_top afterOpen">
+            <i class="linkfont menu_toggle">&#xe67e;</i>
+            <div class="user fl">
+                <img src='' class="user_icon avatar_img" alt='头像加载中' />
+                <p class="user_name change">Welcome</p>
+                <input class="upload_avatar showLoginSuccess" id='avatar' title='点击以设置头像' type='file' />
+            </div>
+        </div>
+        <aside class="afterOpen">
+            <ul class="aside_menu">
+                <li>
+                    <div class="hover_shadow"></div>
+                    <a class="animated fr all_user new_login" href="javascript: void(0);">
+                        <i class="linkfont shake">&#xe6ba;</i><span></span></a>
+                </li>
+                <li class='_new_register'>
+                    <div class="hover_shadow"></div>
+                    <a class="animated fr add_article_api new_register" href="javascript: void(0);">
+                        <i class="linkfont shake">&#xe6a3;</i>
+                        <span>注册</span>
+                    </a>
+                </li>
+                <li>
+                    <div class="hover_shadow"></div>
+                    <a class="leave_message" href="javascript: void(0);"><i
+                            class="linkfont shake">&#xeee0;</i><span>留言板</span></a>
+                </li>
+                <li>
+                    <div class="hover_shadow"></div>
+                    <a class='gallery_api' href="javascript: void(0)"><i
+                            class="linkfont shake">&#xe632;</i><span>图库走廊</span></a>
+                </li>
+                <li class="ic shareToSina">
+                    <div class="hover_shadow"></div>
+                    <a href="javascript: void(0);">
+                        <i class="linkfont shake">&#xe6b8;</i>
+                        <span>分享到新浪</span>
+                    </a>
+                </li>
+                <li class="ic qz" id='zone'>
+                    <div class="hover_shadow"></div>
+                    <i class="qzone fl shake">
+                        <img class="fl" src="./resouce/images/qzone.png" alt=' '>
+                    </i>
+                    <span class="cover">分享到QQ空间</span>
+                </li>
+                <li class="ic">
+                    <div class="hover_shadow"></div>
+                    <a href="https://github.com/AdaXH/blog"><i class="linkfont shake">&#xe6a4;</i>
+                        <span>github</span>
+                    </a>
+                </li>
+                <li class="ic">
+                    <div class="wechat_img"><img src='./resouce/images/wechat.png' alt='微信二维码'></div>
+                    <div class="hover_shadow"></div>
+                    <a href="javascript: void(0);"><i class="linkfont shake">&#xe64f;</i>
+                        <span>微信二维码</span>
+                        <i class="fr wechat linkfont">&#xe6b9;</i>
+                    </a>
+                </li>
+                <li>
+                    <div class="hover_shadow"></div>
+                    <a class="theme"><i class="linkfont shake">&#xe663;</i>
+                        <span>主题</span>
+                        <i class="fr change_theme linkfont">&#xe6b9;</i>
+                    </a>
+                    <div class="theme_containter">
+                        <ul>
+                            <li class="fl"></li>
+                            <li class="fl"></li>
+                            <li class="fl"></li>
+                            <li class="fl"></li>
+                            <li class="fl"></li>
+                            <li class="fl"></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </aside>
+        <header class="afterOpen">
+            <ul class="nav">
+                <li class="fl"><a class="change index" href="#/index">首页</a></li>
+                <li class="fl"><a class="change triggerArticle" href="#/article">文章</a></li>
+                <li class="fl"><a class="change" href="#/message">留言板</a></li>
+                <li class="fl"><a class="change" href="#/about">关于</a></li>
+                <li id='navSelect'></li>
+            </ul>
+            <div class="search_container fr">
+                <i class="linkfont fl">&#xe68d;</i>
+                <input type="text" class="fr search_input" placeholder="search" />
+            </div>
+            <div class="weather fr">
+                <iframe width="450" scrolling="no" height="20" frameborder="0" allowtransparency="true"
+                    src="http://i.tianqi.com/index.php?c=code&id=1&color=%23FFFFFF&icon=1&wind=1&num=1&site=15"></iframe>
+            </div>
+        </header>
+        <div class="repeat_over ">
+            <div class="repeat_con animated">
+                <textarea class="repeat_word" placeholder="点此以输入内容"></textarea>
+                <div class="btn_con">
+                    <a class="cancel_repeat" href="javascript: void(0);">取消</a>
+                    <a class="submit_repeat" href="javascript: void(0);">确定</a>
+                </div>
+            </div>
+        </div>
+        <main class="afterOpen">
+            <ul class="all">
+                <li class="fl menu face glitch_face">
+                    <div class="center_bar fl">
+                        <ul class="dynamic" id='dynamic_container'>
+                            <% dynamic.forEach(item=>{ %>
+                            <li class="dynamic_item" _id=<%= item._id %>>
+                                <p class="title titleShow fl"><%= item.title %></p>
+                                <p class="summary titleShow"><%= item.content %></p>
+                                <span class="fl dynamic_date"><%= item.date %></span>
+                                <div class="fr dynamic_good">
+                                    <i _id=<%= item._id %> class="fr  awesome_dynamic linkfont">&#x349a;</i>
+                                    <span class="fr"><%= item.upvote %></span>
+                                </div>
+                                <div class="fr dynamic-msg">
+                                    <i class="fr dynamic-msg-icon linkfont">&#xe633;</i>
+                                    <span class="fr"><%= item.msg.length %></span>
+                                </div>
+                                <div class="dynamic-msg-container">
+                                    <div class="inesrt-text">
+                                        <textarea class="animated insert-textarea"></textarea>
+                                        <button _id=<%= item._id %> class="leave-dynamic-mg">发表</button>
+                                    </div>
+                                    <ul class="dynamic-msg-ul">
+                                        <% item.msg.reverse().forEach(temp => { %>
+                                        <li class="dynamic-msg-item">
+                                            <i _msgid=<%= item._id %> _id=<%= temp._id || 'null' %>
+                                                class="deleteDynamicRepeat linkfont">&#xe603;</i>
+                                            <p class="dynamic-msg-date">
+                                                <span class="dynamic-repeat-name"><%= temp.name || '神秘人' %>：</span>
+                                                <span class="date"><%= temp.date %></span>
+                                            </p>
+                                            <p class="dynamic-msg-context"><%= temp.context %></p>
+
+                                        </li>
+                                        <%   }) %>
+                                    </ul>
+                                </div>
+                            </li>
+                            <% }) %>
+                            <script type="text/html" id="dynamic_tpl">
+                            {{each dynamics as dynamic}}
+                            <li class="dynamic_item" _id={{ dynamic._id }}>
+                                <p class="title titleShow fl">{{dynamic.title}}</p>
+                                <p class="summary titleShow">{{dynamic.content}}</p>
+                                <span class="fl dynamic_date">{{dynamic.date}}</span>
+                                <div class="fr dynamic_good">
+                                    <i class="fr awesome_dynamic linkfont">&#x349a;</i>
+                                    <span class="fr">{{dynamic.upvote}}</span>
+                                </div>
+                                <div class="fr dynamic-msg">
+                                    <i class="fr dynamic-msg-icon linkfont">&#xe633;</i>
+                                    <span class="fr ">{{dynamic.msg.length}}</span>
+                                </div>
+                            <div class="dynamic-msg-container">
+                               <div class="inesrt-text">
+                                     <textarea class="animated insert-textarea"></textarea>
+                                     <button _id={{ dynamic._id }} class="leave-dynamic-mg">发表</button>
+                                </div>
+                                <ul class="dynamic-msg-ul">
+                                    {{ each dynamic.msg.reverse() as temp }}
+                                    <li class="dynamic-msg-item">
+                                        <i _msgid={{dynamic._id}} _id={{ temp._id }} class="deleteDynamicRepeat linkfont">&#xe603;</i>
+                                        <p class="dynamic-msg-date">
+                                            <span class="dynamic-repeat-name">{{temp.name || '神秘人'}}：</span>
+                                            <span class="date">{{ temp.date }}</span>
+                                        </p>
+                                        <p class="dynamic-msg-context">{{temp.context}}</p>
+                                        
+                                    </li>
+                                    {{/each}}
+                                </ul>
+                            </div>
+                            </li>
+                            {{/each}}
+                        </script>
+                        </ul>
+                    </div>
+                    <div class="right_bar fr">
+                        <div class="swiper-container">
+                            <div class="camera-effect"></div>
+                            <div class="camera-effect"></div>
+                            <div class="camera-effect"></div>
+                            <div class="camera-effect"></div>
+                            <div class="camera-effect"></div>
+                            <div class="camera-effect"></div>
+                            <div class="camera-effect"></div>
+                            <div class="camera-effect"></div>
+                            <span class="effect-line text">Glitch</span>
+                            <span class="swiper-wrapper">
+                                <div class="glitch_effect">
+                                    <div class="customer">
+                                        <p class="customer-word">欢迎，您是第<span id='customer_number'>&nbsp;</span>个访客</p>
+                                    </div>
+                                    <img src="./resouce/images/glitch.jpg" alt="glitch特效" />
+                                </div>
+                            </span>
+                        </div>
+                        <div class="right_bar_down">
+                            <ul class="mood_board">
+                                <% mood.forEach((item)=>{ %>
+                                <li class="mood_item change">
+                                    <span class="date"><%= item.date %></span>
+                                    <div class="line"></div>
+                                    <p class="change"><%= item.mood %></p>
+                                </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="fl 0 face" id="articles_container">
+                    <ul class="article_list">
+
+                        <% article.forEach((item)=>{ %>
+                        <li class="article articles animated articles_list" _id=<%= item._id %> type=<%= item.type %>>
+                            <div class="article-info">
+                                <div class="article-time"><span></span><span><%= item.time %></span></div>
+                                <div class="article-viewer"><span></span><span><%= item.viewer %></span></div>
+                                <div class="article-type-info"><span></span><span><%= item.type %></span></div>
+                            </div>
+                            <i class="article_close linkfont">&#xe629;</i>
+                            <span class="article_date"><%= item.date %> <p class="year"><%= item.year %></p></span>
+                            <div class="article_summary"><%- item.summary %></div>
+                        </li>
+                        <% }) %>
+                        <script type="text/html" id="article_tpl">
+                        {{each articles as article}}
+                        <li class="article animated articles" _id={{article._id}} type={{article.type}}>
+                             <div class="article-info">
+                              <div class="article-time"><span>{{ item.time }}</span></div>
+                              <div class="article-viewer"><span>{{ item.viewer }}</span></div>
+                              <div class="article-type-info"><span>{{ item.type }}</span></div>
+                            </div>
+                            <i class="article_close linkfont">&#xe629;</i>
+                            <span class="article_date">{{article.date}}<p class="year">{{article.year}}</p></span>
+                            <pre class="article_summary">{{article.summary}}</pre>
+                        </li>
+                        {{/each}}
+                    </script>
+                    </ul>
+                    <div class="right_article_list">
+                        <p>所有文章类别</p>
+                        <div class="animated selectType article-type-text" id="recoverAll">全部</div>
+                        <div class="animated article-type-text">HTML</div>
+                        <div class="animated article-type-text">CSS</div>
+                        <div class="animated article-type-text">NodeJs</div>
+                        <div class="animated article-type-text">React</div>
+                        <div class="animated article-type-text">Vue</div>
+                        <div class="animated article-type-text">JavaScript</div>
+
+                    </div>
+                </li>
+                <li class="fl face">
+                    <div class="message_board_input">
+                        <form action="">
+                            <textarea class="msg animated" name="message" id="msg" name="msg"></textarea>
+                            <input class="leave_msg" type="button" id="saveMsgBtn" name="submit" value="发表">
+                            <input class="msg_name" id='saveMsgName' style="display:none" type="text"
+                                placeholder="your name" disabled='true'>
+                            <p class="msg_word_count">还可输入<span class="msg_count">280</span>字</p>
+                        </form>
+                    </div>
+                    <ul class="temp_ul">
+                        <li class="fl repeatCount">0评论</li>
+                        <li class="fr repeatCount">0人参与</li>
+                    </ul>
+                    <div class="message_box">
+                        <ul class="message_list fl">
+                            <% message.forEach((item)=>{ %>
+                            <li class='message_item'>
+
+                                <a class="user_avatar fl"><img class="user_avatar_img" src="" alt='无头像'></a>
+                                <p class="user _user fl"><span class='user_name_msg'><%= item.name %></span> :
+                                    <span class="message_date"><%= item.date %></span>
+                                </p>
+                                <div class="message_operation fr">
+                                    <a class="repeat_msg fl" _to_repeat=<%= item.name %> _id=<%= item._id %>>[回复]</a>
+                                    <a class="delete_msg fr" _id=<%= item._id %>>[删除]</a>
+                                </div>
+                                <p class="message_content"><%= item.content %>
+                                </p>
+                                <a class="togger_repeat_list"
+                                    style=<%- item.repeat.length === 0 ? 'display:none' : 'display:block' %>>
+                                    展开
+                                </a>
+                                <ul class="repeat_list">
+                                    <% item.repeat.forEach((repeat)=>{ %>
+                                    <li class="repeat_item">
+                                        <div class="innerRepeat fr">
+                                            <a class="innerRepeatAPI fl" _id=<%= repeat._id %>
+                                                _to_repeat=<%= repeat.name %> _parent_id=<%= item._id %>>[回复 -
+                                                <%= repeat.name %>]</a>
+                                            <a class="innerDeleteMsg fr" _name=<%= repeat.name %>
+                                                _parent_id=<%= item._id%> _id=<%= repeat._id %>>[删除]</a>
+                                        </div>
+                                        <p class="repeat_user fl"><%= repeat.name %>
+                                            <span class="repeat_date"><%= repeat.date %>
+                                                <span>
+                                                    <!-- @ -->
+                                                    <span style='color:white'>@ <%= repeat.toRepeat %>
+                                                        <span>:</span>
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p class="repeat_text"><%= repeat.info %></p>
+                                    </li>
+                                    <%  }) %>
+
+                                </ul>
+                            </li>
+                            <% }) %>
+                            <script type="text/html" id="message-tpl">
+                            {{each messages as message}}
+                                <li class='message_item'>
+                                  <a class="user_avatar fl"><img class="user_avatar_img" src="" alt='无头像'></a>
+                                     <p class="user _user fl"><span class='user_name_msg'>{{message.name}}</span> : 
+                                      <span class="message_date">{{message.date}}</span>
+                                    </p>
+                                                            <div class="message_operation fr">
+                              <a class="repeat_msg fl" _to_repeat={{message.name}} _id={{message._id}}>[回复]</a>
+                              <a class="delete_msg fr" _id={{message._id}}>[删除]</a>
+                            </div>
+                                     <p class="message_content">{{message.content}} </p>
+                             <a class="togger_repeat_list" style={{message.repeat.length !== 0 ? 'display:block' : 'display:none'}}>
+                                展开
+                            </a>
+                          <ul class="repeat_list">
+                              {{ each message.repeat as repeat }}
+                                <li class="repeat_item">
+                                    <div class="innerRepeat fr">
+                                        <a class="innerRepeatAPI fl" _id={{repeat._id}} _to_repeat={{repeat.name || ''}} _parent_id={{message._id}}>[回复]</a>
+                                        <a class="innerDeleteMsg fr" _name={{repeat.name }} _parent_id={{message._id}} _id={{repeat._id}}>[删除]</a>
+                                    </div>
+                                  <p class="repeat_user fl">{{repeat.name }}
+                                    <span class="repeat_date">{{repeat.date }}
+                                        <span>
+                                            <!-- 回复 -->
+                                        <span>@ {{repeat.toRepeat}}
+                                            <span>:</span>
+                                        </span></span></span>
+                                  </p>
+                                  <p class="repeat_text">{{repeat.info }}</p>
+                                  
+                                </li>                              
+                          {{/each}}
+
+                            </ul>    
+                                 </li>
+                            {{/each}}
+                        </script>
+                        </ul>
+                    </div>
+                </li>
+                <li class="fl face">
+                    <div class="aboutme">
+                        <div class="text_word">
+                            <textarea disabled="true" class="introduce"></textarea>
+                        </div>
+                        <div class="life">
+                            <ul>
+                                <li>
+                                    <div class="step">1995 落地</div>
+                                    <div class="circle"></div>
+                                    <div class="line"></div>
+                                </li>
+                                <li>
+                                    <div class="step">2011 文山</div>
+                                    <div class="circle"></div>
+                                    <div class="line"></div>
+                                </li>
+                                <li>
+                                    <div class="step">2014 东北</div>
+                                    <div class="circle"></div>
+                                    <div class="line"></div>
+                                </li>
+                                <li>
+                                    <div class="step">2018 杭州</div>
+                                    <div class="circle"></div>
+                                    <div class="line"></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="search_result_container animated">
+                <p>搜索结果&nbsp;:</p>
+                <ul class="item_info clear_float">
+                    <li class="fl">摘要</li>
+                    <li class="fr">类型</li>
+                    <li class="fr">最后更新日期</li>
+                </ul>
+                <pre class="full_summary">
+            </pre>
+                <div class="get_search_container">
+                    <ul class="get_search">
+                        <script type='text/html' id='search_result_tpl'>
+        			{{each searchs as search}}
+        			<li _id={{search._id}} type={{search.type}}>
+        				<a _id={{search._id}} type={{search.type}} class="fl search_summary"><p class="search_title">{{search.title}}</p>
+{{search.summary}}
+                  </a>
+        				<span class="fr search_date">{{search.date}}</span>
+        				<span class="fr search_type">{{search.type}}</span>
+        			</li>
+        			{{/each}}
+        		</script>
+                    </ul>
+                </div>
+            </div>
+        </main>
+        <div class="flexDown"></div>
+        <div class="login_register">
+            <div class="top_bar bar"></div>
+            <div class="down_bar bar"></div>
+            <div class="login-effect">
+                <div class="left_effect">
+                    <div class="run_circle"></div>
+                    <h5 class="blog">
+                        <p><a>Blog</a></p>
+                    </h5>
+                    <h6 class="ada">
+                        <p><a>Ada</a></p>
+                    </h6>
+                </div>
+                <div class="register">
+                    <div class="right-shadow"></div>
+                    <button name="login" class="current-api setLoginItem" value="" id="login">登录</button>
+                    <i class="linkfont exit">&#xe626;</i>
+                    <div class="input-con">
+                        <form action="">
+                            <input id="username" type="text" name="username" class="enterDown" placeholder="用户名">
+                            <input id="password" class="enterDown" type="password" name="password" autocomplete='off'
+                                placeholder="密码">
+                            <input id="check_password" class='registerInfo enterDown' type="password" name="checkpwd"
+                                autocomplete='off' placeholder="确认密码">
+                        </form>
+                    </div>
+                    <div class="label-con setLoginItem loginInfo">
+                        <label class='setLoginItem'><input type="checkbox" />记住登录状态</label>
+                    </div>
+                    <button name="register" class="registerbtn registerInfo" lvalue="" id="register">注册</button>
+                    <span></span>
+                    <i class="linkfont login-i">&#xe6ba;</i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="canvas_box">
+        <i class="exit_gallery linkfont">&#xe629;</i>
+        <canvas id="canvas">你的浏览器不支持HTML5画布技术，请使用谷歌浏览器。</canvas>
+    </div>
+    <script src="/js/katex.min.js"></script>
+    <script src="/js/highlight.min.js"></script>
+    <script src="/js/quill.min.js"></script>
+    <script type="text/javascript">
+        var quill = new Quill('#editor-container', {
+            modules: {
+                formula: true,
+                syntax: true,
+                toolbar: '#toolbar-container'
+            },
+            placeholder: 'Compose an epic...',
+            theme: 'snow'
+        });
+    </script>
+</body>
+
+</html>

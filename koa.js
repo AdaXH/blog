@@ -1,4 +1,4 @@
-const koa = require('koa')
+﻿const koa = require('koa')
 const app = new koa()
 const bodyparser = require('koa-bodyparser')
 const json = require('koa-json')
@@ -7,10 +7,8 @@ const mongoose = require('mongoose')
 const session = require('koa-session')
 const fs = require('fs')
 const router = require('koa-router')()
-// console.log('1')
+const config = require('./serverConfig')
 
-// middlewares
-// app.use(logger())
 app.use(bodyparser({
     enableTypes: ['json', 'form', 'text'],
     "jsonLimit": '5mb',
@@ -18,27 +16,28 @@ app.use(bodyparser({
     "textLimit": '5mb'
 }))
 
-// session
-app.keys = ['secret']
+app.keys = ['secret'];
 const CONFIG = {
-    key: 'koa:sess',
+    key: 'SESSION_ID', /** (string) cookie key (default is koa:sess) */
+    /** (number || 'session') maxAge in ms (default is 1 days) */
+    /** 'session' will result in a cookie that expires when session/browser is closed */
+    /** Warning: If a session cookie is stolen, this cookie will never expire */
     maxAge: 86400000,
-    overwrite: true,
-    httpOnly: true,
-    signed: true,
-    rolling: false,
-    renew: false,
+    autoCommit: true, /** (boolean) automatically commit headers (default true) */
+    overwrite: true, /** (boolean) can overwrite or not (default true) */
+    httpOnly: false, /** (boolean) httpOnly or not (default true) */
+    signed: true, /** (boolean) signed or not (default true) */
+    rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */
+    renew: false, /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
 };
 app.use(session(CONFIG, app))
 
-// console.log('2')
 app.use(json())
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {
     extension: 'ejs'
 }))
-// console.log('3')
 
 //controllers
 try {
@@ -52,7 +51,7 @@ try {
             for (let key in controllersExport) {
                 if (!controllersExport[key].method || !controllersExport[key].url || !controllersExport[key].route)
                     throw controller + ' 的 "' + key + '" 配置不正确'
-                else{
+                else {
                     router[controllersExport[key].method](controllersExport[key].url, controllersExport[key].route)
                 }
             }
@@ -61,32 +60,20 @@ try {
     console.log(error)
 }
 
-// console.log('4')
 //router
 app.use(router.routes(), router.allowedMethods())
-// console.log('5')
-app.listen(5050, _ => console.log('server on 5050'))
+
+app.listen(config.port, _ => console.log('server on ' + config.port))
 
 //error
 app.on('error', (err, ctx) => {
     console.log('server error', err, ctx)
 });
 
-const env = 'dev'
 //connect to mongo
-//mongodb://root:jTPgd5nT8uSdzDRr0sgazdnwan1dB2gMwcQvslUU@koeabpwkfrbs.mongodb.sae.sina.com.cn:10297,zcubkoddktjc.mongodb.sae.sina.com.cn:10297
-env !== 'dev' ?
-    mongoose.connect('mongodb://root:jTPgd5nT8uSdzDRr0sgazdnwan1dB2gMwcQvslUU@koeabpwkfrbs.mongodb.sae.sina.com.cn:10297').then(res => {
-        res ?
-            console.log('connected to mongo')
-            :
-            console.log('can not connect to mongo')
-    })
-    // console.log('6')
-    :
-    mongoose.connect('mongodb://localhost:27017/graduation', { useNewUrlParser: true }).then(res => {
-        res ?
-            console.log('connected to mongo')
-            :
-            console.log('can not connect to mongo')
-    }) 
+mongoose.connect(config[process.env.NODE_ENV].host).then(res => {
+    res ?
+        console.log('connected to mongo')
+        :
+        console.log('can not connect to mongo')
+})

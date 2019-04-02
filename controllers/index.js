@@ -247,7 +247,7 @@ routerExports.routerIndex = {
                     const dynamicSort = dynamicTemp.sort((b, a) => {
                         return new Date(a.date).getTime() - new Date(b.date).getTime()
                     })
-                    await ctx.render('index', {
+                    await ctx.render('native', {
                         title: 'Ada - 个人主页',
                         mood,
                         article,
@@ -256,7 +256,7 @@ routerExports.routerIndex = {
                     })
                 } catch (error) {
                     console.log(error)
-                    await ctx.render('index', {
+                    await ctx.render('native', {
                         title: 'Ada - 个人主页',
                         mood: [],
                         article: [],
@@ -269,7 +269,7 @@ routerExports.routerIndex = {
         // Dva
         else{
             console.log('dva:    ' + time)
-            await ctx.render('dva-version')
+            await ctx.render('dva')
         }
 
     }

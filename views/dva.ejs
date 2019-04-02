@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="keywords" content="前端,博客,react,koa,adaxh">
+  <meta name="description" content="基于react的blog，个人主页">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ada - Blog</title>
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1007584_0m1ldy3h106e.css">
+  <link rel="stylesheet" href="https://at.alicdn.com/t/font_1007584_w1x2acv6cb.css">
+  <style>
+    #root {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: filter 1s;
+    }
+  </style>
+  <link rel="stylesheet" href="/dva-version/index.css" />
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+  <script>
+    window.debug = function () { return /localhost/.test(window.location.href) }
+  </script>
+</head>
+
+<body>
+
+  <div id="root"></div>
+  <script src="/dva-version/index.js"></script>
+
+</body>
+
+</html>

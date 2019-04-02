@@ -4,7 +4,6 @@ const fs = require('fs')
 const Base64 = require('js-base64').Base64
 const jwt = require('jsonwebtoken')
 const svgCaptcha = require('svg-captcha')
-const session = require('koa-session')
 
 const secret = 'secret'
 /* 通过token获取JWT的payload部分 */
@@ -18,6 +17,46 @@ function getToken(payload = {}) {
 	return jwt.sign(payload, secret, { expiresIn: '1day' });
 }
 
+routerExports.uploadGallery = {
+	method: 'post',
+	url: '/uploadGallery',
+	route: async ctx => {
+		const { fileName, dataUrl } = ctx.request.body
+		try {
+			const payload = getJWTPayload(ctx.headers.authorization)
+			if (!payload) throw 'token认证失败'
+			else {
+				const { _id } = payload
+				const user = await User.findOne({ _id })
+				if (!user.admin)
+					throw '当前用户无权限'
+			}
+			await callSaveGallery(fileName, dataUrl)
+			ctx.body = {
+				success: true
+			}
+		} catch (error) {
+			console.log(error)
+			ctx.body = {
+				success: false,
+				errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+			}
+		}
+	}
+}
+
+function callSaveGallery(fileName, dataUrl) {
+	return new Promise((resolve, reject) => {
+		const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+		fs.writeFile(`./public/resouce/extra/${fileName.replace(/jpeg+|JPG/g, 'jpg')}`, bf, err => {
+			err === null ?
+				resolve()
+				:
+				reject('保存文件时出错' + err instanceof Object ? JSON.stringify(err) : err.toString())
+		})
+	})
+}
+
 routerExports.getCaptcha = {
 	method: 'post',
 	url: '/getCaptcha',
@@ -29,6 +68,7 @@ routerExports.getCaptcha = {
 			color: true,
 			background: 'transparent'
 		})
+		ctx.session = {}
 		ctx.session.captcha = captcha.text
 		ctx.body = captcha.data
 	}
@@ -359,12 +399,12 @@ routerExports.setAvatar = {
 async function callSaveAvatar(avatar, _id, fileName) {
 	const bf = Buffer(avatar, 'binary')
 	const imgs = fileName.split('.')
-	const imgType = /gif+|GIF/.test(imgs[imgs.length -1]) ? 'gif' : 'jpg'
+	const imgType = /gif+|GIF/.test(imgs[imgs.length - 1]) ? 'gif' : 'jpg'
 	return new Promise((resolve, reject) => {
 		fs.writeFile(`./public/upload/user_avatar/${_id}.${imgType}`, bf, err => {
 			if (err === null)
 				User.updateOne({ _id }, { $set: { avatar: `/upload/user_avatar/${_id}.${imgType}` } }).then(data => data.n === 1 ? resolve(bf) : reject('头像更新失败'))
-				else
+			else
 				reject('保存文件时出错' + err instanceof Object ? JSON.stringify(err) : err.toString())
 		})
 	})
@@ -375,8 +415,8 @@ routerExports.register = {
 	url: '/register',
 	route: async (ctx, nect) => {
 		const { name, pwd, captchaCode } = ctx.request.body
-		const { session: { captcha } } = ctx
 		try {
+			const { session: { captcha } } = ctx
 			if (captcha.toLowerCase() !== captchaCode.toLowerCase()) throw '验证码不正确'
 			const data = await callRegister(name, pwd)
 			ctx.body = {
@@ -384,9 +424,10 @@ routerExports.register = {
 				...data
 			}
 		} catch (error) {
+			console.log(error)
 			ctx.body = {
 				success: false,
-				errorMsg: error
+				errorMsg: error instanceof Object ? JSON.stringify(error) : error.toString()
 			}
 		}
 	}

@@ -67,16 +67,17 @@ routerExports.getDynamic = {
         return _result
       })
       const customer = await Customer.findOne({})
-      if (customer.number)
+      if (customer && customer.number)
         await Customer.updateOne({}, { $set: { number: customer.number + 1 } })
       ctx.body = {
         success: true,
         data: temp
       }
     } catch (error) {
+      console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: error
+        errorMsg: error instanceof Object ? JSON.stringify(error) : error.toString()
       }
     }
   }
@@ -266,7 +267,7 @@ routerExports.deleDynamic = {
         if (!user.admin)
           throw '当前用户无权限'
         const deleteRes = await Dynamic.deleteOne({ _id })
-        if (deleteRes.ok !== 1) 
+        if (deleteRes.ok !== 1)
           throw '删除失败'
       }
       ctx.body = {
