@@ -1407,6 +1407,7 @@ video{
           letter-spacing: 1.5px;
           word-break: break-all;
           padding: 0 50px;
+          animation: itemFromLeft .3s;
         }
         .dynamic_item::after{
           content: '';
@@ -1431,6 +1432,7 @@ video{
           overflow: hidden;
           // margin-top: 15px;
           background:white;
+        animation: itemFromRight .5s;
           .dynamicImg{
             margin: 0 auto;
             margin-top: 5px;

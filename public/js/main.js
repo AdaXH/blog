@@ -943,6 +943,7 @@ function loadingDynamic(index = 0, pageSize = 6, dynamic) {
                     for (let i = 0; i < Math.round(result.total / 6); i++)
                         pageSize.push(i + 1)
                     _('.dynamicPageSizeList').innerHTML = window.template('dynamicPageSize', { list: pageSize })
+                    debugger
                 }
                 resolve(result)
                 sessionStorage && sessionStorage.setItem(dynamic, JSON.stringify(result))
@@ -1308,9 +1309,9 @@ class RegisterClass {  //register fn
                     _('.avatarTip').style.display = /default_avatar.jpg/.test(data.avatar) ? 'block' : 'none'
                     messageOperation(na)
                     if (data.admin) {
-                        adminToggle()
+                        // adminToggle()
                         publishDynamic()
-                        publishItem()
+                        // publishItem()
                         deleteDynamic()
                         deleteArticle()
                         // adminEdit()
@@ -1887,9 +1888,9 @@ function checkPerssion(name) {
     }
     isAdmin(name).then(perssion => {
         if (perssion) {
-            adminToggle();
+            // adminToggle();
             publishDynamic();
-            publishItem()
+            // publishItem()
             deleteDynamic();
             deleteArticle();
             // adminEdit()
@@ -1973,7 +1974,7 @@ function loginState() {
             uploadAvatar(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
             document.querySelector('#avatar').style.display = 'block'
             messageOperation(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
-            checkPerssion(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
+            // checkPerssion(window.Base64.decode(sessionStorage.getItem('user') || item[1]))
             return
         } else count++
     }
@@ -1986,7 +1987,7 @@ function loginState() {
         for (let el of spans) el.innerText = '登陆'
         document.querySelector('.user_name').innerText = 'Ada'
         const name = sessionStorage && sessionStorage.getItem('user') && window.Base64.decode(sessionStorage.getItem('user')) || undefined
-        checkPerssion(name)
+        // checkPerssion(name)
     }
 }
 
@@ -2005,38 +2006,40 @@ function _(el, type, callback) {
 }
 
 function adminToggle() {
-    document.querySelector('#editIntroduce').onclick = () => {
-        const val = document.querySelector('#introduce_textarea').value
-        if (val.length >= 300) {
-            infoContainer('不能超过300个字符', !1)
-            return
-        }
-        if (val.trim() === '') {
-            infoContainer('不能为空', !1)
-            return
-        }
-        fetch('/updateIntroduce', {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json', authorization: Cookies.get('token'),
-                'accept': 'application/json'
-            },
-            body: JSON.stringify({ introduce: val })
-        }).then(res => {
-            if (200 <= res.status && res.status < 300)
-                return res.json()
-            return res.status
-        }).then(result => {
-            result && result.success ?
-                infoContainer('更新成功', 1)
-                :
-                infoContainer(result, !1)
-        }).catch(err => infoContainer(err && err.errorMsg || err))
-    }
-    _('.adminMobile', 'click', () => {
-        _('.menu_toggle').click()
-    })
+    // document.querySelector('#editIntroduce').onclick = () => {
+    //     const val = document.querySelector('#introduce_textarea').value
+    //     if (val.length >= 300) {
+    //         infoContainer('不能超过300个字符', !1)
+    //         return
+    //     }
+    //     if (val.trim() === '') {
+    //         infoContainer('不能为空', !1)
+    //         return
+    //     }
+    //     fetch('/updateIntroduce', {
+    //         method: 'POST',
+    //         headers: {
+    //             'content-type': 'application/json', authorization: Cookies.get('token'),
+    //             'accept': 'application/json'
+    //         },
+    //         body: JSON.stringify({ introduce: val })
+    //     }).then(res => {
+    //         if (200 <= res.status && res.status < 300)
+    //             return res.json()
+    //         return res.status
+    //     }).then(result => {
+    //         result && result.success ?
+    //             infoContainer('更新成功', 1)
+    //             :
+    //             infoContainer(result, !1)
+    //     }).catch(err => infoContainer(err && err.errorMsg || err))
+    // }
+    // _('.adminMobile', 'click', () => {
+    //     _('.menu_toggle').click()
+    // })
     document.querySelector('.menu_toggle').onclick = function () {
+        infoContainer('功能已下线', !1)
+        return
         _('.admin', !1, function () {
             toggleClass(this, 'adminToggle')
         })
@@ -2106,7 +2109,7 @@ function infoContainer(data, status, callback) {
         }
     }, 0);
     _('.result_info_mask').style.display = 'block'
-    // if (/tada/.test(_('._result-info').className)) {
+    // if (/tada/.test(_('.__result-info').className)) {
     setTimeout(() => {
         _('.result_info_mask').style.display = 'none'
         callback && callback()
@@ -2879,10 +2882,10 @@ function customer() {
 }
 
 function checkDevice() {
-    if (window.innerWidth < 750) {
-        alert('您正在使用移动端，移动端仅供预览，完整交互在pc端')
-        checkLoadingFinished(290)
-    }
+    // if (window.innerWidth < 750) {
+    //     alert('您正在使用移动端，移动端仅供预览，完整交互在pc端')
+    //     checkLoadingFinished(290)
+    // }
 }
 
 function selectArticleType() {
@@ -3347,6 +3350,7 @@ function handleEnterKey() {
 }
 
 window.onload = () => {
+    adminToggle()
     viewImg()
     loadDynamicByPageSize()
     handleEnterKey()
@@ -3360,12 +3364,12 @@ window.onload = () => {
     entryMoreOperation()
     allUserAvatar()
     toggleRepeatList()
-    editEffect()
+    // editEffect()
     turnToSummary()
     bugReporter()
     contextMenu()
-    selectArticleType();
-    checkDevice();
+    selectArticleType(); 
+    // checkDevice();
     customer();
     cancleTextEdit();
     dynamicMsg();
@@ -3382,7 +3386,7 @@ window.onload = () => {
     register();
     exitLoginRegCancel();
     messageCount(_('.message_item').length);
-    shortArticleLimited();
+    // shortArticleLimited();
     leaveMsg();
     wordLimited();
     galleryApi();
@@ -3390,7 +3394,7 @@ window.onload = () => {
     slidePhoto();
     upvoteDynamic();
     randomArticleBg();
-    mapToArticleList()
+    // mapToArticleList()
     closeTip()
 }
 
@@ -3577,7 +3581,9 @@ function mapToArticleList() {
     for (let item of articles) {
         const date = item.children[item.children.length - 2].innerText
         const _id = item.getAttribute('_id')
-        const title = item.children[item.children.length - 1].children[0].children[0].innerText || 'title error'
+        const title = item.children[item.children.length - 1].children[0] && 
+            item.children[item.children.length - 1].children[0].children[0] && 
+        item.children[item.children.length - 1].children[0].children[0].innerText || 'title error'
         lis += `<li _id=${_id} >
             <a class="delete_item delete_article" _id=${_id}><i class="fl linkfont">&#xe603;</i></a>
             <a class="fl edit_item_article" _id=${_id}><i _id=${_id} class="update_article_icon linkfont">&#xe759;</i></a>

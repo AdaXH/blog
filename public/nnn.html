@@ -31,7 +31,7 @@
     <script src="./js/template.js"></script>
     <script src="./js/ge1doot.js"></script>
     <script src="./js/imageTransform3D.js"></script>
-    <script src='./js/buddle.js'></script>
+    <script src='./js/main.js'></script>
 </head>
 
 <body style="height:100%;bakcground:#333333ba">
@@ -64,12 +64,9 @@
             <li class="close-blog"><i class="linkfont">&#xe626;</i>退出</li>
         </ul>
     </div>
-    <div class="result_info_mask">
-        <div class="_result-info animated tada">
-            <i class="dialog_font fl">&#xe6b3;</i>
-            <p class="fr"></p>
-        </div>
-    </div>
+    <div class="result-info animated tada">
+        <i class="dialog_font fl">&#xe6b3;</i>
+        <p class="fr">test message</p>
     </div>
     <div class="loadingUI">
         <div class="loadingContainer">
@@ -121,7 +118,7 @@
             </ul>
         </div>
 
-        <!-- <div class="edit_ui">
+        <div class="edit_ui">
             <div class="select_line">
                 <div class="dot animated"></div>
             </div>
@@ -255,27 +252,9 @@
                     </div>
                 </div>
             </div>
-        </div> -->
+        </div>
     </div>
     <div class="screen tempexit">
-        <div class="articleDetalContainer">
-            <div class="articleDetail">
-                <div class="article_date">
-                    <p></p>
-                </div>
-                <div class="article-info">
-                    <div class="article-time">
-                        <span></span>
-                    </div>
-                    <div class="article-viewer">
-                        <span></span>
-                    </div>
-                    <div class="article-type-info">
-                        <span></span>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="avatarTip showLoginSuccess">
             <div class="tipBox">
                 <p class="tipText">点击此处以设置头像</p>
@@ -521,18 +500,17 @@
             <ul class="all">
                 <li class="fl menu face glitch_face">
                     <div class="center_bar fl">
-                        <div class="pageSizeFixed">
-                            <div class="dynamicPageSizeContainer">
-                                <ul class="dynamicPageSizeList">
-                                    <script type="text/html" id="dynamicPageSize">
+                        <div class="pageSizeFixed"></div>
+                        <div class="dynamicPageSizeContainer">
+                            <ul class="dynamicPageSizeList">
+                                <script type="text/html" id="dynamicPageSize">
                                 {{each list as item}}
-                                    <li class="{{item == 1 ? 'currentPage dynamicPageSizeItem' : 'dynamicPageSizeItem'}}" current="{{item == 1 ? 'true' : 'false'}}">
+                                    <li>
                                         {{item}}
                                     </li>
                                 {{/each}}
                                 </script>
-                                </ul>
-                            </div>
+                            </ul>
                         </div>
                         <ul class="dynamic" id='dynamic_container'>
                             <% dynamic.forEach(item=>{ %>
