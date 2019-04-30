@@ -2,6 +2,8 @@ const routerExports = {}
 const User = require('./../dbmodel/User')
 const fs = require('fs')
 const Base64 = require('js-base64').Base64
+const SinaCloud = require('scs-sdk');
+const accessKey = require('../bucketConfig').accessKey
 const jwt = require('jsonwebtoken')
 const svgCaptcha = require('svg-captcha')
 
@@ -31,7 +33,7 @@ routerExports.uploadGallery = {
 				if (!user.admin)
 					throw '当前用户无权限'
 			}
-			await callSaveGallery(fileName, dataUrl)
+			await callSaveGalleryToBucket(fileName, dataUrl)
 			ctx.body = {
 				success: true
 			}
@@ -45,7 +47,27 @@ routerExports.uploadGallery = {
 	}
 }
 
-function callSaveGallery(fileName, dataUrl) {
+function callSaveGalleryToBucket(fileName, dataUrl) {
+	const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+
+	return new Promise((resolve, reject) => {
+		const s3 = new SinaCloud.S3();
+		s3.putObject({
+			ACL: 'public-read',
+			Bucket: 'ada.bucket',
+			Key: `extra/${fileName.replace(/jpeg+|JPG/g, 'jpg')}`,
+			Body: bf
+		}, function (error, response) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve()
+			}
+		});
+	})
+}
+
+function callSaveGalleryToLocal(fileName, dataUrl) {
 	return new Promise((resolve, reject) => {
 		const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 		fs.writeFile(`./public/resouce/extra/${fileName.replace(/jpeg+|JPG/g, 'jpg')}`, bf, err => {
@@ -129,6 +151,7 @@ routerExports.login = {
 			state && ctx.cookies.set('user', Base64.encode(name), { expires: date, httpOnly: false, overwrite: false })
 			ctx.cookies.set('token', getToken({ _id: result._id }), { expires: date, httpOnly: false, overwrite: false })
 			result.name = name
+			console.log(name + ' 上线')
 			ctx.body = {
 				...result,
 				token: getToken({ _id: result._id })
@@ -172,6 +195,7 @@ routerExports.getUserInfoByToken = {
 			if (!payload) throw 'token认证失败'
 			const user = await User.findOne({ _id: payload._id })
 			delete user._doc.password
+			console.log(user.name + ' 重新连接')
 			ctx.body = {
 				success: true,
 				user
@@ -330,7 +354,7 @@ routerExports.getAvatar = {
 	}
 }
 
-routerExports.allAvatar = {
+routerExports.allAvatar = { // 将废弃
 	method: 'post',
 	url: '/all_user_avatar',
 	route:
@@ -381,7 +405,8 @@ routerExports.setAvatar = {
 			try {
 				const payload = getJWTPayload(ctx.headers.authorization)
 				if (!payload) throw 'token认证失败'
-				const src = await callSaveAvatar(avatar, payload._id, fileName)
+				// const userName = await User.findOne({ _id: payload._id })
+				const src = await callSaveAvatarToBucket(avatar, payload._id, fileName)
 				ctx.body = {
 					success: true,
 					src
@@ -396,7 +421,29 @@ routerExports.setAvatar = {
 		}
 }
 
-async function callSaveAvatar(avatar, _id, fileName) {
+async function callSaveAvatarToBucket(avatar, _id, fileName) {
+	const bf = Buffer(avatar, 'binary')
+	const imgs = fileName.split('.')
+	const imgType = /gif+|GIF/.test(imgs[imgs.length - 1]) ? 'gif' : 'jpg'
+
+	return new Promise((resolve, reject) => {
+		const s3 = new SinaCloud.S3();
+		s3.putObject({
+			ACL: 'public-read',
+			Bucket: 'ada.bucket',
+			Key: `avatar/${fileName}${_id}.${imgType}`,
+			Body: bf
+		}, function (error, response) {
+			if (error) {
+				reject(error);
+			} else {
+				User.updateOne({ _id }, { $set: { avatar: `http://sinacloud.net/ada.bucket/avatar/${fileName}${_id}.${imgType}${accessKey}` } }).then(data => data.n === 1 ? resolve(bf) : reject('头像更新失败'))
+			}
+		});
+	})
+}
+
+async function callSaveAvatarToLocal(avatar, _id, fileName) {
 	const bf = Buffer(avatar, 'binary')
 	const imgs = fileName.split('.')
 	const imgType = /gif+|GIF/.test(imgs[imgs.length - 1]) ? 'gif' : 'jpg'
@@ -418,10 +465,14 @@ routerExports.register = {
 		try {
 			const { session: { captcha } } = ctx
 			if (captcha.toLowerCase() !== captchaCode.toLowerCase()) throw '验证码不正确'
-			const data = await callRegister(name, pwd)
+			// const data = await callRegister(name, pwd)
+			const hasUser = await User.findOne({ name })
+			if (hasUser) throw '用户已存在'
+			const saveUser = await new User({ name, password: pwd }).save()
+			delete saveUser._doc.password
 			ctx.body = {
 				success: true,
-				...data
+				...saveUser._doc
 			}
 		} catch (error) {
 			console.log(error)
@@ -433,18 +484,4 @@ routerExports.register = {
 	}
 }
 
-function callRegister(name, pwd) {
-	return new Promise((resolve, reject) => {
-		User.findOne({ name }, (err, result) => {
-			if (result)
-				reject('用户名已存在')
-			else {
-				new User({
-					name, password: pwd
-				}).save().then(_ => resolve({ name, admin: false, avatar: '/upload/user_avatar/default_avatar.jpg' }))
-					.catch(err => reject('注册失败' + err instanceof Object ? JSON.stringify(err) : err.toString()))
-			}
-		})
-	})
-}
 module.exports = routerExports

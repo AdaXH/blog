@@ -39,6 +39,15 @@ routerExports.deleteInnerRepeat = {
     }
 }
 
+function setAvatar(name) {
+    return new Promise(resolve => {
+        User.findOne({ name }).then(result => {
+            if (result) resolve(result.avatar || '')
+            else resolve('')
+        })
+    })
+}
+
 routerExports.getMessageByPageSize = {
     method: 'post',
     url: '/getMessageByPageSize',
@@ -50,13 +59,22 @@ routerExports.getMessageByPageSize = {
             const data = {
                 data: temp.slice(index, pageSize)
             }
+            async function setAllAvatar(result) {
+                for (let item of result) {
+                    const avatar = await setAvatar(item.name)
+                    item.avatar = avatar
+                }
+                return result
+            }
+            const msgWithAvatar = await setAllAvatar(data.data)
             ctx.body = {
                 success: true,
-                data: data.data,
+                data: msgWithAvatar,
                 total: result.length,
                 isOver: result.length <= pageSize
             }
         } catch (error) {
+            console.log(error)
             ctx.body = {
                 success: false,
                 errorMsg: error
@@ -253,14 +271,6 @@ routerExports.deleteMsg = {
                 errorMsg: err instanceof Object ? /JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(err)) ? '会话已过期' : JSON.stringify(err) : err.toString()
             }
         }
-        // await Message.remove({ _id }).then(data => {
-        //     data.ok === 0 ? ctx.body = {
-        //         success: false,
-        //         errorMsg: '该留言已不存在'
-        //     } : ctx.body = {
-        //         success: true
-        //     }
-        // })
     }
 }
 

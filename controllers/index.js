@@ -5,6 +5,7 @@ const Article = require('../dbmodel/Article')
 const Dynamic = require('../dbmodel/Dynamic')
 const Customer = require('../dbmodel/Customer')
 const Mood = require('../dbmodel/Mood')
+const User = require('../dbmodel/User')
 
 const routerExports = {}
 
@@ -14,6 +15,22 @@ routerExports.getCustomer = {
     route: async (ctx, next) => {
         try {
             const data = await callGetCustomer()
+            const userAgent = /Mobile+|iPhone+|Android/.test(ctx.request.header['user-agent']) ? 'Mobile' : 'pc'
+            const { request: { url, header } } = ctx
+            const date = new Date()
+            //${date.getFullYear()}年
+            console.log('\n')
+            const time = `${date.getMonth() + 1}月${date.getDate()}号 ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`
+            console.log(`客户端: ${header['user-agent'] || ''}`)
+            if (userAgent === 'Mobile') {
+                console.log('Mobile: ' + time)
+            }
+            else if (/native/.test(url)) {
+                console.log('Native: ' + time)
+            }
+            else {
+                console.log('dva: ' + time)
+            }
             ctx.body = {
                 success: true,
                 data
@@ -46,10 +63,10 @@ routerExports.addCustomer = {
         try {
             const customer = await Customer.findOne({})
             if (customer.number)
-             await Customer.updateOne({}, { $set: { number: customer.number + 1 } })
+                await Customer.updateOne({}, { $set: { number: customer.number + 1 } })
             ctx.body = true
         } catch (error) {
-            ctx.body = false            
+            ctx.body = false
         }
     }
 }
@@ -173,18 +190,30 @@ function reMapArticle(result) {
     return result
 }
 
+function setAvatar(name) {
+    return new Promise(resolve => {
+        User.findOne({ name }).then(result => {
+            if (result) resolve(result.avatar || '')
+            else resolve('')
+        })
+    })
+}
+
 routerExports.getAllMessages = {
     method: 'get',
     url: '/getAllMessages',
     route: async (ctx, nect) => {
         try {
             const result = await Message.find({})
-            const _result = result.sort((a, b) => {
-                const time1 = new Date(a.date.replace(/-----/g, ' ').replace(/ : /g, ':')).getTime()
-                const time2 = new Date(b.date.replace(/-----/g, ' ').replace(/ : /g, ':')).getTime()
-                return time2 - time1
-            })
-            for (let item of _result)
+            async function setAllAvatar(result) {
+                for (let item of result) {
+                    const avatar = await setAvatar(item.name)
+                    item.avatar = avatar
+                }
+                return result
+            }
+            const msgWithAvatar = await setAllAvatar(result)
+            for (let item of msgWithAvatar)
                 if (item.repeat && item.repeat.length !== 0) {
                     for (let item2 of item.repeat) {
                         if (item2 && item2 !== null) {
@@ -193,9 +222,14 @@ routerExports.getAllMessages = {
                         }
                     }
                 }
+            const _result = msgWithAvatar.sort((a, b) => {
+                const time1 = new Date(a.date.replace(/-----/g, ' ').replace(/ : /g, ':')).getTime()
+                const time2 = new Date(b.date.replace(/-----/g, ' ').replace(/ : /g, ':')).getTime()
+                return time2 - time1
+            })
             ctx.body = {
                 success: true,
-                data: _result
+                data: msgWithAvatar
             }
         } catch (err) {
             console.log(err)
@@ -214,17 +248,17 @@ routerExports.routerIndex = {
         const userAgent = /Mobile+|iPhone+|Android/.test(ctx.request.header['user-agent']) ? 'Mobile' : 'pc'
         const { request: { url } } = ctx
         const date = new Date()
-        const time = `${url|| ''} : ${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}号 : ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`
-        
+        const time = `${url || ''} : ${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}号 : ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`
+
         // Mobile
         if (userAgent === 'Mobile') {
-                console.log('Mobile: ' + time)
-                await ctx.render('mobile')
-            }
-        
-        
-        else if(/native/.test(url)){
-            console.log('Native:  ' + time )
+            // console.log('Mobile: ' + time)
+            await ctx.render('mobile')
+        }
+
+
+        else if (/native/.test(url)) {
+            // console.log('Native:  ' + time)
             if (userAgent === 'pc') { // native-version
                 try {
                     const mood = await moodArr(time)
@@ -267,8 +301,8 @@ routerExports.routerIndex = {
             }
         }
         // Dva
-        else{
-            console.log('dva:    ' + time)
+        else {
+            // console.log('dva:    ' + time)
             await ctx.render('dva')
         }
 

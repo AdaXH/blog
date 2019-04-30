@@ -4,6 +4,8 @@ const Base64 = require('js-base64').Base64
 const Customer = require('../dbmodel/Customer')
 const fs = require('fs')
 const jwt = require('jsonwebtoken')
+const SinaCloud = require('scs-sdk');
+const accessKey = require('../bucketConfig').accessKey
 
 const routerExports = {}
 
@@ -52,7 +54,8 @@ routerExports.getDynamic = {
   route: async (ctx, next) => {
     ctx.set('Access-Control-Allow-Origin', '*')
     try {
-      const result = await callGetDynamic()
+      // const result = await callGetDynamic()
+      const result = await Dynamic.find()
       const temp = [...result].reverse().map(item => {
         let _result = {}
         if (item._doc)
@@ -97,7 +100,7 @@ routerExports.setDynamicImg = {
         if (!user.admin)
           throw '当前用户无权限'
       }
-      const img = await callSetDynamicImg(name, dataUrl)
+      const img = await callSetDynamicImgToBucket(name, dataUrl)
       ctx.body = {
         success: true,
         img
@@ -112,15 +115,22 @@ routerExports.setDynamicImg = {
   }
 }
 
-function callSetDynamicImg(name, dataUrl) {
-  return new Promise((resolve, reject) => {
-    const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    fs.writeFile(`./public/upload/dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}`, bf, err => {
-      err === null ?
-        resolve(`upload/dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}`)
-        :
-        reject('保存文件时出错' + err instanceof Object ? JSON.stringify(err) : err.toString())
-    })
+function callSetDynamicImgToBucket(name, dataUrl) {
+  const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+	return new Promise((resolve, reject) => {
+		const s3 = new SinaCloud.S3();
+		s3.putObject({
+			ACL: 'public-read',
+			Bucket: 'ada.bucket',
+			Key: `dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}`,
+			Body: bf
+		}, function (error, response) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(`http://sinacloud.net/ada.bucket/dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}${accessKey}`)
+			}
+		});
   })
 }
 
@@ -130,7 +140,9 @@ routerExports.getDynamicByPageSize = {
   route: async ctx => {
     const { pageSize, index } = ctx.request.body
     try {
-      const result = await callGetDynamic(pageSize)
+      const result = await Dynamic.find()
+      // const res = await Dynamic.find({}).skip((index * pageSize) - (pageSize)).limit(pageSize) 需要返回总数，取消该用法
+      // console.log(res)
       const temp = [...result].reverse().map(item => {
         let result = {}
         if (item._doc)
@@ -162,28 +174,6 @@ routerExports.getDynamicByPageSize = {
   }
 }
 
-function callGetDynamic(pageSize, index) {
-  return new Promise((resolve, reject) => {
-    Dynamic.find({}).then(res => {
-      res ? resolve(sortArr(res)) : reject('无法获取dynamic数据')
-    }).catch(err => reject(err.toString()))
-  })
-}
-
-function sortArr(res) {
-  return res.sort((a, b) => {
-    return (new Date(a.date).getTime()) - (new Date(b.date).getTime())
-  })
-}
-
-function callUpvote(_id, upvote) {
-  return new Promise((resolve, reject) => {
-    Dynamic.updateMany({ _id }, { $set: { upvote } }).then(res => {
-      res.ok === 0 ? reject(false) : resolve(true)
-    }).catch(err => reject(false))
-  })
-}
-
 routerExports.discussDynamic = {
   method: 'post',
   url: '/discussDynamic',
@@ -209,49 +199,6 @@ routerExports.discussDynamic = {
       }
     }
   }
-}
-
-routerExports.leaveMsg = { // 新版本废弃
-  method: 'post',
-  url: '/leave-dynamic-mg',
-  route: async (ctx, next) => {
-    const { _id, msg, name } = ctx.request.body
-    try {
-      // await next()
-      const payload = getJWTPayload(ctx.headers.authorization)
-      if (!payload) throw 'token认证失败'
-      if (!_id || !msg || !name) throw '入参错误'
-      const result = await callLeaveMsgDynamic(_id, msg, name)
-      ctx.body = {
-        success: true,
-        data: result,
-      }
-    } catch (error) {
-      ctx.body = {
-        success: false,
-        errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
-      }
-    }
-  }
-}
-
-function callLeaveMsgDynamic(_id, msg, name) {
-  return new Promise((resolve, reject) => {
-    Dynamic.findOne({ _id }).then(data => {
-      if (data) {
-        const oldMsg = data.msg
-        const newMsg = oldMsg.concat([{ ...msg, name: Base64.decode(name) }])
-        Dynamic.updateMany({ _id }, { $set: { msg: newMsg } }).then(res => {
-          Dynamic.find({}).then(ans => {
-            resolve(ans)
-          }).catch(err => reject('更新成功，但是获取失败了'))
-        }).catch(err => {
-          reject('更新失败' + err instanceof Object ? JSON.stringify(err) : err.toString)
-        })
-      } else
-        reject('这条动态已不存在')
-    })
-  })
 }
 
 routerExports.deleDynamic = {
@@ -283,19 +230,6 @@ routerExports.deleDynamic = {
   }
 }
 
-function callDeleteDynamicById(_id) { // 废弃
-  return new Promise((resolve, reject) => {
-    Dynamic.deleteOne({ _id }, err => {
-      if (err) reject('删除失败' + err instanceof Object ? JSON.stringify(err) : err.toString())
-      else {
-        Dynamic.find({}, (err, result) => {
-          result && resolve(result)
-        })
-      }
-    })
-  })
-}
-
 routerExports.addDynamic = {
   method: 'post',
   url: '/addDynamic',
@@ -310,7 +244,9 @@ routerExports.addDynamic = {
         if (!!user && !user.admin)
           throw '当前用户无权限'
       }
-      const result = await callAddDynamic(title, content, upvote, date, img)
+      // const result = await callAddDynamic(title, content, upvote, date, img)
+      const saveResult = await new Dynamic({ title, content, upvote, date, img }).save()
+      const result = await Dynamic.find()
       ctx.body = {
         success: true,
         data: result
@@ -322,20 +258,6 @@ routerExports.addDynamic = {
       }
     }
   }
-}
-
-function callAddDynamic(title, content, upvote, date, img) {
-  return new Promise((resolve, reject) => {
-    new Dynamic({
-      title, content, date, upvote, img
-    }).save().then(res => {
-      if (res) {
-        Dynamic.find({}).then(res => {
-          res ? resolve(res) : reject('发布成功，但是获取失败了')
-        }).catch(err => reject('发布成功，但是获取失败了'))
-      } else reject('发布失败')
-    }).catch(err => reject('发布失败' + err instanceof Object ? JSON.stringify(err) : err.toString()))
-  })
 }
 
 routerExports.updateDynamic = {
