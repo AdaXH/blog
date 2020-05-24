@@ -6,14 +6,13 @@ const SinaCloud = require('scs-sdk');
 const accessKey = require('../bucketConfig').accessKey
 const jwt = require('jsonwebtoken')
 const svgCaptcha = require('svg-captcha')
+const {
+	getJWTPayload,
+	parseToken,
+	reMapError,
+} = require('../common/util')
 
 const secret = 'secret'
-/* 通过token获取JWT的payload部分 */
-function getJWTPayload(token) {
-	// 验证并解析JWT
-	if (!token) return
-	return jwt.verify(token, 'secret');
-}
 
 function getToken(payload = {}) {
 	return jwt.sign(payload, secret, { expiresIn: '1day' });
@@ -25,14 +24,11 @@ routerExports.uploadGallery = {
 	route: async ctx => {
 		const { fileName, dataUrl } = ctx.request.body
 		try {
-			const payload = getJWTPayload(ctx.headers.authorization)
-			if (!payload) throw 'token认证失败'
-			else {
-				const { _id } = payload
-				const user = await User.findOne({ _id })
-				if (!user.admin)
-					throw '当前用户无权限'
-			}
+			const { headers: { authorization } } = ctx;
+			const tokenParse = parseToken(authorization);
+			const { _id: userId } = tokenParse
+			const user = await User.findOne({ _id: userId })
+			if (!user.admin) throw '当前用户无权限'
 			await callSaveGalleryToBucket(fileName, dataUrl)
 			ctx.body = {
 				success: true
@@ -41,7 +37,7 @@ routerExports.uploadGallery = {
 			console.log(error)
 			ctx.body = {
 				success: false,
-				errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+				erorMsg: reMapError(error),
 			}
 		}
 	}
@@ -64,18 +60,6 @@ function callSaveGalleryToBucket(fileName, dataUrl) {
 				resolve()
 			}
 		});
-	})
-}
-
-function callSaveGalleryToLocal(fileName, dataUrl) {
-	return new Promise((resolve, reject) => {
-		const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-		fs.writeFile(`./public/resouce/extra/${fileName.replace(/jpeg+|JPG/g, 'jpg')}`, bf, err => {
-			err === null ?
-				resolve()
-				:
-				reject('保存文件时出错' + err instanceof Object ? JSON.stringify(err) : err.toString())
-		})
 	})
 }
 
@@ -102,20 +86,18 @@ routerExports.setPics = {
 	route: async ctx => {
 		const { type, binary } = ctx.request.body
 		try {
-			const payload = getJWTPayload(ctx.headers.authorization)
-			if (!payload) throw 'token认证失败'
-			else {
-				const { _id } = payload
-				const user = await User.findOne({ _id })
-				if (!user.admin)
-					throw '当前用户无权限'
-			}
+			const { headers: { authorization } } = ctx;
+			const tokenParse = parseToken(authorization);
+			const { _id: userId } = tokenParse
+			const user = await User.findOne({ _id: userId })
+			if (!user.admin) throw '当前用户无权限'
 			await callHandlePic(type, binary)
 			ctx.body = { success: true }
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error
+				erorMsg: reMapError(error),
+
 			}
 		}
 	}
@@ -159,7 +141,8 @@ routerExports.login = {
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error
+				erorMsg: reMapError(error),
+
 			}
 		}
 	}
@@ -180,7 +163,8 @@ routerExports.getUserInfor = { // 新版本废物
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error
+				erorMsg: reMapError(error),
+
 			}
 		}
 	}
@@ -203,7 +187,7 @@ routerExports.getUserInfoByToken = {
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+				erorMsg: reMapError(error),
 			}
 		}
 	}
@@ -252,7 +236,8 @@ routerExports.introduce = {
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error
+				erorMsg: reMapError(error),
+
 			}
 		}
 	}
@@ -273,22 +258,20 @@ routerExports.updateIntroduce = {
 	route: async (ctx, next) => {
 		const { introduce } = ctx.request.body
 		try {
-			const payload = getJWTPayload(ctx.headers.authorization)
-			if (!payload) throw 'token认证失败'
-			else {
-				const { _id } = payload
-				const user = await User.findOne({ _id })
-				if (!user.admin || user.name !== 'Ada')
-					throw '当前用户无权限'
-			}
-			const success = await callUpdateIntroduce(introduce)
+			const { headers: { authorization } } = ctx;
+			const tokenParse = parseToken(authorization);
+			const { _id: userId } = tokenParse
+			const user = await User.findOne({ _id: userId })
+			if (!user.admin) throw '当前用户无权限'
+			await callUpdateIntroduce(introduce)
 			ctx.body = {
 				success: true
 			}
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error
+				erorMsg: reMapError(error),
+
 			}
 		}
 	}
@@ -302,33 +285,6 @@ function callUpdateIntroduce(introduce) {
 	})
 }
 
-routerExports.admin = { // 新版本废物， 不安全
-	method: 'post',
-	url: '/checkAdmin',
-	route: async (ctx, next) => {
-		const { name } = ctx.request.body
-		const na = JSON.parse(Base64.decode(name)).name
-		try {
-			const result = await callCheckAdmin(na)
-			ctx.body = {
-				success: true,
-				data: result
-			}
-		} catch (error) {
-			ctx.body = {
-				success: false,
-				errorMsg: error
-			}
-		}
-	}
-}
-
-function callCheckAdmin(name) {
-	return new Promise((resolve, reject) => {
-		User.findOne({ name }).then(data => data && data.admin ? resolve(true) : reject(name + '无权限'))
-			.catch(err => reject(err instanceof Object ? JSON.stringify(err) : err.toString()))
-	})
-}
 
 routerExports.getAvatar = {
 	method: 'post',
@@ -348,7 +304,8 @@ routerExports.getAvatar = {
 		}).catch(err => {
 			ctx.body = {
 				success: false,
-				errorMsg: '无法获取头像' + err
+				erorMsg: reMapError(error),
+
 			}
 		})
 	}
@@ -369,7 +326,8 @@ routerExports.allAvatar = { // 将废弃
 			} catch (error) {
 				ctx.body = {
 					success: false,
-					errorMsg: error
+					erorMsg: reMapError(error),
+
 				}
 			}
 		}
@@ -412,10 +370,9 @@ routerExports.setAvatar = {
 					src
 				}
 			} catch (error) {
-				console.log(error)
 				ctx.body = {
 					success: false,
-					errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+					erorMsg: reMapError(error),
 				}
 			}
 		}
@@ -443,20 +400,6 @@ async function callSaveAvatarToBucket(avatar, _id, fileName) {
 	})
 }
 
-async function callSaveAvatarToLocal(avatar, _id, fileName) {
-	const bf = Buffer(avatar, 'binary')
-	const imgs = fileName.split('.')
-	const imgType = /gif+|GIF/.test(imgs[imgs.length - 1]) ? 'gif' : 'jpg'
-	return new Promise((resolve, reject) => {
-		fs.writeFile(`./public/upload/user_avatar/${_id}.${imgType}`, bf, err => {
-			if (err === null)
-				User.updateOne({ _id }, { $set: { avatar: `/upload/user_avatar/${_id}.${imgType}` } }).then(data => data.n === 1 ? resolve(bf) : reject('头像更新失败'))
-			else
-				reject('保存文件时出错' + err instanceof Object ? JSON.stringify(err) : err.toString())
-		})
-	})
-}
-
 routerExports.register = {
 	method: 'post',
 	url: '/register',
@@ -464,6 +407,7 @@ routerExports.register = {
 		const { name, pwd, captchaCode } = ctx.request.body
 		try {
 			const { session: { captcha } } = ctx
+			if (!captcha) throw '服务器繁忙，请重试'
 			if (captcha.toLowerCase() !== captchaCode.toLowerCase()) throw '验证码不正确'
 			// const data = await callRegister(name, pwd)
 			const hasUser = await User.findOne({ name })
@@ -475,10 +419,10 @@ routerExports.register = {
 				...saveUser._doc
 			}
 		} catch (error) {
-			console.log(error)
+			// console.log(error)
 			ctx.body = {
 				success: false,
-				errorMsg: error instanceof Object ? JSON.stringify(error) : error.toString()
+				erorMsg: reMapError(error),
 			}
 		}
 	}

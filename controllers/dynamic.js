@@ -2,19 +2,15 @@ const Dynamic = require('./../dbmodel/Dynamic')
 const User = require('./../dbmodel/User')
 const Base64 = require('js-base64').Base64
 const Customer = require('../dbmodel/Customer')
-const fs = require('fs')
-const jwt = require('jsonwebtoken')
 const SinaCloud = require('scs-sdk');
 const accessKey = require('../bucketConfig').accessKey
+const {
+  parseToken,
+  getJWTPayload,
+  reMapError,
+} = require('../common/util')
 
 const routerExports = {}
-
-/* 通过token获取JWT的payload部分 */
-function getJWTPayload(token) {
-  // 验证并解析JWT
-  if (!token) return
-  return jwt.verify(token, 'secret');
-}
 
 routerExports.upvote = {
   method: 'post',
@@ -26,8 +22,10 @@ routerExports.upvote = {
       await Dynamic.updateOne({ _id }, { $set: { upvote: currentDyanmic.upvote + 1 } })
       ctx.body = { success: true }
     } catch (error) {
-      console.log(error)
-      ctx.body = { success: false }
+      ctx.body = { 
+        success: false,
+				erorMsg: reMapError(error),      
+      }
     }
   }
 }
@@ -42,8 +40,10 @@ routerExports.cancelUpvote = {
       await Dynamic.updateOne({ _id }, { $set: { upvote: currentDyanmic.upvote > 1 ? currentDyanmic.upvote - 1 : 1 } })
       ctx.body = { success: true }
     } catch (error) {
-      console.log(error)
-      ctx.body = { success: false }
+      ctx.body = { 
+        success: false,
+				erorMsg: reMapError(error),
+      }
     }
   }
 }
@@ -77,10 +77,9 @@ routerExports.getDynamic = {
         data: temp
       }
     } catch (error) {
-      console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: error instanceof Object ? JSON.stringify(error) : error.toString()
+				erorMsg: reMapError(error),
       }
     }
   }
@@ -92,24 +91,20 @@ routerExports.setDynamicImg = {
   route: async ctx => {
     const { name, dataUrl } = ctx.request.body
     try {
-      const payload = getJWTPayload(ctx.headers.authorization)
-      if (!payload) throw 'token认证失败'
-      else {
-        const { _id } = payload
-        const user = await User.findOne({ _id })
-        if (!user.admin)
-          throw '当前用户无权限'
-      }
+      const { headers: { authorization } } = ctx;
+      const tokenParse = parseToken(authorization);
+      const { _id: userId } = tokenParse
+      const user = await User.findOne({ _id: userId })
+      if (!user.admin) throw '当前用户无权限'
       const img = await callSetDynamicImgToBucket(name, dataUrl)
       ctx.body = {
         success: true,
         img
       }
     } catch (error) {
-      console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+				erorMsg: reMapError(error),
       }
     }
   }
@@ -117,20 +112,20 @@ routerExports.setDynamicImg = {
 
 function callSetDynamicImgToBucket(name, dataUrl) {
   const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-	return new Promise((resolve, reject) => {
-		const s3 = new SinaCloud.S3();
-		s3.putObject({
-			ACL: 'public-read',
-			Bucket: 'ada.bucket',
-			Key: `dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}`,
-			Body: bf
-		}, function (error, response) {
-			if (error) {
-				reject(error);
-			} else {
-				resolve(`http://sinacloud.net/ada.bucket/dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}${accessKey}`)
-			}
-		});
+  return new Promise((resolve, reject) => {
+    const s3 = new SinaCloud.S3();
+    s3.putObject({
+      ACL: 'public-read',
+      Bucket: 'ada.bucket',
+      Key: `dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}`,
+      Body: bf
+    }, function (error, response) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(`http://sinacloud.net/ada.bucket/dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}${accessKey}`)
+      }
+    });
   })
 }
 
@@ -168,7 +163,7 @@ routerExports.getDynamicByPageSize = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: error
+				erorMsg: reMapError(error),
       }
     }
   }
@@ -195,7 +190,7 @@ routerExports.discussDynamic = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+				erorMsg: reMapError(error),
       }
     }
   }
@@ -207,16 +202,13 @@ routerExports.deleDynamic = {
   route: async (ctx, next) => {
     const { _id } = ctx.request.body
     try {
-      const payload = getJWTPayload(ctx.headers.authorization)
-      if (!payload) throw 'token认证失败'
-      else {
-        const user = await User.findOne({ _id: payload._id })
-        if (!user.admin)
-          throw '当前用户无权限'
-        const deleteRes = await Dynamic.deleteOne({ _id })
-        if (deleteRes.ok !== 1)
-          throw '删除失败'
-      }
+      const { headers: { authorization } } = ctx;
+      const tokenParse = parseToken(authorization);
+      const { _id: userId } = tokenParse
+      const user = await User.findOne({ _id: userId })
+      if (!user.admin) throw '当前用户无权限'
+      const deleteRes = await Dynamic.deleteOne({ _id })
+      if (deleteRes.ok !== 1) throw '删除失败'
       ctx.body = {
         success: true,
         ...payload
@@ -224,7 +216,7 @@ routerExports.deleDynamic = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+				erorMsg: reMapError(error),
       }
     }
   }
@@ -236,15 +228,11 @@ routerExports.addDynamic = {
   route: async (ctx, next) => {
     const { title, content, upvote, date, img } = ctx.request.body
     try {
-      const payload = getJWTPayload(ctx.headers.authorization)
-      if (!payload) throw 'token认证失败'
-      else {
-        const { _id } = payload
-        const user = await User.findOne({ _id })
-        if (!!user && !user.admin)
-          throw '当前用户无权限'
-      }
-      // const result = await callAddDynamic(title, content, upvote, date, img)
+      const { headers: { authorization } } = ctx;
+      const tokenParse = parseToken(authorization);
+      const { _id: userId } = tokenParse
+      const user = await User.findOne({ _id: userId })
+      if (!user.admin) throw '当前用户无权限'
       const saveResult = await new Dynamic({ title, content, upvote, date, img }).save()
       const result = await Dynamic.find()
       ctx.body = {
@@ -254,7 +242,7 @@ routerExports.addDynamic = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+				erorMsg: reMapError(error),
       }
     }
   }
@@ -266,18 +254,14 @@ routerExports.updateDynamic = {
   route: async (ctx, next) => {
     const { _id, content, title, img } = ctx.request.body
     try {
-      const payload = getJWTPayload(ctx.headers.authorization)
-      if (!payload) throw 'token认证失败'
-      else {
-        const { _id } = payload
-        const user = await User.findOne({ _id })
-        if (!user.admin)
-          throw '当前用户无权限'
-      }
+      const { headers: { authorization } } = ctx;
+      const tokenParse = parseToken(authorization);
+      const { _id: userId } = tokenParse
+      const user = await User.findOne({ _id: userId })
+      if (!user.admin) throw '当前用户无权限'
       const result = await Dynamic.updateMany({ _id }, { $set: { content, title, img } })
       ctx.body = result.n !== 0
     } catch (error) {
-      console.log(error)
       ctx.body = false
     }
   }
@@ -302,20 +286,17 @@ routerExports.deleteDynamicMsg = {
   route: async (ctx, next) => {
     const { _id, msgId } = ctx.request.body
     try {
-      const payload = getJWTPayload(ctx.headers.authorization)
-      if (!payload) throw 'token认证失败'
-      else {
-        const { _id } = payload
-        const user = await User.findOne({ _id })
-        if (!!user && !user.admin)
-          throw '当前用户无权限'
-      }
+      const { headers: { authorization } } = ctx;
+      const tokenParse = parseToken(authorization);
+      const { _id: userId } = tokenParse
+      const user = await User.findOne({ _id: userId })
+      if (!user.admin) throw '当前用户无权限'
       await callDeleteDynamicMsg(_id, msgId)
       ctx.body = { success: true }
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+				erorMsg: reMapError(error),
       }
     }
   }

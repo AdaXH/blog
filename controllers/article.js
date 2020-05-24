@@ -1,33 +1,25 @@
-const Article = require('./../dbmodel/Article') 
+const Article = require('./../dbmodel/Article')
 const User = require('./../dbmodel/User')
-const Message = require('./../dbmodel/Message')
-
-const jwt = require('jsonwebtoken')
-
-/* 通过token获取JWT的payload部分 */
-function getJWTPayload(token) {
-  // 验证并解析JWT
-  if (!token) return
-  return jwt.verify(token, 'secret');
-}
+const {
+	parseToken,
+	reMapError,
+} = require('../common/util')
 
 const routerExports = {}
+
 routerExports.deleteArticle = {
 	method: 'post',
 	url: '/deleteArticle',
 	route: async (ctx, next) => {
-		const { _id } = ctx.request.body
+		const { request: { body: { _id: articleId } }, headers: { authorization } } = ctx;
 		try {
-			const payload = getJWTPayload(ctx.headers.authorization)     
-            if (!payload) throw 'token认证失败'
-			else {
-				const { _id } = payload
-				const user = await User.findOne({ _id })
-				if (!user.admin) 
-					throw '当前用户无权限'
-			}
+			const tokenParse = parseToken(authorization);
+			const { _id } = tokenParse
+			const user = await User.findOne({ _id })
+			if (!user.admin)
+				throw '当前用户无权限'
 			// await callDeleteArticleById(_id)
-			const result = await Article.findByIdAndDelete({ _id })
+			const result = await Article.findByIdAndDelete({ _id: articleId })
 			if (result === null) throw '删除失败，文章不存在'
 			ctx.body = {
 				success: true
@@ -35,15 +27,13 @@ routerExports.deleteArticle = {
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : 
-					/_id/.test(JSON.stringify(error)) ? '文章不存在' : JSON.stringify(error)
-				) : error.toString()
+				erorMsg: reMapError(error),
 			}
 		}
 	}
 }
 
-routerExports.queryArticleById= {
+routerExports.queryArticleById = {
 	method: 'post',
 	url: '/queryArticleById',
 	route: async (ctx, next) => {
@@ -57,7 +47,7 @@ routerExports.queryArticleById= {
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: '文章id:' + _id +'不存在'
+				errorMsg: '文章不存在'
 			}
 		}
 	}
@@ -67,16 +57,14 @@ routerExports.saveArticle = {
 	method: 'post',
 	url: '/saveArticle',
 	route: async (ctx, next) => {
-		const { date, year, summary, type, time, title =  'title' } = ctx.request.body
+		const { date, year, summary, type, time, title = 'title' } = ctx.request.body
 		try {
-			const payload = getJWTPayload(ctx.headers.authorization)     
-            if (!payload) throw 'token认证失败'
-			else {
-				const { _id } = payload
-				const user = await User.findOne({ _id })
-				if (!user.admin) 
-					throw '当前用户无权限'
-			}
+			const { headers: { authorization } } = ctx;
+			const tokenParse = parseToken(authorization);
+			const { _id: userId } = tokenParse
+			const user = await User.findOne({ _id: userId })
+			if (!user.admin)
+				throw '当前用户无权限'
 			// await callSaveArticle(time, date, year, summary, type, title)
 			const saveResult = await new Article({ time, date, year, summary, type, viewer: 0, title }).save()
 			if (!saveResult._id) throw '保存失败'
@@ -84,7 +72,7 @@ routerExports.saveArticle = {
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' : JSON.stringify(error)) : error.toString()
+				erorMsg: reMapError(error),
 			}
 		}
 	}
@@ -103,7 +91,10 @@ routerExports.updateArticle = {
 			await Article.updateOne({ _id }, { $set: { viewer: article.viewer + 1 } })
 			ctx.body = { success: true }
 		} catch (error) {
-			ctx.body = { success: false, erorMsg: error.toString() }
+			ctx.body = {
+				success: false,
+				erorMsg: reMapError(error),
+			}
 		}
 	}
 }
@@ -114,14 +105,12 @@ routerExports.updateView = {
 	route: async (ctx, next) => {
 		const { _id, summary, title = '', type } = ctx.request.body
 		try {
-			const payload = getJWTPayload(ctx.headers.authorization)     
-            if (!payload) throw 'token认证失败'
-			else {
-				const { _id } = payload
-				const user = await User.findOne({ _id })
-				if (!user.admin) 
-					throw '当前用户无权限'
-			}
+			const { headers: { authorization } } = ctx;
+			const tokenParse = parseToken(authorization);
+			const { _id: userId } = tokenParse
+			const user = await User.findOne({ _id: userId })
+			if (!user.admin)
+				throw '当前用户无权限'
 			// await callUpdateArticleById(_id, summary, type, title)
 			const updateResult = await Article.updateOne({ _id }, { $set: { summary, type, title } })
 			console.log(updateResult)
@@ -129,20 +118,10 @@ routerExports.updateView = {
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				erorMsg: error instanceof Object ? (/JsonWebTokenError+|TokenExpiredError/.test(JSON.stringify(error)) ? '会话已过期，请重新登录验证' 
-					: /Cast to ObjectId failed for value/.test(JSON.stringify(error)) ? '文章id不存在' : error.toString()) 
-				: error.toString()
+				erorMsg: reMapError(error),
 			}
 		}
 	}
-}
-
-function callQueryArticleById(_id){
-	return new Promise((resolve, reject) => {
-		Article.findOne({_id}).then(data => {
-			data ? resolve(data) : reject('没有找到文章信息')
-		}).catch(err => reject('文章已不存在')  )
-	})
 }
 
 routerExports.getArticlePageSize = {
@@ -165,7 +144,7 @@ routerExports.getArticlePageSize = {
 		} catch (error) {
 			ctx.body = {
 				success: false,
-				errorMsg: error
+				erorMsg: reMapError(error),
 			}
 		}
 	}
@@ -181,5 +160,4 @@ function callGetArticlePageSize() {
 	})
 }
 
-module.exports =  routerExports 
- 
+module.exports = routerExports
