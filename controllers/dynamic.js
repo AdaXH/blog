@@ -2,13 +2,9 @@ const Dynamic = require('./../dbmodel/Dynamic')
 const User = require('./../dbmodel/User')
 const Base64 = require('js-base64').Base64
 const Customer = require('../dbmodel/Customer')
-const SinaCloud = require('scs-sdk');
+const SinaCloud = require('scs-sdk')
 const accessKey = require('../bucketConfig').accessKey
-const {
-  parseToken,
-  getJWTPayload,
-  reMapError,
-} = require('../common/util')
+const { parseToken, getJWTPayload, reMapError } = require('../common/util')
 
 const routerExports = {}
 
@@ -19,15 +15,18 @@ routerExports.upvote = {
     const { _id } = ctx.request.body
     try {
       const currentDyanmic = await Dynamic.findOne({ _id })
-      await Dynamic.updateOne({ _id }, { $set: { upvote: currentDyanmic.upvote + 1 } })
+      await Dynamic.updateOne(
+        { _id },
+        { $set: { upvote: currentDyanmic.upvote + 1 } }
+      )
       ctx.body = { success: true }
     } catch (error) {
-      ctx.body = { 
+      ctx.body = {
         success: false,
-				erorMsg: reMapError(error),      
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 routerExports.cancelUpvote = {
@@ -37,15 +36,22 @@ routerExports.cancelUpvote = {
     const { _id } = ctx.request.body
     try {
       const currentDyanmic = await Dynamic.findOne({ _id })
-      await Dynamic.updateOne({ _id }, { $set: { upvote: currentDyanmic.upvote > 1 ? currentDyanmic.upvote - 1 : 1 } })
+      await Dynamic.updateOne(
+        { _id },
+        {
+          $set: {
+            upvote: currentDyanmic.upvote > 1 ? currentDyanmic.upvote - 1 : 1,
+          },
+        }
+      )
       ctx.body = { success: true }
     } catch (error) {
-      ctx.body = { 
+      ctx.body = {
         success: false,
-				erorMsg: reMapError(error),
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 routerExports.getDynamic = {
@@ -56,17 +62,24 @@ routerExports.getDynamic = {
     try {
       // const result = await callGetDynamic()
       const result = await Dynamic.find()
-      const temp = [...result].reverse().map(item => {
+      const temp = [...result].reverse().map((item) => {
         let _result = {}
         if (item._doc)
           _result = {
             ...item._doc,
-            img: !!item._doc.img ? item._doc.img.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif') : ''
+            img: !!item._doc.img
+              ? item._doc.img
+                  .replace(/jpeg+|JPG/g, 'jpg')
+                  .replace(/GIF/g, 'gif')
+              : '',
           }
-        else _result = {
-          ...item,
-          img: !!item.img ? item.img.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif') : ''
-        }
+        else
+          _result = {
+            ...item,
+            img: !!item.img
+              ? item.img.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')
+              : '',
+          }
         return _result
       })
       const customer = await Customer.findOne({})
@@ -74,99 +87,119 @@ routerExports.getDynamic = {
         await Customer.updateOne({}, { $set: { number: customer.number + 1 } })
       ctx.body = {
         success: true,
-        data: temp
+        data: temp.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        ),
       }
     } catch (error) {
       ctx.body = {
         success: false,
-				erorMsg: reMapError(error),
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 routerExports.setDynamicImg = {
   method: 'post',
   url: '/setDynamicImg',
-  route: async ctx => {
+  route: async (ctx) => {
     const { name, dataUrl } = ctx.request.body
     try {
-      const { headers: { authorization } } = ctx;
-      const tokenParse = parseToken(authorization);
+      const {
+        headers: { authorization },
+      } = ctx
+      const tokenParse = parseToken(authorization)
       const { _id: userId } = tokenParse
       const user = await User.findOne({ _id: userId })
       if (!user.admin) throw '当前用户无权限'
       const img = await callSetDynamicImgToBucket(name, dataUrl)
       ctx.body = {
         success: true,
-        img
+        img,
       }
     } catch (error) {
       ctx.body = {
         success: false,
-				erorMsg: reMapError(error),
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 function callSetDynamicImgToBucket(name, dataUrl) {
-  const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64')
   return new Promise((resolve, reject) => {
-    const s3 = new SinaCloud.S3();
-    s3.putObject({
-      ACL: 'public-read',
-      Bucket: 'ada.bucket',
-      Key: `dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}`,
-      Body: bf
-    }, function (error, response) {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(`http://sinacloud.net/ada.bucket/dynamic_img/${name.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')}${accessKey}`)
+    const s3 = new SinaCloud.S3()
+    s3.putObject(
+      {
+        ACL: 'public-read',
+        Bucket: 'ada.bucket',
+        Key: `dynamic_img/${name
+          .replace(/jpeg+|JPG/g, 'jpg')
+          .replace(/GIF/g, 'gif')}`,
+        Body: bf,
+      },
+      function(error, response) {
+        if (error) {
+          reject(error)
+        } else {
+          resolve(
+            `http://sinacloud.net/ada.bucket/dynamic_img/${name
+              .replace(/jpeg+|JPG/g, 'jpg')
+              .replace(/GIF/g, 'gif')}${accessKey}`
+          )
+        }
       }
-    });
+    )
   })
 }
 
 routerExports.getDynamicByPageSize = {
   method: 'post',
   url: '/getDynamicByPageSize',
-  route: async ctx => {
+  route: async (ctx) => {
     const { pageSize, index } = ctx.request.body
     try {
       const result = await Dynamic.find()
       // const res = await Dynamic.find({}).skip((index * pageSize) - (pageSize)).limit(pageSize) 需要返回总数，取消该用法
       // console.log(res)
-      const temp = [...result].reverse().map(item => {
+      const temp = [...result].reverse().map((item) => {
         let result = {}
         if (item._doc)
           result = {
             ...item._doc,
-            img: !!item._doc.img ? item._doc.img.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif') : ''
+            img: !!item._doc.img
+              ? item._doc.img
+                  .replace(/jpeg+|JPG/g, 'jpg')
+                  .replace(/GIF/g, 'gif')
+              : '',
           }
-        else result = {
-          ...item,
-          img: !!item.img ? item.img.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif') : ''
-        }
+        else
+          result = {
+            ...item,
+            img: !!item.img
+              ? item.img.replace(/jpeg+|JPG/g, 'jpg').replace(/GIF/g, 'gif')
+              : '',
+          }
         return result
       })
       const data = {
-        data: temp.slice(index, pageSize)
+        data: temp.slice(index, pageSize),
       }
       ctx.body = {
         success: true,
         data: data.data,
         isOver: result.length <= pageSize,
-        total: result.length
+        total: result.length,
       }
     } catch (error) {
       ctx.body = {
         success: false,
-				erorMsg: reMapError(error),
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 routerExports.discussDynamic = {
@@ -190,10 +223,10 @@ routerExports.discussDynamic = {
     } catch (error) {
       ctx.body = {
         success: false,
-				erorMsg: reMapError(error),
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 routerExports.deleDynamic = {
@@ -202,8 +235,10 @@ routerExports.deleDynamic = {
   route: async (ctx, next) => {
     const { _id } = ctx.request.body
     try {
-      const { headers: { authorization } } = ctx;
-      const tokenParse = parseToken(authorization);
+      const {
+        headers: { authorization },
+      } = ctx
+      const tokenParse = parseToken(authorization)
       const { _id: userId } = tokenParse
       const user = await User.findOne({ _id: userId })
       if (!user.admin) throw '当前用户无权限'
@@ -211,15 +246,15 @@ routerExports.deleDynamic = {
       if (deleteRes.ok !== 1) throw '删除失败'
       ctx.body = {
         success: true,
-        ...payload
+        ...payload,
       }
     } catch (error) {
       ctx.body = {
         success: false,
-				erorMsg: reMapError(error),
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 routerExports.addDynamic = {
@@ -228,24 +263,32 @@ routerExports.addDynamic = {
   route: async (ctx, next) => {
     const { title, content, upvote, date, img } = ctx.request.body
     try {
-      const { headers: { authorization } } = ctx;
-      const tokenParse = parseToken(authorization);
+      const {
+        headers: { authorization },
+      } = ctx
+      const tokenParse = parseToken(authorization)
       const { _id: userId } = tokenParse
       const user = await User.findOne({ _id: userId })
       if (!user.admin) throw '当前用户无权限'
-      const saveResult = await new Dynamic({ title, content, upvote, date, img }).save()
+      const saveResult = await new Dynamic({
+        title,
+        content,
+        upvote,
+        date,
+        img,
+      }).save()
       const result = await Dynamic.find()
       ctx.body = {
         success: true,
-        data: result
+        data: result,
       }
     } catch (error) {
       ctx.body = {
         success: false,
-				erorMsg: reMapError(error),
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 routerExports.updateDynamic = {
@@ -254,17 +297,22 @@ routerExports.updateDynamic = {
   route: async (ctx, next) => {
     const { _id, content, title, img } = ctx.request.body
     try {
-      const { headers: { authorization } } = ctx;
-      const tokenParse = parseToken(authorization);
+      const {
+        headers: { authorization },
+      } = ctx
+      const tokenParse = parseToken(authorization)
       const { _id: userId } = tokenParse
       const user = await User.findOne({ _id: userId })
       if (!user.admin) throw '当前用户无权限'
-      const result = await Dynamic.updateMany({ _id }, { $set: { content, title, img } })
+      const result = await Dynamic.updateMany(
+        { _id },
+        { $set: { content, title, img } }
+      )
       ctx.body = result.n !== 0
     } catch (error) {
       ctx.body = false
     }
-  }
+  },
 }
 
 routerExports.queryDynamic = {
@@ -272,12 +320,21 @@ routerExports.queryDynamic = {
   url: '/dynamicQueryById',
   route: async (ctx, next) => {
     const { _id } = ctx.request.body
-    await Dynamic.findOne({ _id }).then(data => {
-      data ? ctx.body = { img: data.img, title: data.title, content: data.content, _id: data._id } : ctx.body = false
-    }).catch(err => {
-      ctx.body = false
-    })
-  }
+    await Dynamic.findOne({ _id })
+      .then((data) => {
+        data
+          ? (ctx.body = {
+              img: data.img,
+              title: data.title,
+              content: data.content,
+              _id: data._id,
+            })
+          : (ctx.body = false)
+      })
+      .catch((err) => {
+        ctx.body = false
+      })
+  },
 }
 
 routerExports.deleteDynamicMsg = {
@@ -286,8 +343,10 @@ routerExports.deleteDynamicMsg = {
   route: async (ctx, next) => {
     const { _id, msgId } = ctx.request.body
     try {
-      const { headers: { authorization } } = ctx;
-      const tokenParse = parseToken(authorization);
+      const {
+        headers: { authorization },
+      } = ctx
+      const tokenParse = parseToken(authorization)
       const { _id: userId } = tokenParse
       const user = await User.findOne({ _id: userId })
       if (!user.admin) throw '当前用户无权限'
@@ -296,25 +355,34 @@ routerExports.deleteDynamicMsg = {
     } catch (error) {
       ctx.body = {
         success: false,
-				erorMsg: reMapError(error),
+        errorMsg: reMapError(error),
       }
     }
-  }
+  },
 }
 
 function callDeleteDynamicMsg(_id, msgId) {
   return new Promise((resolve, reject) => {
-    Dynamic.findOne({ _id: msgId }).then(data => {
-      if (data) {
-        const msg = data.msg.filter(item => (String(item._id) !== String(_id)))
-        Dynamic.updateOne({ _id: msgId }, {
-          $set: {
-            msg
-          }
-        }).then(ans => ans.ok === 1 ? resolve(true) : reject('删除失败'))
-      }
-    }).catch(err => reject(err instanceof Object ? JSON.stringify(err) : err.toString()))
+    Dynamic.findOne({ _id: msgId })
+      .then((data) => {
+        if (data) {
+          const msg = data.msg.filter(
+            (item) => String(item._id) !== String(_id)
+          )
+          Dynamic.updateOne(
+            { _id: msgId },
+            {
+              $set: {
+                msg,
+              },
+            }
+          ).then((ans) => (ans.ok === 1 ? resolve(true) : reject('删除失败')))
+        }
+      })
+      .catch((err) =>
+        reject(err instanceof Object ? JSON.stringify(err) : err.toString())
+      )
   })
 }
 
-module.exports = routerExports 
+module.exports = routerExports

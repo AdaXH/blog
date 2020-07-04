@@ -9,5 +9,9 @@ module.exports = mongoose.model('messages', mongoose.Schema({
         date: String,
         name: String,
         toRepeat: String
-    })
+    }),
+    avatar: {
+        default: '/upload/user_avatar/default_avatar.jpg',
+        type: String
+    }
 }))
