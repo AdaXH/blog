@@ -18,7 +18,7 @@ import User from './components/user';
     message,
   })
 )
-export class Index extends React.Component {
+class Index extends React.Component {
   state = {
     isLogin: false,
     showOperation: false,
@@ -114,3 +114,5 @@ export class Index extends React.Component {
     );
   }
 }
+
+export { Index };

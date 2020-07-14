@@ -11,7 +11,7 @@
     "start": "NODE_ENV=production node koa.js",
     "dev": "node koa.js NODE_ENV=development",
     "lint-client": "cd dva-version && eslint --ext .js src test",
-    "dev-pc": "concurrently 'nodemon nodemon -i ./pc/ koa' 'cd pc && yarn dev'",
+    "dev-pc": "concurrently 'nodemon -i ./pc/ koa' 'cd pc && yarn dev'",
     "dev-mobile": "concurrently 'node koa' 'cd umi-mobile && yarn dev'",
     "build-pc": "cd pc && npm run build"
   },
