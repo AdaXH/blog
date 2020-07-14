@@ -1,12 +1,12 @@
 # Project-Blog
 
-## install modules
-```ruby  
+## 安装依赖
+
+```ruby
    $ npm i
 ```
-to install all modules the project need,
-The project's data should get from local mongodb,
-you should config that in koa.js:
+
+在启动前，需要打开数据库连接
 
 ## config :
 
@@ -18,62 +18,17 @@ you should config that in koa.js:
         console.log('can not connect to mongo'+err)
 });
 ```
+
 ## you should create the following collections or run 'mongorestore' in the 'dump' floder before running :
+
 ```ruby
-module.exports = mongoose.model('dynamics', mongoose.Schema({
-    title: String,
-    content: String,
-    date: String,
-    upvote: Number,
-    msg: Array({
-        context: String,
-        date: String
-    })
-}))
-```
-```ruby
-module.exports = mongoose.model('articles', mongoose.Schema({
-    date: String,
-    year: String,
-    type: String,
-    summary: String,
-    time: String,
-    viewer: {
-        default: 0,
-        type: Number
-    }
-}))
-```
-```ruby
-module.exports = mongoose.model('messages', mongoose.Schema({
-    name: String,
-    content: String,
-    date: String,
-    repeat: Array({
-        info: String,
-        date: String,
-        name: String
-    })
-}))
-```
-```ruby
-module.exports = mongoose.model('moods', mongoose.Schema({
-	date: String,
-	mood: String,
-	user: String
-}))
-```
-```ruby
-module.exports = mongoose.model('users', mongoose.Schema({
-	name:String,
-    password:String,
-    admin: {
-        type: Bollean,
-        default: false
-    }
-})) //  **the admin's property 'admin' must be 'true' or some operation won't be work !**  
+    npm run dev // 只打开服务端
+    npm run dev-pc // 打开服务端和pc端
+    npm run dev-mobile // 打开服务端和移动端
+    npm run build-pc // 生成pc打包文件
 ```
 
-URL  http://www.adaxh.site
- 
-![screenshot](http://wx2.sinaimg.cn/mw690/a99a6e98ly1fox9b9l44ij20sg0lc457.jpg)  
+URL https://www.adaxh.site
+
+![screenshot](http://wx3.sinaimg.cn/mw690/a99a6e98ly1fzhr333xfaj21fn0u01kx.jpg)
+![screenshot](http://wx1.sinaimg.cn/mw690/a99a6e98ly1fzhr2ziflpj21jb0u07wh.jpg)

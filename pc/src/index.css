@@ -1,0 +1,62 @@
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+  font-family: Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI,
+    PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica,
+    Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+.App,
+#root {
+  /* text-align: center; */
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 50% 34%, #1099c9, #1167b0);
+}
+body,
+ul,
+li,
+ol,
+dl,
+dt,
+dd,
+figure,
+figcaption,
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input,
+form,
+button {
+  padding: 0;
+  margin: 0;
+}
+ul {
+  list-style: none;
+}
+a:link {
+  text-decoration: none !important;
+}
+input,
+button,
+textarea {
+  outline: none;
+}
+a:visited {
+  text-decoration: none !important;
+}
+a:hover {
+  text-decoration: none !important;
+}
+a:active {
+  text-decoration: none !important;
+}

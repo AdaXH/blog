@@ -1,0 +1,112 @@
+@keyframes fromLeft {
+  form {
+    opacity: 0;
+    transform: translate3d(-100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes formRight {
+  form {
+    opacity: 0;
+    transform: translate3d(100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+.searchContainer {
+  position: absolute;
+  width: 400px;
+  height: 500px;
+  top: 180px;
+  left: 50px;
+  background: white;
+  overflow: hidden;
+  opacity: 0;
+  will-change: opacity, transform;
+  animation: fromLeft 1s;
+  animation-fill-mode: forwards;
+  transform: translate3d(-100px, 0, 0);
+  .resultWrap {
+    position: relative;
+    width: 518px;
+    overflow: hidden;
+    overflow-y: auto;
+    margin-top: 10px;
+    height: 465px;
+    padding: 10px;
+    padding-right: 114px;
+    ul {
+      margin-bottom: 30px;
+      opacity: 0;
+      width: 377px;
+      will-change: opacity, transform;
+      animation: formRight 1s;
+      animation-fill-mode: forwards;
+      transform: translate3d(100px, 0, 0);
+      li:hover {
+        background: rgba(0, 0, 0, 0.5);
+      }
+      li:hover * {
+        color: white;
+      }
+      li {
+        display: flex;
+        margin-bottom: 10px;
+        transition: all 0.2s;
+        cursor: pointer;
+        span {
+          flex: 1;
+          text-align: center;
+          line-height: 30px;
+          white-space: nowrap;
+          font-size: 13px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          color: rgba(0, 0, 0, 0.5);
+          * {
+            font-size: 13px !important;
+            font-weight: normal;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: rgba(0, 0, 0, 0.5);
+            display: inline;
+          }
+        }
+      }
+    }
+  }
+  .searchHeader {
+    width: 380px;
+    height: 35px;
+    margin: 0 auto;
+    border-bottom: 1px solid #eee;
+    ul {
+      display: flex;
+      li {
+        flex: 1;
+        line-height: 35px;
+        text-align: center;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.7);
+      }
+    }
+  }
+}
+.searchMask1 {
+  z-index: 4;
+  width: 100%;
+  position: absolute;
+  height: 100%;
+}
+.searchMask2 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #0000006b;
+}

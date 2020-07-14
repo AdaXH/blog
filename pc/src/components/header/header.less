@@ -1,0 +1,114 @@
+@themeColor: #f54c53;
+header {
+  height: 80px;
+  // top: 40px;
+  width: 1150px;
+  left: 50%;
+  position: absolute;
+  z-index: 2;
+  transition: all 1s;
+  transform: translateY(40px);
+  margin-left: -575px;
+  .search {
+    line-height: 80px;
+    float: left;
+    margin-left: 20px;
+    .searchIcon {
+      color: white;
+      font-weight: bold;
+      float: left;
+      margin: 3px 10px 0 0;
+      cursor: pointer;
+    }
+    input {
+      background: transparent;
+      border: none;
+      height: 29px;
+      float: left;
+      margin-top: 30px;
+      line-height: 30px;
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.4s;
+      will-change: width;
+      font-weight: bold;
+      width: 0px;
+      border-bottom: 2px solid @themeColor;
+    }
+    input:focus {
+      width: 180px;
+    }
+    input::-webkit-input-placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    input:-ms-input-placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    input:-moz-placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    input::-moz-placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+  .logo {
+    float: left;
+    line-height: 80px;
+    color: white;
+    font-weight: bold;
+    text-align: left;
+    // margin-left: 100px;
+    font-size: 20px;
+  }
+  ul {
+    height: 80px;
+    line-height: 80px;
+    color: white;
+    float: left;
+    position: relative;
+    margin-right: 100px;
+    .navLine {
+      height: 2px;
+      position: absolute;
+      bottom: 20px;
+      width: 48px;
+      transform: translateX(30px);
+      transition: all 0.4s;
+      background: #f54c53;
+    }
+    li {
+      display: inline-block;
+      // width: 100px;
+      margin-left: 20px;
+      a {
+        display: block;
+        padding: 0 0 0 20px;
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.4s;
+      }
+      a:hover {
+        color: white;
+      }
+    }
+  }
+}
+header.anotherHeader {
+  transform: translateY(0px);
+  z-index: 200;
+  // background: white;
+  animation: bg 1s forwards;
+  animation-delay: 1s;
+  * {
+    color: #2d2c2cd6;
+  }
+  a:hover {
+    color: #f54c53;
+  }
+}
+@keyframes bg {
+  from {
+    background: transparent;
+  }
+  to {
+    background: white;
+  }
+}

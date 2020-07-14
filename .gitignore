@@ -24,5 +24,7 @@ public/upload/user_avatar/*
 backup/
 backup.zip
 /public/upload
+/pc/node_modules/
+/umi-mobile/node_modules
 
 /public/sass/*.map

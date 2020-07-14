@@ -1,0 +1,425 @@
+@keyframes formRight {
+  form {
+    opacity: 0;
+    transform: translate3d(100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes flyFromRight {
+  from {
+    transform: translateX(300px);
+  }
+  to {
+    transform: translateX(-2000px);
+  }
+}
+@keyframes fromTop {
+  form {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes dot1 {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes dot2 {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100px;
+  }
+}
+@keyframes dot3 {
+  from {
+    width: 0;
+  }
+  to {
+    width: 150px;
+  }
+}
+@keyframes dot4 {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.messageContainer {
+  width: 1150px;
+  height: 100%;
+  position: relative;
+  margin: 0 auto;
+  overflow: hidden;
+  .flyMsgContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    .msgFlyItem:nth-of-type(1) {
+      top: 50px;
+      animation-delay: 0.1s;
+      right: -100px;
+    }
+    .msgFlyItem:nth-of-type(2) {
+      top: 75px;
+      animation-delay: 0.3s;
+      right: -270px;
+    }
+    .msgFlyItem:nth-of-type(3) {
+      top: 95px;
+      animation-delay: 0.5s;
+      right: -370px;
+    }
+    .msgFlyItem:nth-of-type(4) {
+      top: 115px;
+      animation-delay: 0.5s;
+      right: -480px;
+    }
+    .msgFlyItem {
+      color: #ffffffb2;
+      margin: 20px;
+      max-width: 300px;
+      letter-spacing: 2px;
+      text-align: center;
+      height: 40px;
+      line-height: 40px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      // padding: 20px 0;
+      position: absolute;
+      // font-weight: bold;
+      // float: right;
+      right: 0;
+      transform: translateX(300px);
+      animation: flyFromRight 20s infinite linear;
+    }
+  }
+  .wrapContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    .pagination {
+      height: 100px;
+      position: absolute;
+      overflow: hidden;
+      top: 50%;
+      left: 50%;
+      transform: translate3d(-50%, 120%, 0);
+    }
+  }
+  .addMsgCon {
+    width: 300px;
+    height: 400px;
+    position: absolute;
+    top: 50%;
+    margin-top: -320px;
+    left: 50%;
+    margin-left: -600px;
+    div.addMsg {
+      width: 150px;
+      height: 50px;
+      text-align: center;
+      line-height: 50px;
+      cursor: pointer;
+      background: none;
+      color: white;
+      position: absolute;
+      right: 100px;
+      top: 91px;
+      opacity: 0;
+      transform: translateY(-30px);
+      transition: all 0.4s;
+      animation: dot4 0.5s 2s;
+    }
+    .addMsg:hover {
+      font-weight: bold;
+      color: #f54c53;
+    }
+    div {
+      background: white;
+      animation-fill-mode: forwards !important;
+      animation-timing-function: linear !important;
+    }
+    .dotToLine2 {
+      position: absolute;
+      width: 0px;
+      height: 1px;
+      top: 50%;
+      margin-top: -59px;
+      right: 101px;
+      animation: dot3 0.5s 1.5s;
+    }
+    .dotToLine {
+      position: absolute;
+      top: 50%;
+      width: 0px;
+      height: 1px;
+      right: 20px;
+      transform-origin: right bottom;
+      transform: rotate(35deg);
+      margin-top: -1.5px;
+      animation: dot2 0.5s 1s;
+    }
+    .dot {
+      position: absolute;
+      top: 50%;
+      width: 10px;
+      right: 10px;
+      height: 10px;
+      opacity: 0;
+      transform: translateY(-50%);
+      background: white;
+      border-radius: 50%;
+      animation: dot1 0.5s 0.5s;
+      animation-fill-mode: forwards;
+    }
+  }
+  .messageListWrap {
+    width: 600px;
+    height: 400px;
+    padding-bottom: 20px;
+    position: absolute;
+    overflow: hidden;
+    top: 50%;
+    border-bottom: 1px solid white;
+    left: 50%;
+    margin-left: -300px;
+    margin-top: -320px;
+    animation: formRight 1s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-transform: translate3d(100px, 0, 0);
+    transform: translate3d(100px, 0, 0);
+    .mssageList {
+      width: 800px;
+      height: 421px;
+      overflow: hidden;
+      overflow-y: auto;
+      position: relative;
+      .messageItem {
+        color: white;
+        height: auto;
+        padding: 0 50px;
+        position: relative;
+        margin: 10px 0;
+        opacity: 0;
+        animation: formRight 0.4s forwards;
+        transform: translate3d(100px, 0, 0);
+        .repeatList {
+          padding: 20px;
+          font-size: 13px;
+          animation: formRight 1s;
+          opacity: 0;
+          -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+          -webkit-transform: translate3d(100px, 0, 0);
+          transform: translate3d(100px, 0, 0);
+          .repeatItem:nth-of-type(1) {
+            padding-top: 0;
+          }
+          .repeatItem {
+            line-height: 1.5;
+            padding: 20px 162px 0 20px;
+            position: relative;
+            .msgOperation::after {
+              content: '';
+              position: absolute;
+              right: 8px;
+              bottom: -4px;
+              background: white;
+              width: 10px;
+              height: 10px;
+              -webkit-transform: rotate(45deg);
+              transform: rotate(45deg);
+            }
+            .msgOperation {
+              position: absolute;
+              right: 134px;
+              opacity: 0;
+              transition: all 0.4s;
+              background: white;
+              width: 100px;
+              height: 30px;
+              bottom: 26px;
+              border-radius: 4px;
+              z-index: 1;
+              will-change: transform, opacity;
+              transform: translateY(-30px);
+              animation: fromTop 0.4s;
+              animation-fill-mode: forwards;
+              div {
+                width: 45px;
+                float: left;
+                height: 20px;
+                line-height: 30px;
+                text-align: center;
+                margin-left: 5px;
+                color: #777;
+                cursor: pointer;
+              }
+              div:hover {
+                color: black;
+              }
+            }
+            .more {
+              color: rgba(255, 255, 255, 0.3);
+              position: absolute;
+              right: -32px;
+              bottom: 0;
+              cursor: pointer;
+              transition: all 0.4s;
+            }
+            .more:hover {
+              color: white;
+            }
+            .repeatInfo {
+              font-size: 13px;
+            }
+            .repeatContent {
+              padding-left: 10px;
+              font-size: 13px;
+              position: relative;
+            }
+          }
+        }
+        .msgContent {
+          clear: both;
+          padding: 20px 205px 20px 20px;
+          white-space: pre-wrap;
+          // border-bottom: 1px solid rgba(255,255,255,0.3);
+          position: relative;
+          font-size: 13px;
+          line-height: 1.5;
+          .msgOperation::after {
+            content: '';
+            position: absolute;
+            right: 8px;
+            bottom: -4px;
+            background: white;
+            width: 10px;
+            height: 10px;
+            -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+          }
+          .msgOperation {
+            position: absolute;
+            right: 154px;
+            opacity: 0;
+            transition: all 0.4s;
+            background: white;
+            width: 100px;
+            height: 30px;
+            bottom: 48px;
+            border-radius: 4px;
+            z-index: 1;
+            will-change: transform, opacity;
+            transform: translateY(-30px);
+            animation: fromTop 0.4s;
+            animation-fill-mode: forwards;
+            div {
+              width: 45px;
+              float: left;
+              height: 20px;
+              line-height: 30px;
+              text-align: center;
+              margin-left: 5px;
+              color: #777;
+              cursor: pointer;
+            }
+            div:hover {
+              color: black;
+            }
+          }
+          .moreCon {
+            position: absolute;
+            bottom: 10px;
+            right: 150px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+            width: 60px;
+            div {
+              float: left;
+              // margin-left: 10px;
+              transition: all 0.4s;
+              line-height: 24px;
+              cursor: pointer;
+            }
+            div:nth-of-type(2) {
+              float: right;
+            }
+            div:hover {
+              color: white;
+            }
+          }
+        }
+        .msgAvatar {
+          position: absolute;
+          left: 0px;
+          width: 50px;
+          height: 50px;
+          border-radius: 25px;
+          overflow: hidden;
+          background: white;
+          img {
+            display: block;
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .mssageName {
+          float: left;
+        }
+        .leaveInfo {
+          float: left;
+          font-weight: bold;
+          font-size: 15px;
+          margin-left: 20px;
+          div:nth-of-type(2) {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: normal;
+            font-size: 13px;
+          }
+        }
+      }
+      li.messageItem:nth-of-type(1) {
+        animation-delay: 0s;
+      }
+      li.messageItem:nth-of-type(2) {
+        animation-delay: 0.2s;
+      }
+      li.messageItem:nth-of-type(3) {
+        animation-delay: 0.4s;
+      }
+      li.messageItem:nth-of-type(4) {
+        animation-delay: 0.6s;
+      }
+      li.messageItem:nth-of-type(5) {
+        animation-delay: 0.8s;
+      }
+      li.messageItem:nth-of-type(6) {
+        animation-delay: 1s;
+      }
+    }
+  }
+}

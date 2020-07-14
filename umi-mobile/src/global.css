@@ -1,0 +1,12 @@
+html,
+body,
+#root {
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+#root {
+  transition: background 1s;
+}
+body {
+  margin: 0;
+}

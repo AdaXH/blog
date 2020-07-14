@@ -1,6 +1,11 @@
 const Message = require('./../dbmodel/Message')
 const User = require('./../dbmodel/User')
-const { getJWTPayload, timeago, reMapError } = require('../common/util')
+const {
+  getJWTPayload,
+  timeago,
+  reMapError,
+  sendEmail,
+} = require('../common/util')
 const routerExports = {}
 
 function escapeMessage(str) {
@@ -18,7 +23,21 @@ routerExports.deleteInnerRepeat = {
       if (!payload) throw 'token认证失败'
       const user = await User.findOne({ _id: payload._id })
       if (!user) throw '当前用户不存在或会话已过期'
-      const result = await deleteInnerRepeat(_id, _parent_id, user.name)
+      const curMsg = await Message.findOne({ _id: _parent_id })
+      if (!curMsg) {
+        throw '该条回复不存在'
+      }
+      const repeat = curMsg.repeat.filter((item) => item._id != _id)
+      const na = curMsg.repeat.filter((item) => item._id == _id)[0].name
+      // const result = await deleteInnerRepeat(_id, _parent_id, user.name)
+      const curUser = await User.findOne({ name: user.name })
+      if (!curUser) throw '用户不存在'
+      if (user.name === na || curUser.admin) {
+        await Message.updateOne(
+          { _id: _parent_id },
+          { $set: { repeat: [...repeat] } }
+        )
+      } else if (user.name !== na) throw '只能删除自己的回复'
       ctx.body = {
         success: true,
       }
@@ -101,49 +120,6 @@ function callGetMessageByPageSize() {
   })
 }
 
-function deleteInnerRepeat(_id, _parent_id, name) {
-  return new Promise((resolve, reject) => {
-    Message.findOne({ _id: _parent_id })
-      .then((ans) => {
-        if (!ans) reject('该条回复已不存在')
-        else {
-          const repeat = ans.repeat.filter((item) => item._id != _id)
-          const na = ans.repeat.filter((item) => item._id == _id)[0].name
-          User.findOne({ name })
-            .then((ans) => {
-              if (!ans) reject('当前用户不存在')
-              else {
-                if (name === na || ans.admin)
-                  Message.updateOne(
-                    { _id: _parent_id },
-                    {
-                      $set: {
-                        repeat: [...repeat],
-                      },
-                    }
-                  ).then((res) =>
-                    res.ok === 1 ? resolve(true) : reject('删除失败')
-                  )
-                else if (name !== na) reject('只能删除自己的回复')
-              }
-            })
-            .catch((err) =>
-              reject(
-                reject(
-                  err instanceof Object ? JSON.stringify(err) : err.toString()
-                )
-              )
-            )
-        }
-      })
-      .catch((err) =>
-        reject(
-          reject(err instanceof Object ? JSON.stringify(err) : err.toString())
-        )
-      )
-  })
-}
-
 routerExports._repeatMsg = {
   method: 'post',
   url: '/repeatmsg',
@@ -173,6 +149,7 @@ routerExports._repeatMsg = {
         info,
         name: user.name,
       }
+      const toRepeatUser = (await User.findOne({ name: toRepeat })) || {}
       const currentMsg = await Message.findOne({ _id })
       await Message.updateOne(
         { _id },
@@ -198,95 +175,27 @@ routerExports._repeatMsg = {
           return time1 - time2
         })
       }
-
-      ctx.body = {
-        success: true,
-        data: result,
-      }
-    } catch (error) {
-      ctx.body = {
-        success: false,
-        errorMsg: reMapError(error),
-      }
-    }
-  },
-}
-
-routerExports.repeatMsg = {
-  //将废弃
-  method: 'post',
-  url: '/repeatMsg',
-  route: async (ctx, next) => {
-    const { _id, msg } = ctx.request.body
-    try {
-      const payload = getJWTPayload(ctx.headers.authorization)
-      if (!payload) throw 'token认证失败'
-      const data = await callRepeatMsg(_id, msg)
-      ctx.body = {
-        success: true,
-        data,
-      }
-    } catch (error) {
-      ctx.body = {
-        success: false,
-        errorMsg: reMapError(error),
-      }
-    }
-  },
-}
-//
-function callRepeatMsg(_id, msg) {
-  return new Promise((resolve, reject) => {
-    Message.findOne({ _id })
-      .then((ans) => {
-        if (!ans) reject('这条留言已不存在，无法回复')
-        else {
-          const repeat = ans.repeat || []
-          Message.updateMany(
-            { _id },
-            {
-              $set: {
-                repeat: [...repeat, msg],
-              },
-            }
-          )
-            .then((res) => {
-              if (res.ok === 1) {
-                Message.find({})
-                  .then((ans) => {
-                    if (ans) {
-                      for (let item of ans)
-                        if (item.repeat && item.repeat.length !== 0) {
-                          for (let item2 of item.repeat) {
-                            let temp = new Date(item2.date).getTime()
-                            item2.date = timeago(temp)
-                          }
-                        }
-                      resolve(ans)
-                    } else reject('获取留言板失败')
-                  })
-                  .catch((err) => reject('回复成功，但是获取失败'))
-              } else reject('回复失败')
-            })
-            .catch((err) =>
-              reject(
-                '回复失败' + err instanceof Object
-                  ? JSON.stringify(err)
-                  : err.toString()
-              )
-            )
-        }
-      })
-      .catch((err) =>
-        reject(
-          reject(
-            '无法回复' + err instanceof Object
-              ? JSON.stringify(err)
-              : err.toString()
-          )
+      if (toRepeatUser.email) {
+        sendEmail(
+          `hi，${
+            toRepeatUser.name
+          }，你在https://adaxh.site 的留言板有了新的回复～\n
+          ${user.name} 说 ：\n
+          “${info}”
+        `,
+          undefined,
+          '留言回复通知'
         )
-      )
-  })
+      }
+      ctx.body = { success: true, data: result }
+    } catch (error) {
+      console.log('error', error)
+      ctx.body = {
+        success: false,
+        errorMsg: reMapError(error),
+      }
+    }
+  },
 }
 
 routerExports.deleteMsg = {
@@ -336,79 +245,19 @@ routerExports._leaveMsg = {
         success: true,
         data,
       }
+      sendEmail(
+        `${user.name}（${user.email}）给你留言了：${newContent}`,
+        undefined,
+        '留言回复通知'
+      )
     } catch (error) {
+      console.log('error', error)
       ctx.body = {
         success: false,
         errorMsg: reMapError(error),
       }
     }
   },
-}
-
-routerExports.leaveMsg = {
-  //新版本废弃
-  method: 'post',
-  url: '/leaveMessage',
-  route: async (ctx, next) => {
-    const { date, content } = ctx.request.body
-    const newContent = escapeMessage(content)
-    try {
-      const payload = getJWTPayload(ctx.headers.authorization)
-      if (!payload) throw 'token认证失败'
-      const user = await User.findOne({ _id: payload._id })
-      if (!date || !content) throw '入参错误'
-      const data = await callLeaveMessage(user.name, date, newContent)
-      ctx.body = {
-        success: true,
-        data,
-        ...payload,
-      }
-    } catch (error) {
-      ctx.body = {
-        success: false,
-        errorMsg: reMapError(error),
-      }
-    }
-  },
-}
-
-function callLeaveMessage(name, date, content) {
-  return new Promise((resolve, reject) => {
-    new Message({
-      name,
-      date,
-      content,
-      repeat: [],
-    }).save((err, ans) => {
-      console.log(ans)
-      if (err)
-        reject(
-          '留言保存失败' + err instanceof Object
-            ? JSON.stringify(err)
-            : err.toString()
-        )
-      else {
-        Message.find({}, (err, ans) => {
-          if (err)
-            reject(
-              '获取留言失败' + err instanceof Object
-                ? JSON.stringify(err)
-                : err.toString()
-            )
-          else {
-            for (let item of ans)
-              if (item.repeat && item.repeat.length !== 0) {
-                for (let item2 of item.repeat) {
-                  let temp = new Date(item2.date).getTime()
-                  item2.date = timeago(temp)
-                }
-              }
-            resolve(ans)
-          }
-        })
-      }
-    })
-  })
 }
 
 module.exports = routerExports

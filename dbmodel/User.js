@@ -1,22 +1,29 @@
 const mongoose = require('mongoose')
 
-module.exports = mongoose.model('users', mongoose.Schema({
+module.exports = mongoose.model(
+  'users',
+  mongoose.Schema({
     name: String,
     password: String,
     avatar: {
-        type: String,
-        default: '/upload/user_avatar/default_avatar.jpg'
+      type: String,
+      default: '/upload/user_avatar/default_avatar.jpg',
     },
     admin: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     introduce: {
-        type: String,
-        default: undefined
+      type: String,
+      default: undefined,
     },
     pics: {
-        type: Object({ glitchUrl: String, flyUrl: String }),
-        default: { glitchUrl: 'no permission', flyUrl: 'no permission' }
-    } 
-}))
+      type: Object({ glitchUrl: String, flyUrl: String }),
+      default: { glitchUrl: 'no permission', flyUrl: 'no permission' },
+    },
+    email: {
+      type: String,
+      default: '',
+    },
+  })
+)

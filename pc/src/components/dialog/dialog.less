@@ -1,0 +1,134 @@
+@keyframes dialog {
+  from {
+    opacity: 0;
+    transform: scale3d(0.8, 0.8, 0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+.dialogContainer {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 900;
+  .dialogContent {
+    position: absolute;
+    z-index: 1;
+    width: 500px;
+    height: 410px;
+    top: 50%;
+    left: 50%;
+    margin-left: -250px;
+    margin-top: -200px;
+    background: white;
+    animation: dialog 0.5s;
+    animation-fill-mode: forwards;
+    transform: scale3d(0.8, 0.8, 0.8);
+    opacity: 0;
+    will-change: transform, opacity;
+    .info {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      color: #777;
+      font-size: 15px;
+    }
+    .dialogOperation {
+      width: 250px;
+      margin: 0 auto;
+      height: 35px;
+      i {
+        color: #f54c53;
+        font-size: 20px;
+        font-weight: bold;
+      }
+    }
+    .dialogOperation div {
+      cursor: pointer;
+      width: 50px;
+      height: 35px;
+      line-height: 35px;
+      color: white;
+      text-align: center;
+      // border-radius: 4px;
+      float: left;
+      border-bottom: 1px solid transparent;
+      transition: all 0.5s;
+    }
+    .dialogOperation div:nth-of-type(1):hover {
+      border-bottom: 1px solid #f54c53;
+    }
+    .dialogOperation div:nth-of-type(2):hover {
+      border-bottom: 1px solid #52c41a;
+    }
+    div.dialogSubmit {
+      float: right;
+    }
+    .dialogCancel i {
+      color: #f54c53;
+    }
+    .dialogSubmit i {
+      color: #52c41a;
+    }
+    .dynamicTitle {
+      width: 400px;
+      height: 40px;
+      margin: 0 auto;
+      border: none;
+      outline: none;
+      display: block;
+      background: white;
+      padding: 20px;
+    }
+    .editImg {
+      width: 400px;
+      height: 200px;
+      margin: 0 auto;
+      position: relative;
+      .editUpload {
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        z-index: 1;
+      }
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    }
+    textarea {
+      width: 400px;
+      height: 300px;
+      margin: 0 auto;
+      display: block;
+      background: white;
+      padding: 20px;
+      resize: none;
+      border: none;
+      color: #777;
+
+      font-size: 15px;
+    }
+    textarea:focus {
+      border: none;
+    }
+  }
+  .dialogMask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+}

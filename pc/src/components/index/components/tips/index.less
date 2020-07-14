@@ -1,0 +1,65 @@
+.leftContainer {
+  float: left;
+  width: auto;
+  position: relative;
+  .extrc {
+    position: absolute;
+    white-space: nowrap;
+    top: 300px;
+    color: white;
+    opacity: 0;
+    font-size: 16px;
+    transform: translate3d(100px, 0, 0);
+    animation: formRight 1s;
+    animation-fill-mode: forwards;
+  }
+  .extrc2 {
+    position: absolute;
+    white-space: nowrap;
+    top: 350px;
+    left: 100px;
+    color: white;
+    opacity: 0;
+    font-size: 16px;
+    transform: translate3d(0, 100px, 0);
+    animation: fromBottom 1s;
+    animation-fill-mode: forwards;
+  }
+  .welcome {
+    position: absolute;
+    top: 250px;
+    left: 0;
+    width: auto;
+    white-space: nowrap;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.15em;
+    display: block;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translate3d(-100px, 0, 0);
+    animation: formRight 1s;
+    animation-fill-mode: forwards;
+  }
+}
+@keyframes formRight {
+  form {
+    opacity: 0;
+    transform: translate3d(100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes fromBottom {
+  form {
+    opacity: 0;
+    transform: translate3d(0, 100px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}

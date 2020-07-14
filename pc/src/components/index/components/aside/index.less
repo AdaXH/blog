@@ -1,0 +1,79 @@
+.operationContainer {
+  position: absolute;
+  top: -20px;
+  width: 240px;
+  left: -60px;
+  z-index: 2;
+  height: 300px;
+  .api {
+    width: 240px;
+    cursor: pointer;
+    text-align: center;
+    .icon {
+      color: white;
+      text-align: center;
+      transform: translate3d(-100px, 0, 0);
+      animation: leftToRight 8s infinite;
+      i {
+        font-size: 22px;
+      }
+    }
+  }
+  ul {
+    animation: formRight 1s;
+    will-change: opacity, transform;
+    opacity: 0;
+    transform: translate3d(60px, 0, 0);
+    animation-fill-mode: forwards;
+    li {
+      line-height: 30px;
+      padding-left: 62px;
+      color: white;
+      will-change: opacity, transform;
+      opacity: 0;
+      cursor: pointer;
+      animation: fromLeft 1s;
+      transform: translate3d(-40px, 0, 0);
+      animation-fill-mode: forwards;
+      span {
+        margin-left: 20px;
+        font-size: 13px;
+        transition: all 0.4s;
+      }
+    }
+    li:hover span {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+@keyframes formRight {
+  form {
+    opacity: 0;
+    transform: translate3d(100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes fromLeft {
+  form {
+    opacity: 0;
+    transform: translate3d(-100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes leftToRight {
+  0% {
+    transform: translate3d(-100px, 0, 0);
+  }
+  50% {
+    transform: translate3d(100px, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100px, 0, 0);
+  }
+}

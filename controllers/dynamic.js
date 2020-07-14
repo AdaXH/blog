@@ -17,7 +17,7 @@ routerExports.upvote = {
       const currentDyanmic = await Dynamic.findOne({ _id })
       await Dynamic.updateOne(
         { _id },
-        { $set: { upvote: currentDyanmic.upvote + 1 } }
+        { $set: { upvote: (currentDyanmic.upvote || 0) + 1 } }
       )
       ctx.body = { success: true }
     } catch (error) {

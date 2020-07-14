@@ -69,12 +69,17 @@ function moodArr(time) {
 function articleArr() {
   return new Promise((resolve, reject) => {
     Article.find({}, (err, res) => {
-      const result = res.sort((a, b) => {
-        return (
-          new Date(b.year + '-' + b.date).getTime() -
-          new Date(a.year + '-' + a.date).getTime()
-        )
-      })
+      const result = res
+        .sort((a, b) => {
+          return (
+            new Date(b.year + '-' + b.date).getTime() -
+            new Date(a.year + '-' + a.date).getTime()
+          )
+        })
+        .map((item) => {
+          delete item._doc.summary
+          return item
+        })
       err ? reject([]) : resolve(result)
     })
   })

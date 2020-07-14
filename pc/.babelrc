@@ -1,0 +1,22 @@
+{
+  "presets": ["env", "react", "stage-0"],
+  "plugins": [
+    "dva-hmr",
+    "transform-decorators-legacy",
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "libraryDirectory": "es",
+        "style": true
+      }
+    ],
+    "transform-class-properties",
+    "transform-runtime"
+  ],
+  "env": {
+    "production": {
+      "plugins": ["transform-remove-console"]
+    }
+  }
+}

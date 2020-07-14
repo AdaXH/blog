@@ -1,0 +1,14 @@
+{
+  "extends": ["umi", "prettier"],
+  "rules": {
+    "quotes": "off",
+    "semi": 1
+    // "prettier/prettier": [
+    //   "error",
+    //   {
+    //     "printWidth": 200,
+    //     "semi": true
+    //   }
+    // ]
+  }
+}
