@@ -19,8 +19,6 @@
 });
 ```
 
-## you should create the following collections or run 'mongorestore' in the 'dump' floder before running :
-
 ```ruby
     npm run dev // 只打开服务端
     npm run dev-pc // 打开服务端和pc端
