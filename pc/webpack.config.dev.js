@@ -3,10 +3,6 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-console.log(
-  'path.resolve(__dirname, "public")',
-  path.resolve(__dirname, "public")
-);
 module.exports = {
   entry: ["babel-polyfill", "./src/index.js"],
   output: {
@@ -75,8 +71,9 @@ module.exports = {
             loader: "css-loader",
             options: {
               importLoaders: 1,
-              modules: true,
-              localIdentName: "[name]_[local]-[hash:base64:5]"
+              modules: {
+                localIdentName: "[name]_[local]-[hash:base64:5]"
+              }
             }
           },
           {
@@ -146,11 +143,13 @@ module.exports = {
       filename: "index.html",
       hash: true
     }),
-    new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname, "public")
-      }
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "public")
+        }
+      ]
+    }),
     new webpack.HotModuleReplacementPlugin()
   ]
 };
