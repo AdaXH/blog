@@ -15,7 +15,7 @@ export default connect(({ dynamic: { dynamic }, article: { data }, user }) => ({
   user,
   dynamic,
   article: data,
-}))((props) => {
+}))(props => {
   const tabs = [
     {
       component: () => <Dynamic />,
@@ -47,7 +47,7 @@ export default connect(({ dynamic: { dynamic }, article: { data }, user }) => ({
     >
       {permission ? (
         <Tabs defaultActiveKey="Moments">
-          {tabs.map((item) => (
+          {tabs.map(item => (
             <TabPane tab={item.description} key={item.description}>
               {item.component()}
             </TabPane>

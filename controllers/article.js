@@ -28,7 +28,7 @@ routerExports.deleteArticle = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -46,11 +46,7 @@ routerExports.queryArticleById = {
         data: result,
       }
     } catch (error) {
-      console.log('error', error)
-      ctx.body = {
-        success: false,
-        errorMsg: '文章不存在',
-      }
+      ctx.body = { success: false, errorMsg: error }
     }
   },
 }
@@ -90,7 +86,7 @@ routerExports.saveArticle = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -111,7 +107,7 @@ routerExports.updateArticle = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -140,7 +136,7 @@ routerExports.updateView = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -166,7 +162,7 @@ routerExports.getArticlePageSize = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },

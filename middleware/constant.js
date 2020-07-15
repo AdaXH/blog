@@ -5,5 +5,7 @@ module.exports = {
     'Googlebot',
     'dva-version',
     'favicon.ico',
+    'PhantomJS',
+    'index.php',
   ],
 }

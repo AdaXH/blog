@@ -2,7 +2,7 @@ const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HappyPack = require("happypack");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+// const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -59,8 +59,9 @@ module.exports = {
             loader: "css-loader",
             options: {
               importLoaders: 1,
-              modules: true,
-              localIdentName: "[name]_[local]-[hash:base64:5]"
+              modules: {
+                localIdentName: "[name]_[local]-[hash:base64:5]"
+              }
             }
           },
           {
@@ -147,12 +148,13 @@ module.exports = {
       filename: "index.html"
       // hash: true // 防止缓存
     }),
-    // new CleanWebpackPlugin(["dist"]),
-    new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname, "public")
-      }
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "public")
+        }
+      ]
+    }),
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /\.css$/g,
       cssProcessor: require("cssnano"),

@@ -23,7 +23,7 @@ routerExports.upvote = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -48,7 +48,7 @@ routerExports.cancelUpvote = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -94,7 +94,7 @@ routerExports.getDynamic = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -121,7 +121,7 @@ routerExports.setDynamicImg = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -196,7 +196,7 @@ routerExports.getDynamicByPageSize = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -223,7 +223,7 @@ routerExports.discussDynamic = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -251,7 +251,7 @@ routerExports.deleDynamic = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -285,7 +285,7 @@ routerExports.addDynamic = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -355,7 +355,7 @@ routerExports.deleteDynamicMsg = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },

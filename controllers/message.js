@@ -44,7 +44,7 @@ routerExports.deleteInnerRepeat = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -87,7 +87,7 @@ routerExports.getMessageByPageSize = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -192,7 +192,7 @@ routerExports._repeatMsg = {
       console.log('error', error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -218,7 +218,7 @@ routerExports.deleteMsg = {
     } catch (err) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -254,7 +254,7 @@ routerExports._leaveMsg = {
       console.log('error', error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },

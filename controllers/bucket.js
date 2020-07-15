@@ -76,7 +76,7 @@ routerExports.uploadBucket = {
       console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },

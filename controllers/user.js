@@ -36,7 +36,7 @@ routerExports.uploadGallery = {
       console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -100,7 +100,7 @@ routerExports.setPics = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -189,7 +189,7 @@ routerExports.login = {
       console.log('error', error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -211,7 +211,7 @@ routerExports.getUserInfor = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -243,7 +243,7 @@ routerExports.getUserInfoByToken = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -294,7 +294,7 @@ routerExports.introduce = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -331,7 +331,7 @@ routerExports.updateIntroduce = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -368,7 +368,7 @@ routerExports.getAvatar = {
       .catch((err) => {
         ctx.body = {
           success: false,
-          errorMsg: reMapError(error),
+          errorMsg: error,
         }
       })
   },
@@ -389,7 +389,7 @@ routerExports.allAvatar = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -435,7 +435,7 @@ routerExports.setAvatar = {
     } catch (error) {
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -502,7 +502,7 @@ routerExports.register = {
       // console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -522,7 +522,7 @@ routerExports.updateUserInfo = {
       await User.updateOne({ _id }, { $set: others })
       ctx.body = { success: true }
     } catch (error) {
-      ctx.body = { success: false, errorMsg: reMapError(error) }
+      ctx.body = { success: false, errorMsg: error }
     }
   },
 }

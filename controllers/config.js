@@ -24,7 +24,7 @@ routerExports.updateConfig = {
       console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -44,7 +44,7 @@ routerExports.getConfig = {
       console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },

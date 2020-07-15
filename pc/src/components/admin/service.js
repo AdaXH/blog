@@ -7,3 +7,7 @@ export async function verifyFriend(data) {
 export async function queryFriends() {
   return Api('api/queryFriends');
 }
+
+export async function deleteFriend(data) {
+  return Api('api/deleteFriend', 'POST', data);
+}

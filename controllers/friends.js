@@ -25,7 +25,7 @@ routerExports.queryFriends = {
       console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -46,7 +46,6 @@ routerExports.verifyFriend = {
       const { _id: userId } = tokenParse
       const user = await User.findOne({ _id: userId })
       if (!user || !user.admin) throw '当前用户无权限'
-      //   await new FriendShip(body).save()
       const curFirend = await FriendShip.findOne({ _id: friendId })
       if (!curFirend) throw '找不到这个友情链接哦'
       if (others.verify && !curFirend.verify && curFirend.email) {
@@ -65,7 +64,7 @@ routerExports.verifyFriend = {
       console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
     }
   },
@@ -82,7 +81,10 @@ routerExports.addFriend = {
       const { link } = body
       const curFirend = await FriendShip.findOne({ link })
       if (curFirend) {
-        throw '已提交过这个友情链接啦'
+        if (curFirend && !curFirend.verify) {
+          throw '友链已提交过了，您可以前往首页通过“聊骚吗”催一下'
+        }
+        throw '这个友情链接已存在啦'
       } else {
         delete body.verify
         await new FriendShip(body).save()
@@ -95,8 +97,31 @@ routerExports.addFriend = {
       console.log(error)
       ctx.body = {
         success: false,
-        errorMsg: reMapError(error),
+        errorMsg: error,
       }
+    }
+  },
+}
+
+routerExports.deleteFriend = {
+  method: 'post',
+  url: '/deleteFriend',
+  route: async (ctx) => {
+    try {
+      const {
+        headers: { authorization },
+        request: {
+          body: { _id: friendId },
+        },
+      } = ctx
+      const tokenParse = parseToken(authorization)
+      const { _id: userId } = tokenParse
+      const user = await User.findOne({ _id: userId })
+      if (!user || !user.admin) throw '当前用户无权限'
+      await FriendShip.deleteOne({ _id: friendId })
+      ctx.body = { success: true }
+    } catch (error) {
+      ctx.body = { success: false, errorMsg: error }
     }
   },
 }
