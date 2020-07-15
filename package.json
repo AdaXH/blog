@@ -31,12 +31,6 @@
     "eslint-plugin-import": "^2.6.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.1.0",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^7.0.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-remove-use-strict": "^0.0.2",
-    "gulp-sass": "^4.0.1",
-    "gulp-uglify": "^3.0.0",
     "js-cookie": "^2.2.1"
   },
   "dependencies": {
