@@ -15,14 +15,14 @@ const models = [
   'dynamic',
   'user',
   'dialog',
-  // 'article',
+  'article',
   // 'message',
   'search',
   // 'pagenation',
   'image',
   'blogConfig',
 ];
-models.forEach(item => app.model(require(`./models/${item}`).default));
+models.forEach((item) => app.model(require(`./models/${item}`).default));
 
 // 4. Router
 app.router(require('./router').default);
