@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './index.less';
 
-export default () => {
+export default ({ className }) => {
   return (
-    <div className={styles.preLoad}>
+    <div className={`${styles.preLoad} ${className}`}>
       <div className={styles.con}>
         <div>
           <span />

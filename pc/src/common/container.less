@@ -12,6 +12,10 @@
   width: 100%;
   height: 100%;
   position: relative;
+  opacity: 0;
+  transform: scale(0.8);
+  animation: zoomIn 1s forwards;
+  // animation-delay: 1s;
   section {
     position: absolute;
     top: 130px;
@@ -59,4 +63,28 @@ section.anotherWorldSection {
   z-index: 100;
   // background: white;
   top: 0px;
+}
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.loadFinish {
+  animation: opacity 1s forwards;
+}
+
+@keyframes opacity {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.1;
+    transform: scale(0.9);
+  }
 }

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Route, Switch, Redirect, Router } from 'dva/router';
 import PreLoad from '@/wrapComponent/preLoad';
 import Api from '@/utils/request';
-import { setCache } from '@/utils/functions';
+import { setCache, delay } from '@/utils/functions';
 import Dialog from './components/dialog/dialog';
 import DynamicDetail from './components/dynamic/component/dynamicDetail';
 import styles from './common/container.less';
@@ -20,6 +20,7 @@ export default ({ history }) => {
   };
   const [isAnother, changeStyle] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadStyle, changeLoad] = useState(false);
   useDidMount(async () => {
     history.listen(() => {
       const {
@@ -36,9 +37,24 @@ export default ({ history }) => {
       }
     }
     await preLoad();
-    setLoading(false);
+    changeLoad(true);
+    // await delay(2);
   });
-  if (loading) return <PreLoad />;
+  useEffect(() => {
+    async function change() {
+      setTimeout(() => {
+        setLoading(false);
+      }, 800);
+    }
+    if (loadStyle) {
+      change();
+    }
+    console.log('loadStyle', loadStyle);
+  }, [loadStyle]);
+  const loadClass = classnames({
+    [styles.loadFinish]: loadStyle,
+  });
+  if (loading) return <PreLoad className={loadClass} />;
   return (
     <Router history={history}>
       <div className={styles.container}>
