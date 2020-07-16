@@ -2,8 +2,7 @@
   "extends": ["umi", "prettier"],
   "rules": {
     "quotes": "off",
-    "semi": 1,
-    "react/jsx-pascal-case": "off"
+    "semi": 1
     // "prettier/prettier": [
     //   "error",
     //   {

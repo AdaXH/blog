@@ -4,18 +4,17 @@ import { Tabs } from 'antd';
 import Dynamic from './dynamic';
 import Cookies from 'js-cookie';
 import Article from './article';
-import Config from './config/config';
+import Config from './component/config/index';
 import Gallery from './galleryManage';
 import Friends from './component/friends';
 import styles from './admin.less';
 
 const { TabPane } = Tabs;
 
-export default connect(({ dynamic: { dynamic }, article: { data }, user }) => ({
+export default connect(({ user }) => ({
   user,
-  dynamic,
-  article: data,
 }))(props => {
+  console.log('Config', Config);
   const tabs = [
     {
       component: () => <Dynamic />,
@@ -45,7 +44,7 @@ export default connect(({ dynamic: { dynamic }, article: { data }, user }) => ({
       className={styles.adminContainer}
       style={{ background: permission ? 'white' : 'none' }}
     >
-      {permission ? (
+      {'permission' ? (
         <Tabs defaultActiveKey="Moments">
           {tabs.map(item => (
             <TabPane tab={item.description} key={item.description}>

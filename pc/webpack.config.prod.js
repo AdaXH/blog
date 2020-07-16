@@ -16,15 +16,15 @@ module.exports = {
   output: {
     filename: "pc.js",
     path: path.resolve(__dirname, "dist"),
-    publicPath: "./"
+    publicPath: "./",
     // chunkFilename: "[name].async.js"
   },
 
   resolve: {
     alias: {
-      src: path.resolve(__dirname, "src/")
+      "@": path.resolve(__dirname, "src/"),
     },
-    extensions: [".ts", ".tsx", ".js", ".jsx", ".css", ".less"]
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".css", ".less"],
   },
 
   module: {
@@ -32,12 +32,12 @@ module.exports = {
       {
         test: /\.js|jsx$/,
         include: [path.resolve(__dirname, "src")],
-        use: ["happypack/loader?id=babel"]
+        use: ["happypack/loader?id=babel"],
       },
       {
         test: /\.tsx/,
         loader: ["babel-loader", "awesome-typescript-loader"],
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.css$/,
@@ -46,10 +46,10 @@ module.exports = {
           {
             loader: "css-loader",
             options: {
-              importLoaders: 1
-            }
-          }
-        ]
+              importLoaders: 1,
+            },
+          },
+        ],
       },
       {
         test: /\.less$/,
@@ -60,19 +60,19 @@ module.exports = {
             options: {
               importLoaders: 1,
               modules: {
-                localIdentName: "[name]_[local]-[hash:base64:5]"
-              }
-            }
+                localIdentName: "[name]_[local]-[hash:base64:5]",
+              },
+            },
           },
           {
             loader: "less-loader",
             options: {
-              javascriptEnabled: true
+              javascriptEnabled: true,
               // modifyVars: theme
-            }
-          }
+            },
+          },
         ],
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.less$/,
@@ -81,18 +81,18 @@ module.exports = {
           {
             loader: "css-loader",
             options: {
-              importLoaders: 1
-            }
+              importLoaders: 1,
+            },
           },
           {
             loader: "less-loader",
             options: {
-              javascriptEnabled: true
+              javascriptEnabled: true,
               // modifyVars: theme
-            }
-          }
+            },
+          },
         ],
-        exclude: /src/
+        exclude: /src/,
       },
       {
         test: /\.(png|svg|jpg|gif|ttf)$/,
@@ -101,20 +101,20 @@ module.exports = {
             loader: "url-loader",
             options: {
               limit: 8192,
-              outputPath: "./assets/"
-            }
-          }
-        ]
-      }
-    ]
+              outputPath: "./assets/",
+            },
+          },
+        ],
+      },
+    ],
   },
   stats: {
     children: false,
-    warningsFilter: warn => warn.indexOf("Conflicting order between:") > -1
+    warningsFilter: (warn) => warn.indexOf("Conflicting order between:") > -1,
   },
   node: {
     fs: "empty",
-    module: "empty"
+    module: "empty",
   },
   optimization: {
     splitChunks: {
@@ -123,49 +123,49 @@ module.exports = {
           name: "styles",
           test: /\.(css|less)/,
           chunks: "all",
-          enforce: true
+          enforce: true,
         },
         commons: {
           name: "commons",
           chunks: "initial",
-          minChunks: 2
+          minChunks: 2,
         },
         vendors: {
           name: "vendors",
           test: /[\\/]node_modules[\\/]/,
-          priority: -10
-        }
-      }
+          priority: -10,
+        },
+      },
     },
-    runtimeChunk: true
+    runtimeChunk: true,
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "[name].css"
+      filename: "[name].css",
     }),
     new HtmlWebpackPlugin({
       // template: path.resolve(__dirname, "src", "index.ejs"), // 模板
-      filename: "index.html"
+      filename: "index.html",
       // hash: true // 防止缓存
     }),
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, "public")
-        }
-      ]
+          from: path.resolve(__dirname, "public"),
+        },
+      ],
     }),
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /\.css$/g,
       cssProcessor: require("cssnano"),
       cssProcessorOptions: { discardComments: { removeAll: true } },
-      canPrint: true
+      canPrint: true,
     }),
     new HappyPack({
       id: "babel",
       loaders: ["babel-loader?cacheDirectory"],
-      threadPool: happyThreadPool
+      threadPool: happyThreadPool,
     }),
-    new webpack.HashedModuleIdsPlugin()
-  ]
+    new webpack.HashedModuleIdsPlugin(),
+  ],
 };

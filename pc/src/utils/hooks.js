@@ -5,3 +5,9 @@ export function useDidMount(callback) {
     callback();
   }, []);
 }
+
+export function useUnmount(callback) {
+  useEffect(() => {
+    return () => callback();
+  }, []);
+}

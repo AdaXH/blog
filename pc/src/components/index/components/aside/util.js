@@ -74,7 +74,7 @@ export const operations = [
   { url: forUrl().qZone, text: '分享QQ空间', icon: 'icon-qqkongjian' },
   {
     url: 'http://wpa.qq.com/msgrd?v=3&uin=3532371088&site=qq&menu=yes',
-    text: '来聊骚吗',
-    icon: 'icon-weixin',
+    text: '快速咨询',
+    icon: 'icon-qq1',
   },
 ];

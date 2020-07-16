@@ -31,9 +31,9 @@ class _Pagination extends React.Component {
 
   componentDidMount() {
     //初始化list
-    const { pagenation } = this.props;
-    const key = this.props.location.pathname.replace(/\//, '');
-    const defaultPage = pagenation[key];
+    // const { pagenation } = this.props;
+    // const key = this.props.location.pathname.replace(/\//, '');
+    const defaultPage = 1;
     const { pageSize, total } = this.state.paginationProps;
     const _total = total / pageSize;
     const end = _total <= pageSize ? _total : pageSize;

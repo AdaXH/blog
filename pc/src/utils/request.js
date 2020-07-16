@@ -2,6 +2,7 @@ import fetch from 'dva/fetch';
 import Cookies from 'js-cookie';
 import Loading from '../wrapComponent/Loading';
 import Notification from '../wrapComponent/Notification';
+import { NO_LOADING_API } from './constant';
 // function parseJSON(response) {
 //   return response.json();
 // }
@@ -38,20 +39,6 @@ function parseError(error) {
 }
 
 const isBuild = /5050+|adaxh/.test(window.location.href);
-const NO_LOADING_API = [
-  '/upvoteDynamic',
-  '/cancelUpvote',
-  '/get-customer',
-  '/all_user_avatar',
-  '/getCaptcha',
-  '/getUserInfoByToken',
-  '/getArticles',
-  '/getAllMessages',
-  '/getDynamic',
-  '/getConfig',
-  '/queryArticleById',
-  '/updateArticleViewerById',
-];
 export default function Api(url, method = 'GET', data, isSvg = false) {
   const _url_ = isBuild ? url.replace(/api/, '') : url;
   // console.log(_url_)
@@ -70,8 +57,6 @@ export default function Api(url, method = 'GET', data, isSvg = false) {
     };
     method === 'POST' && (options.body = JSON.stringify(data));
     return new Promise((resolve, reject) => {
-      // const startCb = () => document.querySelector('#root').style.cssText = 'filter:blur(2px)'
-      // const endCb = () => document.querySelector('#root').style.cssText = 'filter:none'
       !needLoading && Loading.show({});
       fetch(_url_, options)
         .then(response => {

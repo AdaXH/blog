@@ -38,9 +38,7 @@ routerExports.deleteInnerRepeat = {
           { $set: { repeat: [...repeat] } }
         )
       } else if (user.name !== na) throw '只能删除自己的回复'
-      ctx.body = {
-        success: true,
-      }
+      ctx.body = { success: true, data: repeat }
     } catch (error) {
       ctx.body = {
         success: false,
@@ -151,10 +149,8 @@ routerExports._repeatMsg = {
       }
       const toRepeatUser = (await User.findOne({ name: toRepeat })) || {}
       const currentMsg = await Message.findOne({ _id })
-      await Message.updateOne(
-        { _id },
-        { $set: { repeat: [...currentMsg.repeat, msg] } }
-      )
+      const newRepeat = [...currentMsg.repeat, msg]
+      await Message.updateOne({ _id }, { $set: { repeat: newRepeat } })
       const data = await Message.find({})
       let result = []
       if (data) {
@@ -187,7 +183,8 @@ routerExports._repeatMsg = {
           '留言回复通知'
         )
       }
-      ctx.body = { success: true, data: result }
+      const newMsg = await Message.findOne({ _id })
+      ctx.body = { success: true, data: { ...newMsg._doc } }
     } catch (error) {
       console.log('error', error)
       ctx.body = {
@@ -211,15 +208,10 @@ routerExports.deleteMsg = {
       if (!user) throw '会话已过期'
       if (currentMsg.name === user.name || user.admin) {
         await Message.deleteOne({ _id })
-        ctx.body = {
-          success: true,
-        }
+        ctx.body = { success: true }
       } else throw '暂无权限'
-    } catch (err) {
-      ctx.body = {
-        success: false,
-        errorMsg: error,
-      }
+    } catch (error) {
+      ctx.body = { success: false, errorMsg: error }
     }
   },
 }
@@ -241,10 +233,11 @@ routerExports._leaveMsg = {
         content: newContent,
         repeat: [],
       }).save()
-      ctx.body = {
-        success: true,
-        data,
+      if (/default_avatar/.test(data.avatar)) {
+        const user = await User.findOne({ _id: payload._id })
+        data.avatar = user.avatar
       }
+      ctx.body = { success: true, data }
       sendEmail(
         `${user.name}（${user.email}）给你留言了：${newContent}`,
         undefined,

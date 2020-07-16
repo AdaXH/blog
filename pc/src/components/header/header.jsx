@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import styles from './header.less';
 import { NavLink, withRouter } from 'dva/router';
+import Notification from '@/wrapComponent/Notification';
+
 import classnames from 'classnames';
-import Notification from '../../wrapComponent/Notification';
 import { connect } from 'dva';
-import routes from '../../config/router.config';
+import routes from '@/config/router.config';
 import { getNavStyle } from './util';
+import styles from './header.less';
+import { getCache } from '@/utils/functions';
 
 const Header = props => {
   const { dispatch, config, history, user } = props;
@@ -15,18 +17,21 @@ const Header = props => {
     const {
       nativeEvent: { target },
     } = e;
-    const { dynamic, article } = props;
+    const moments = getCache('moments') || [];
+    const articles = getCache('articles') || [];
     if (e.keyCode === 13 && !!target.value && target.value.trim() !== '') {
       dispatch({
         type: 'search/asyncSearch',
         payload: {
           data: target.value,
-          allData: [...dynamic, ...article],
+          allData: [...moments, ...articles],
         },
       }).then(
         result =>
           result.length === 0 &&
-          Notification.fail({ msg: `找不到关于 ${target.value} 相关内容` })
+          Notification.fail({
+            msg: `找不到关于 ${target.value} 相关内容`,
+          })
       );
     }
   };
@@ -92,11 +97,10 @@ const Header = props => {
 };
 
 export default connect(
-  ({
+  ({ search, blogConfig: { config }, dynamic: { dynamicDetail }, user }) => ({
     search,
-    blogConfig: { config },
-    dynamic: { dynamicDetail, dynamic },
-    article: { data },
+    config,
+    dynamicDetail,
     user,
-  }) => ({ search, config, dynamicDetail, dynamic, article: data, user })
+  })
 )(withRouter(Header));

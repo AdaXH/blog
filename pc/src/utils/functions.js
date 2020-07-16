@@ -36,6 +36,6 @@ export function getCache(key) {
   return null;
 }
 
-// export function diffStr(data1, data2) {
-//   if ()
-// }
+export function hasChange(data1, data2) {
+  return JSON.stringify(data1) !== JSON.stringify(data2);
+}

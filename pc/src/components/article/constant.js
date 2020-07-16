@@ -14,3 +14,13 @@ export const color = [
   '#c5d08d',
   '#4ae488',
 ];
+
+export const ARTICLE_TYPE = [
+  'HTML',
+  'JavaScript',
+  'CSS',
+  'React',
+  'NodeJs',
+  'Vue',
+  'Others',
+];

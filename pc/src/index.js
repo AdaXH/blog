@@ -15,10 +15,10 @@ const models = [
   'dynamic',
   'user',
   'dialog',
-  'article',
-  'message',
+  // 'article',
+  // 'message',
   'search',
-  'pagenation',
+  // 'pagenation',
   'image',
   'blogConfig',
 ];

@@ -1,11 +1,11 @@
-import { Index } from '../components/index/index';
-import Dynamic from '../components/dynamic/dynamic';
-import Message from '../components/message/message';
+import Index from '../components/index';
+import Dynamic from '../components/dynamic';
+import Message from '../components/message';
 import Gallery from '../components/gallery/gallery';
 import Introduction from '../components/introduction';
 import Admin from '../components/admin';
-import Article from '../components/article/article';
-import Detail from '../components/article/ArticleDetail';
+import Article from '../components/article/';
+import Detail from '../components/article/component/ArticleDetail';
 import FriendShip from '../components/FriendShip';
 
 export default [

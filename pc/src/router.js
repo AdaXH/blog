@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Route, Switch, Redirect, Router } from 'dva/router';
+import PreLoad from '@/wrapComponent/preLoad';
+import Api from '@/utils/request';
+import { setCache } from '@/utils/functions';
 import Dialog from './components/dialog/dialog';
-import DynamicDetail from './components/dynamic/dynamicDetail';
+import DynamicDetail from './components/dynamic/component/dynamicDetail';
 import styles from './common/container.less';
 import Search from './components/search/search';
 import Header from './components/header/header';
@@ -9,20 +12,33 @@ import Body from './components/body/body';
 import routes from './config/router.config';
 import classnames from 'classnames';
 import { useDidMount } from './utils/hooks';
+import { CHACHE_DATA } from './components/index/constant';
 
 export default ({ history }) => {
   window.onload = () => {
     window.preOnload && window.preOnload();
   };
   const [isAnother, changeStyle] = useState(false);
-  useDidMount(() => {
+  const [loading, setLoading] = useState(true);
+  useDidMount(async () => {
     history.listen(() => {
       const {
         location: { pathname },
       } = history;
       changeStyle(pathname === '/friend-ship');
     });
+    async function preLoad() {
+      for (const item of CHACHE_DATA) {
+        const result = await Api(item.api);
+        if (result.success) {
+          setCache(item.key, result.data);
+        }
+      }
+    }
+    await preLoad();
+    setLoading(false);
   });
+  if (loading) return <PreLoad />;
   return (
     <Router history={history}>
       <div className={styles.container}>
@@ -37,7 +53,7 @@ export default ({ history }) => {
           })}
         >
           <Switch>
-            {routes.map(route => {
+            {routes.map((route) => {
               const { path, Component, exact } = route;
               const cfg = {
                 path,

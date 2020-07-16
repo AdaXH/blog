@@ -3,6 +3,7 @@ import s from './search.less';
 import { connect } from 'dva';
 import { withRouter } from 'dva/router';
 import ReactHtmlParser from 'react-html-parser';
+import { getCache } from '@/utils/functions';
 
 const Search = props => {
   const {
@@ -21,10 +22,9 @@ const Search = props => {
       onMask();
       history.push('/article/' + _id);
     } else {
-      dispatch({
-        type: 'dynamic/dynamicDetail',
-        payload: _id,
-      });
+      const curDatas = getCache('moments') || [];
+      const curData = curDatas.find(item => item._id === _id);
+      dispatch({ type: 'dynamic/dynamicDetail', payload: curData });
     }
   };
 

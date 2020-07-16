@@ -1,14 +1,18 @@
-import React from 'react';
-import styles from './index.less';
+import React, { useState, useRef } from 'react';
 import { connect } from 'dva';
 import Cookies from 'js-cookie';
+import { useDidMount, useUnmount } from '@/utils/hooks';
+import Api from '@/utils/request';
+// import { setCache, getCache, hasChange } from '@/utils/functions';
 import Login from './components/login';
 import Loading from '../../wrapComponent/Loading';
 import Aside from './components/aside';
 import Tips from './components/tips';
 import User from './components/user';
+// import { CHACHE_DATA } from './constant';
+import styles from './index.less';
 
-@connect(
+export default connect(
   ({ user, loading, dynamic, article, message, blogConfig: { config } }) => ({
     config,
     user,
@@ -17,102 +21,64 @@ import User from './components/user';
     article,
     message,
   })
-)
-class Index extends React.Component {
-  state = {
-    isLogin: false,
-    showOperation: false,
-    customer: 0,
-  };
-
-  interval = null;
-
-  async componentDidMount() {
-    const { dispatch, user } = this.props;
-    clearInterval(this.interval);
-    dispatch({ type: 'user/customer' }).then(number => {
-      if (number && number !== 0) {
-        this.interval = setInterval(() => {
-          if (this.state.customer >= number) clearInterval(this.interval);
-          this.setState(({ customer }) => ({
-            customer: customer >= number ? number : customer + 10,
-          }));
-        });
+)((props) => {
+  const { user, config, dispatch } = props;
+  const [state, setState] = useState({ customer: 0 });
+  const { customer } = state;
+  const dom = useRef({});
+  let interval;
+  useUnmount(() => clearInterval(interval));
+  useDidMount(async () => {
+    clearInterval(interval);
+    try {
+      if (!user.isLogin && !!Cookies.get('user')) {
+        dispatch({ type: 'user/getUserInfo', payload: {} });
       }
-    });
-    const preLoad = async () => {
-      const { dynamic, article, message } = this.props;
-      if (
-        !dynamic.dynamic ||
-        !dynamic.dynamic.length ||
-        !article.data ||
-        !article.data.length ||
-        !message.data ||
-        !message.data.length
-      ) {
-        try {
-          Loading.show();
-          await dynamicLoad();
-          await articleLoad();
-          await messagesLoad();
-          Loading.hide();
-        } catch (error) {
-          Loading.hide();
+      dispatch({ type: 'user/customer' }).then((number) => {
+        if (number && number !== 0) {
+          interval = setInterval(() => {
+            setState(({ customer }) => {
+              if (customer >= number) {
+                clearInterval(interval);
+              }
+              return { customer: customer >= number ? number : customer + 10 };
+            });
+            console.log('state');
+          });
         }
-      }
-    };
-    const dynamicLoad = () =>
-      new Promise(resolve =>
-        dispatch({ type: 'dynamic/load', payload: { cb: resolve } })
-      );
-    const articleLoad = () =>
-      new Promise(resolve =>
-        dispatch({ type: 'article/load', payload: { cb: resolve } })
-      );
-    const messagesLoad = () =>
-      new Promise(resolve =>
-        dispatch({ type: 'message/load', payload: { cb: resolve } })
-      );
-    await preLoad();
-    if (!user.isLogin && !!Cookies.get('user')) {
-      dispatch({
-        type: 'user/getUserInfo',
-        payload: {},
       });
+      Loading.show();
+      // await preLoad();
+      // async function preLoad() {
+      //   for (const item of CHACHE_DATA) {
+      //     const result = await Api(item.api);
+      //     if (result.success) {
+      //       const cacheItem = getCache(item.key) || '{}';
+      //       if (hasChange(cacheItem, result.data)) {
+      //         setCache(item.key, result.data);
+      //       }
+      //     }
+      //   }
+      // }
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      Loading.hide();
     }
-  }
-
-  componentWillUnmount = () => clearInterval(this.interval);
-
-  handleOperation = item => {
-    typeof item.url === 'string' ? window.open(item.url) : item.url();
-  };
-
-  handleCloseOperation({ nativeEvent: { target } }) {
-    const { showOperation } = this.state;
-    if (showOperation && !/target/.test(target.className))
-      this.setState({ showOperation: false });
-  }
-
-  render() {
-    const { user, config, dispatch } = this.props;
-    const { customer } = this.state;
-    const curraneYear = new Date().getFullYear();
-    return (
-      <div className={styles.indexContainer}>
-        <Aside />
-        <Tips config={{ ...config, customer }} />
-        {!!Cookies.get('user') && user.isLogin ? (
-          <User user={user} dispatch={dispatch} />
-        ) : (
-          <Login user={user} dispatch={dispatch} />
-        )}
-        <div className={styles.footerInfo}>
-          React Blog © 2018 - {curraneYear} Adaxh
-        </div>
+  });
+  const curraneYear = new Date().getFullYear();
+  return (
+    <div className={styles.indexContainer} ref={dom}>
+      <Aside />
+      <Tips config={{ ...config, customer }} />
+      {Cookies.get('user') && user.isLogin ? (
+        <User user={user} dispatch={dispatch} />
+      ) : (
+        <Login user={user} dispatch={dispatch} />
+      )}
+      <div className={styles.footerInfo}>
+        React Blog © 2018 - {curraneYear} Adaxh
       </div>
-    );
-  }
-}
-
-export { Index };
+    </div>
+  );
+});

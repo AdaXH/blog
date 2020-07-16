@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import Loading from '../../wrapComponent/Loading';
 import Modal from './component/modal';
 import { useDidMount } from '../../utils/hooks';
-import { getCache, setCache } from '../../utils/functions';
+import { getCache, setCache, hasChange } from '@/utils/functions';
 import { queryFriends } from './service';
 import { init, setStyle } from './util';
 import Site from './component/site';
@@ -13,28 +13,30 @@ export default () => {
   const cacheData = getCache('friends') || [];
   const [data, setData] = useState(cacheData);
   const [modalVidible, setVisible] = useState(false);
-  useEffect(() => {
-    if (ref.current) {
-      init(ref.current);
-    }
-  }, [ref]);
+  useEffect(
+    () => {
+      if (ref.current) {
+        init(ref.current);
+      }
+    },
+    [ref]
+  );
   useDidMount(async () => {
-    // if (!cacheData.length) {
     try {
-      Loading.show();
+      console.log('cacheData', cacheData);
+      if (!cacheData.length) Loading.show();
       const result = await queryFriends();
       if (result.success) {
         const { data: res } = result;
         setData(res || []);
-        if (JSON.stringify()) setCache('friends', res);
+        if (hasChange(cacheData, res)) setCache('friends', res);
       }
     } catch (error) {
     } finally {
       Loading.hide();
     }
-    // }
   });
-  const turn2Page = (link) => {
+  const turn2Page = link => {
     if (!link) return;
     let url = link;
     if (!/^https:\/\/+|^http:\/\//.test(link)) {
@@ -59,7 +61,7 @@ export default () => {
             </h4>
             <div className={styles.itemF}>
               {data
-                .filter((item) => item.verify)
+                .filter(item => item.verify)
                 .map(({ link, desc, title, icon }, index) => {
                   return (
                     <a

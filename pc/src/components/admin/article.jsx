@@ -1,16 +1,34 @@
 import React, { useRef, useState } from 'react';
 import { connect } from 'dva';
 import { Table, Button, Popconfirm, Select, Input } from 'antd';
-import Notification from '../../wrapComponent/Notification';
+import { setCache, getCache, hasChange } from '@/utils/functions';
+import { useDidMount } from '@/utils/hooks';
+import { getArticles } from '@/utils/service';
+import Notification from '@/wrapComponent/Notification';
+import Loading from '@/wrapComponent/Loading';
 import types from '../../config/articleType';
 import BraftEditor from 'braft-editor';
 import { getDate } from './util';
+import { queryArticleById } from './service';
 import 'braft-editor/dist/index.css';
 import styles from './admin.less';
 
 const { Option } = Select;
 
 const AticleManage = props => {
+  const { dispatch } = props;
+  const [data, setData] = useState(getCache('articles') || []);
+  useDidMount(async () => {
+    if (!data.length) Loading.show();
+    const result = await getArticles();
+    if (result.success) {
+      if (hasChange(data, result.data)) {
+        setCache('articles', result.data);
+        setData(result.data);
+      }
+    }
+    Loading.hide();
+  });
   const [state, setState] = useState({
     summary: BraftEditor.createEditorState(null),
     _type: 'HTML',
@@ -61,17 +79,19 @@ const AticleManage = props => {
     columns,
     title,
   } = state;
-  const { dispatch, article } = props;
   const iRef = useRef(null);
-  const handleEdit = data => {
-    setState({
-      ...state,
-      newArticle: { visible: true, target: 'edit' },
-      summary: BraftEditor.createEditorState(data.summary),
-      _type: data.type,
-      _id: data._id,
-      title: data.title,
-    });
+  const handleEdit = async data => {
+    const curArticle = await queryArticleById({ _id: data._id });
+    if (curArticle.success) {
+      setState({
+        ...state,
+        newArticle: { visible: true, target: 'edit' },
+        summary: BraftEditor.createEditorState(curArticle.data.summary),
+        _type: data.type,
+        _id: data._id,
+        title: data.title,
+      });
+    }
   };
 
   const handleDelete = _id => {
@@ -183,12 +203,11 @@ const AticleManage = props => {
         <Button type="primary" onClick={onCreate}>
           New
         </Button>
-        <Table rowKey={a => a._id} columns={columns} dataSource={article} />
+        <Table rowKey={a => a._id} columns={columns} dataSource={data} />
       </div>
     </div>
   );
 };
-export default connect(({ article: { data }, user }) => ({
-  article: data,
+export default connect(({ user }) => ({
   user,
 }))(AticleManage);
