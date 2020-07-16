@@ -2,7 +2,7 @@ import fetch from 'dva/fetch';
 import Cookies from 'js-cookie';
 import Loading from '../wrapComponent/Loading';
 import Notification from '../wrapComponent/Notification';
-import { NO_LOADING_API } from './constant';
+import { NO_LOADING_API, NOERROR_API } from './constant';
 // function parseJSON(response) {
 //   return response.json();
 // }
@@ -45,6 +45,10 @@ export default function Api(url, method = 'GET', data, isSvg = false) {
   const needLoading = NO_LOADING_API.includes(
     /api/.test(_url_) ? _url_.replace(/api/g, '') : _url_
   );
+  // 不需要提示错误的接口
+  const noError = NOERROR_API.includes(
+    /api/.test(_url_) ? _url_.replace(/api/g, '') : _url_
+  );
   if (!isSvg) {
     const options = {
       method,
@@ -59,19 +63,24 @@ export default function Api(url, method = 'GET', data, isSvg = false) {
     return new Promise((resolve, reject) => {
       !needLoading && Loading.show({});
       fetch(_url_, options)
-        .then(response => {
+        .then((response) => {
           if (response.status >= 200 && response.status < 300)
             return response.json();
           return response.status;
         })
-        .then(result => {
-          (typeof result === 'boolean' && result) || result.success
-            ? resolve(result)
-            : Notification.fail({
-                msg: parseError((result && result.errorMsg) || result),
-              });
+        .then((result) => {
+          if ((typeof result === 'boolean' && result) || result.success) {
+            resolve(result);
+          } else {
+            if (noError) {
+              return;
+            }
+            Notification.fail({
+              msg: parseError((result && result.errorMsg) || result),
+            });
+          }
         })
-        .catch(err => Notification.fail({ msg: parseError(err) }))
+        .catch((err) => {})
         .finally(() => !needLoading && Loading.hide());
     });
   } else {
@@ -85,12 +94,12 @@ export default function Api(url, method = 'GET', data, isSvg = false) {
     };
     return new Promise((resolve, reject) => {
       fetch(_url_, options)
-        .then(response => {
+        .then((response) => {
           if (response.status >= 200 && response.status < 300)
             return response.text();
           return response.status;
         })
-        .then(response => {
+        .then((response) => {
           resolve(response);
         });
     });

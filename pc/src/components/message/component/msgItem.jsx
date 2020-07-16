@@ -1,25 +1,46 @@
 import React from 'react';
 import { useSetState } from 'react-use';
+import Cookies from 'js-cookie';
+import Notification from '@/wrapComponent/Notification';
 import RepeatItem from './repeatItem';
 import { deleteMsgById, repeatMsg } from '../service';
 import { escapeData } from '../util';
 import styles from '../index.less';
 
-export default props => {
-  const { item, index, dispatch, deleteMsgCallback, updateRepeat } = props;
+export default (props) => {
+  const {
+    item,
+    index,
+    dispatch,
+    deleteMsgCallback,
+    updateRepeat,
+    user,
+  } = props;
   const [state, setState] = useSetState({
     showOperation: false, // 展开操作
     showRepeat: false, // 展开回复列表
   });
   const { showOperation, showRepeat } = state;
-  const deleteMsg = async _id => {
+  function noLogin() {
+    if (!user || user.isLogin || !Cookies.get('user')) {
+      Notification.fail({ msg: '请先登录~' });
+      return true;
+    }
+  }
+  const deleteMsg = async (_id) => {
+    if (noLogin()) return;
     const res = await deleteMsgById({ _id });
     if (res.success) {
       deleteMsgCallback(_id);
     }
   };
   const leaveMsg = (_id, toRepeat) => {
-    const cb = async value => {
+    if (noLogin()) return;
+    const cb = async (value) => {
+      if (!user || user.isLogin || !Cookies.get('user')) {
+        Notification.fail({ msg: '请先登录~' });
+        return;
+      }
       if (!value || value.trim() === '') {
         Notification.fail({
           msg: '输入不规范',

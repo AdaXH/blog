@@ -14,3 +14,5 @@ export const NO_LOADING_API = [
   '/updateArticleViewerById',
   '/queryFriends',
 ];
+
+export const NOERROR_API = ['/getUserInfoByToken'];
