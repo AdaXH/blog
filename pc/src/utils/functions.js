@@ -1,3 +1,6 @@
+import moment from 'moment';
+moment.lang('zh-cn');
+
 export const delay = time =>
   new Promise(resolve => setTimeout(() => resolve()), time * 1000);
 
@@ -38,4 +41,15 @@ export function getCache(key) {
 
 export function hasChange(data1, data2) {
   return JSON.stringify(data1) !== JSON.stringify(data2);
+}
+
+export function relativeTime(time) {
+  if (isNaN(time)) {
+    return moment(time)
+      .startOf('minute')
+      .fromNow();
+  }
+  return moment(new Date(Number(time)))
+    .startOf('minute')
+    .fromNow();
 }

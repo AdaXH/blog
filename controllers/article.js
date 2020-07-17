@@ -41,6 +41,10 @@ routerExports.queryArticleById = {
     const { _id } = ctx.request.body
     try {
       const result = await Article.findById(_id)
+      const { year, date, time = '0:0:0' } = result
+      if (/-/.test(date)) {
+        result.date = new Date(`${year}-${date}/${time}`)
+      }
       ctx.body = {
         success: true,
         data: result,

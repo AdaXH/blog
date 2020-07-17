@@ -1,13 +1,12 @@
 import React from 'react';
 import { useSetState } from 'react-use';
-import Cookies from 'js-cookie';
 import Notification from '@/wrapComponent/Notification';
 import RepeatItem from './repeatItem';
 import { deleteMsgById, repeatMsg } from '../service';
-import { escapeData } from '../util';
+import { escapeData, renderDate } from '../util';
 import styles from '../index.less';
 
-export default (props) => {
+export default props => {
   const {
     item,
     index,
@@ -22,12 +21,12 @@ export default (props) => {
   });
   const { showOperation, showRepeat } = state;
   function noLogin() {
-    if (!user || user.isLogin || !Cookies.get('user')) {
+    if (!user.isLogin) {
       Notification.fail({ msg: '请先登录~' });
       return true;
     }
   }
-  const deleteMsg = async (_id) => {
+  const deleteMsg = async _id => {
     if (noLogin()) return;
     const res = await deleteMsgById({ _id });
     if (res.success) {
@@ -36,11 +35,7 @@ export default (props) => {
   };
   const leaveMsg = (_id, toRepeat) => {
     if (noLogin()) return;
-    const cb = async (value) => {
-      if (!user || user.isLogin || !Cookies.get('user')) {
-        Notification.fail({ msg: '请先登录~' });
-        return;
-      }
+    const cb = async value => {
       if (!value || value.trim() === '') {
         Notification.fail({
           msg: '输入不规范',
@@ -79,7 +74,7 @@ export default (props) => {
       <div className={styles.mssageName}>
         <div className={styles.leaveInfo}>
           <div>{item.name}</div>
-          <div>{item.date.replace(/-----/, ' ')}</div>
+          <div>{renderDate(item.date)}</div>
         </div>
       </div>
       <div className={styles.msgContent}>

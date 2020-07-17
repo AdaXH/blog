@@ -116,11 +116,15 @@ routerExports.getArticles = {
   url: '/getArticles',
   route: async (ctx, next) => {
     try {
-      const article = await articleArr()
-      ctx.body = {
-        success: true,
-        data: article,
-      }
+      const article = await Article.find()
+      const newArticle = article.reverse().map((item) => {
+        const { year, date, time = '0:0:0' } = item
+        if (/-/.test(date)) {
+          item.date = new Date(`${year}-${date}/${time}`)
+        }
+        return item
+      })
+      ctx.body = { success: true, data: newArticle }
     } catch (error) {
       ctx.body = {
         success: false,
@@ -162,28 +166,24 @@ routerExports.getAllMessages = {
         return result
       }
       const msgWithAvatar = await setAllAvatar(result)
-      for (let item of msgWithAvatar)
-        if (item.repeat && item.repeat.length !== 0) {
-          for (let item2 of item.repeat) {
-            if (item2 && item2 !== null) {
-              let temp = new Date(item2.date).getTime()
-              item2.date = timeago(temp)
-            }
-          }
+      for (let item of msgWithAvatar) {
+        item.date = checkTime(item.date)
+        if (item.repeat && item.repeat.length) {
+          item.repeat = item.repeat.reverse()
         }
-      const _result = msgWithAvatar.sort((a, b) => {
-        const time1 = new Date(
-          a.date.replace(/-----/g, ' ').replace(/ : /g, ':')
-        ).getTime()
-        const time2 = new Date(
-          b.date.replace(/-----/g, ' ').replace(/ : /g, ':')
-        ).getTime()
-        return time2 - time1
-      })
-      ctx.body = {
-        success: true,
-        data: msgWithAvatar,
       }
+      function checkTime(time) {
+        if (/-----+| /.test(time)) {
+          return Number(
+            new Date(time.replace(/-----/g, '/').replace(/ /g, '')).getTime()
+          )
+        }
+        return Number(time)
+      }
+      const _result = msgWithAvatar.sort((a, b) => {
+        return b.date - a.date
+      })
+      ctx.body = { success: true, data: _result }
     } catch (err) {
       console.log(err)
       ctx.body = {

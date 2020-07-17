@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Notification from '@/wrapComponent/Notification';
 import { deleteInnerRepeat } from '../service';
+import { relativetime } from './util';
 import styles from '../index.less';
 
 export default props => {
@@ -32,7 +33,7 @@ const Item = props => {
   return (
     <li key={item._id} className={styles.repeatItem}>
       <div className={styles.repeatInfo}>
-        {item.name} {item.date} @ {item.toRepeat}
+        {item.name} {relativetime(item.date)} @ {item.toRepeat}
       </div>
       <div className={styles.repeatContent}>
         {item.info}

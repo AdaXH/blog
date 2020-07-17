@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { useDidMount } from '@/utils/hooks';
 import Notification from '@/wrapComponent/Notification';
-import { getParam } from '@/utils/functions';
+import { getParam, relativeTime } from '@/utils/functions';
 import Api from '@/utils/request';
 import Loading from '@/wrapComponent/Loading';
 import styles from '../index.less';
@@ -44,9 +44,7 @@ export default ({ history, dispatch }) => {
                 <div className={styles.page}>
                   <div className={styles.info}>
                     <div>类型：{data.type}</div>
-                    <div>
-                      时间：{data.year} - {data.date} - {data.time}
-                    </div>
+                    <div>时间：{relativeTime(data.date)}</div>
                     <div>浏览：{data.viewer}</div>
                   </div>
                   <div className={styles.content}>

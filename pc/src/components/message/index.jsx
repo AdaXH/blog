@@ -10,12 +10,12 @@ import Loading from '../../wrapComponent/Loading';
 import Notification from '../../wrapComponent/Notification';
 import MsgItem from './component/msgItem';
 import FlyMsg from './component/flyMsg';
-import { escapeData, getDate } from './util';
+import { escapeData } from './util';
 import { leaveMessage } from './service';
 import { MAX_PAGE_COUNT } from './constant';
 import styles from './index.less';
 
-const Message = (props) => {
+const Message = props => {
   const { dispatch, user } = props;
   const [data, setData] = useState(getCache('messages') || []);
   const [current, setCurrent] = useState(1);
@@ -36,17 +36,20 @@ const Message = (props) => {
       Loading.hide();
     }
   });
-  useEffect(() => {
-    setCache('messages', data);
-  }, [data]);
-  const handlePage = (page) => {
+  useEffect(
+    () => {
+      setCache('messages', data);
+    },
+    [data]
+  );
+  const handlePage = page => {
     const wrapList = document.querySelector('.' + styles.mssageList);
     if (wrapList) wrapList.scrollTop = 0;
     setCurrent(page);
   };
 
   const leaveMsg = (type, _id, toRepeat) => {
-    const cb = async (value) => {
+    const cb = async value => {
       if (!value || value.trim() === '')
         Notification.fail({
           msg: '输入不规范',
@@ -56,7 +59,7 @@ const Message = (props) => {
           const msg = escapeData(value);
           const name = user.name || Base64.decode(Cookies.get('user'));
           const result = await leaveMessage({
-            date: getDate(),
+            date: Date.now(),
             content: msg,
             name,
           });
@@ -78,7 +81,7 @@ const Message = (props) => {
               info: escapeData(value),
               toRepeat,
             },
-          }).then((result) => {
+          }).then(result => {
             !result.success && Notification.fail({ msg: result });
             result.success && dispatch({ type: 'dialog/hide' });
           });
@@ -100,13 +103,13 @@ const Message = (props) => {
       dispatch({ type: 'message/init' });
     }
   };
-  const deleteMsgCallback = (_id) => {
-    setData(data.filter((item) => item._id !== _id));
+  const deleteMsgCallback = _id => {
+    setData(data.filter(item => item._id !== _id));
   };
   // 更新回复
   const updateRepeat = (_id, newRepeat) => {
     setData(
-      data.map((item) => {
+      data.map(item => {
         if (item._id === _id) {
           item.repeat = newRepeat;
         }
@@ -117,7 +120,7 @@ const Message = (props) => {
     );
   };
   const checkLeaveMsg = () => {
-    !user.isLogin && !Cookies.get('user')
+    !user.isLogin || !Cookies.get('user')
       ? Notification.fail({ msg: '请先登录' })
       : leaveMsg('leaveMsg');
   };
@@ -126,7 +129,7 @@ const Message = (props) => {
   return (
     <div className={styles.messageContainer}>
       <FlyMsg data={data} />
-      <div className={styles.wrapContainer} onClick={(e) => handleClickWarp(e)}>
+      <div className={styles.wrapContainer} onClick={e => handleClickWarp(e)}>
         <div className={styles.addMsgCon}>
           <div className={styles.dot} />
           <div className={styles.dotToLine} />
@@ -156,7 +159,7 @@ const Message = (props) => {
             <Pagination
               total={data.length}
               pageSize={MAX_PAGE_COUNT}
-              onChange={(page) => handlePage(page, data)}
+              onChange={page => handlePage(page, data)}
             />
           )}
         </div>

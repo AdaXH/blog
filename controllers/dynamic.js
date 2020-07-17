@@ -3,7 +3,7 @@ const User = require('./../dbmodel/User')
 const Base64 = require('js-base64').Base64
 const Customer = require('../dbmodel/Customer')
 const SinaCloud = require('scs-sdk')
-const accessKey = 'requir.accessKey'
+const accessKey = require('../bucketConfig').accessKey
 const { parseToken, getJWTPayload, reMapError } = require('../common/util')
 
 const routerExports = {}

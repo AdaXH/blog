@@ -8,7 +8,6 @@ import Notification from '@/wrapComponent/Notification';
 import Loading from '@/wrapComponent/Loading';
 import types from '../../config/articleType';
 import BraftEditor from 'braft-editor';
-import { getDate } from './util';
 import { queryArticleById } from './service';
 import 'braft-editor/dist/index.css';
 import styles from './admin.less';
@@ -130,10 +129,10 @@ const AticleManage = props => {
       });
     } else {
       const arg = {
-        ...getDate(),
         summary: summary.toHTML(),
         type: _type,
         title,
+        date: Date.now(),
       };
       dispatch({
         type: 'article/publishArticle',

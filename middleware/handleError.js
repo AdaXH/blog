@@ -4,9 +4,10 @@ module.exports = async (ctx, next) => {
   await next()
   try {
     const { body } = ctx
+    const isJsonStr = typeof body === 'string'
     // 排除请求页面的API
-    if (!isJSON(body)) return
-    const bodyParse = JSON.parse(body)
+    if (isJsonStr && !isJSON(body)) return
+    const bodyParse = isJsonStr ? JSON.parse(body) : body
     // 排除直接返回true的接口
     if (bodyParse === true) return
     const { errorMsg } = bodyParse

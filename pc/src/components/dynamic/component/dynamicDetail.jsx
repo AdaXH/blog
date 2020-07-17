@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import { Base64 } from 'js-base64';
 import Notification from '@/wrapComponent/Notification';
-import { getDate } from './util';
+import { getDate, relativetime } from './util';
 import styles from '../index.less';
 
 const UI = props => {
@@ -107,7 +107,7 @@ const UI = props => {
               {dynamicDetail.msg.reverse().map(item => (
                 <li key={item._id} className={styles.dynamicMsgItem}>
                   <div className={styles.dynamicName}>
-                    {item.name || '神秘人'} 在 {item.date} 评论：
+                    {item.name || '神秘人'} 在 {relativetime(item.date)} 评论：
                   </div>
                   <div className={styles.dynamicMsgContent}>{item.context}</div>
                 </li>
