@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { NavLink, withRouter } from 'dva/router';
 import Notification from '@/wrapComponent/Notification';
-
 import classnames from 'classnames';
 import { connect } from 'dva';
 import routes from '@/config/router.config';
@@ -10,9 +9,17 @@ import styles from './header.less';
 import { getCache } from '@/utils/functions';
 
 const Header = props => {
-  const { dispatch, config, history, user } = props;
+  const {
+    dispatch,
+    config,
+    history,
+    user,
+    search: { visible },
+    dynamicDetail,
+  } = props;
   const [style, setStyle] = useState({});
   const [headerStyle, setHeaderStyle] = useState(false);
+  const inputRef = useRef({});
   const handleSearch = e => {
     const {
       nativeEvent: { target },
@@ -36,12 +43,7 @@ const Header = props => {
     }
   };
 
-  const handleLine = ({ nativeEvent: { target } }) => {
-    const {
-      search: { visible },
-      dynamicDetail,
-      dispatch,
-    } = props;
+  const handleLine = () => {
     visible && dispatch({ type: 'search/close' });
     dynamicDetail.visible && dispatch({ type: 'dynamic/closeDetail' });
   };
@@ -55,6 +57,12 @@ const Header = props => {
       setHeaderStyle(pathname === '/friend-ship');
     });
   }, []);
+  const onFocusSearch = () => {
+    if (inputRef.current) {
+      inputRef.current.value = '';
+      inputRef.current.focus();
+    }
+  };
   return (
     <header
       className={classnames({
@@ -63,18 +71,11 @@ const Header = props => {
     >
       <h1 className={styles.logo}>{title}</h1>
       <div className={styles.search}>
-        <div
-          className={styles.searchIcon}
-          onClick={() => {
-            document.getElementsByClassName('_searchInput')[0].value = '';
-            document.getElementsByClassName('_searchInput')[0].focus();
-          }}
-        >
+        <div className={styles.searchIcon} onClick={onFocusSearch}>
           <i className="icon-search iconfont" />
         </div>
         <input
-          type="text"
-          className="_searchInput"
+          ref={inputRef}
           placeholder="SEARCH"
           onKeyDown={e => handleSearch(e)}
         />

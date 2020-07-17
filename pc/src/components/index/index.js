@@ -2,10 +2,10 @@ import React, { useState, useRef } from 'react';
 import { connect } from 'dva';
 import Cookies from 'js-cookie';
 import { useDidMount, useUnmount } from '@/utils/hooks';
-import Api from '@/utils/request';
+// import Api from '@/utils/request';
 // import { setCache, getCache, hasChange } from '@/utils/functions';
 import Login from './components/login';
-import Loading from '../../wrapComponent/Loading';
+// import Loading from '../../wrapComponent/Loading';
 import Aside from './components/aside';
 import Tips from './components/tips';
 import User from './components/user';
@@ -21,7 +21,7 @@ export default connect(
     article,
     message,
   })
-)((props) => {
+)(props => {
   const { user, config, dispatch } = props;
   const [state, setState] = useState({ customer: 0 });
   const { customer } = state;
@@ -34,20 +34,18 @@ export default connect(
       if (!user.isLogin && !!Cookies.get('user')) {
         dispatch({ type: 'user/getUserInfo', payload: {} });
       }
-      dispatch({ type: 'user/customer' }).then((number) => {
-        if (number && number !== 0) {
-          interval = setInterval(() => {
-            setState(({ customer }) => {
-              if (customer >= number) {
-                clearInterval(interval);
-              }
-              return { customer: customer >= number ? number : customer + 10 };
-            });
-            console.log('state');
+      const number = await dispatch({ type: 'user/customer' });
+      if (number) {
+        interval = setInterval(() => {
+          setState(({ customer }) => {
+            if (customer >= number) {
+              clearInterval(interval);
+            }
+            return { customer: customer >= number ? number : customer + 10 };
           });
-        }
-      });
-      Loading.show();
+        });
+      }
+      // Loading.show();
       // await preLoad();
       // async function preLoad() {
       //   for (const item of CHACHE_DATA) {
@@ -63,7 +61,7 @@ export default connect(
     } catch (error) {
       console.log('error', error);
     } finally {
-      Loading.hide();
+      // Loading.hide();
     }
   });
   const curraneYear = new Date().getFullYear();

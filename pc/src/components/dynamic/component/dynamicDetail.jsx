@@ -65,7 +65,7 @@ const UI = props => {
     });
   };
   if (!dynamicDetail.visible) return null;
-  const { summary, img, msg = [] } = dynamicDetail;
+  const { content, img, msg = [], title } = dynamicDetail;
   return (
     <div className={styles.detailWrap}>
       <div className={styles.dynamicDetail} style={{ top: top }}>
@@ -73,7 +73,10 @@ const UI = props => {
           className={styles.dynamicDetailImg}
           style={{ backgroundImage: 'url(' + img + ')' }}
         />
-        <div className={styles.dynamicDetailContent}>{summary}</div>
+        <div className={styles.dynamicDetailContent}>
+          <div className={styles.momentTitle}>{title}</div>
+          {content}
+        </div>
         <div className={styles.dynamicOperation}>
           <div
             onClick={() => upvote(dynamicDetail)}

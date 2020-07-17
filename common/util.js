@@ -22,24 +22,20 @@ module.exports = {
   },
   reMapError,
   timeago,
-  sendEmail: async (
-    content,
-    target = '18668465750@163.com',
-    title = '友情链接通知'
-  ) => {
+  sendEmail: async (content, target, title) => {
     try {
-      const SMTP = 'lidmhegktlzuchbh'
+      const SMTP = 'your smtp code'
       const server = new SMTPClient({
-        user: 'adaxh@qq.com',
+        user: 'your email address',
         password: SMTP,
-        host: 'smtp.qq.com',
+        host: 'your email host',
         ssl: true,
       })
       //开始发送邮件
       server.send(
         {
           text: content, //邮件内容
-          from: 'adaxh@qq.com', //谁发送的
+          from: 'xxxx@xxx.com', //谁发送的
           to: target, //发送给谁的
           subject: title, //邮件主题
         },
