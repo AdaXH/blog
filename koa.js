@@ -8,6 +8,7 @@ const session = require('koa-session')
 const fs = require('fs')
 const log = require('./middleware/log')
 const handleError = require('./middleware/handleError')
+const reaceId = require('./middleware/traceId')
 const router = require('koa-router')()
 // const logger = require('koa-logger')
 
@@ -29,6 +30,7 @@ app.use(
 
 app.use(log)
 app.use(handleError)
+app.use(reaceId)
 
 app.keys = ['secret']
 const CONFIG = {
