@@ -1,3 +1,5 @@
+import moment from 'moment';
+moment.lang('zh-cn');
 export function escapeData(data) {
   return data
     .replace(
@@ -19,4 +21,11 @@ export function getDate() {
   let day = date.getDate();
   const _day = day < 10 ? '0' + day : day;
   return year + '-' + ms + '-' + _day + '-----' + h + ' : ' + m;
+}
+
+export function renderDate(date) {
+  if (/-/.test(date)) return date.replace(/-----/, ' ');
+  return moment(moment(new Date(Number(date))).format('YYYY-MM-DD/HH:mm:ss'))
+    .startOf('minute')
+    .fromNow();
 }

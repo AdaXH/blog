@@ -116,6 +116,7 @@ routerExports.getArticles = {
   url: "/getArticles",
   route: async (ctx, next) => {
     try {
+<<<<<<< HEAD
       const article = await Article.find();
       const newArticle = article.reverse().map(item => {
         const { year, date, time = "0:0:0" } = item;
@@ -126,6 +127,17 @@ routerExports.getArticles = {
         return item;
       });
       ctx.body = { success: true, data: newArticle };
+=======
+      const article = await Article.find()
+      const newArticle = article.reverse().map((item) => {
+        const { year, date, time = '0:0:0' } = item
+        if (/-/.test(date)) {
+          item.date = new Date(`${year}-${date}/${time}`)
+        }
+        return item
+      })
+      ctx.body = { success: true, data: newArticle }
+>>>>>>> aace511cc61549ec0cbd42c79e9f39b2cf71ddd8
     } catch (error) {
       ctx.body = {
         success: false,
@@ -166,6 +178,7 @@ routerExports.getAllMessages = {
         }
         return result;
       }
+<<<<<<< HEAD
       const msgWithAvatar = await setAllAvatar(result);
       for (let item of msgWithAvatar) {
         item.date = checkTime(item.date);
@@ -185,6 +198,27 @@ routerExports.getAllMessages = {
         return b.date - a.date;
       });
       ctx.body = { success: true, data: _result };
+=======
+      const msgWithAvatar = await setAllAvatar(result)
+      for (let item of msgWithAvatar) {
+        item.date = checkTime(item.date)
+        if (item.repeat && item.repeat.length) {
+          item.repeat = item.repeat.reverse()
+        }
+      }
+      function checkTime(time) {
+        if (/-----+| /.test(time)) {
+          return Number(
+            new Date(time.replace(/-----/g, '/').replace(/ /g, '')).getTime()
+          )
+        }
+        return Number(time)
+      }
+      const _result = msgWithAvatar.sort((a, b) => {
+        return b.date - a.date
+      })
+      ctx.body = { success: true, data: _result }
+>>>>>>> aace511cc61549ec0cbd42c79e9f39b2cf71ddd8
     } catch (err) {
       console.log(err);
       ctx.body = {

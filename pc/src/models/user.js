@@ -1,4 +1,4 @@
-import Api from './../utils/request';
+import Api from '@/utils/request';
 import Cookies from 'js-cookie';
 import { Base64 } from 'js-base64';
 
@@ -11,13 +11,15 @@ export default {
     },
     *customer(action, { call, put, select }) {
       const customer = yield select(state => state.user.customer);
-      if (customer === 0) {
-        const customer = yield call(Api, 'api/get-customer');
-        yield put({
-          type: 'setCustomer',
-          customer: customer.data.number,
-        });
-        return customer.data.number;
+      if (!customer) {
+        const newCustomer = yield call(Api, 'api/get-customer');
+        if (newCustomer.success) {
+          yield put({
+            type: 'setCustomer',
+            customer: newCustomer.data.number,
+          });
+          return newCustomer.data.number;
+        }
       }
       yield put({
         type: 'setCustomer',
@@ -78,22 +80,15 @@ export default {
       {
         payload: { cb },
       },
-      { call, put, select }
+      { call, put }
     ) {
-      const { customer, name } = yield select(state => state.user);
-      let result = { user: {} };
-      if (!name) {
-        result = yield call(Api, 'api/getUserInfoByToken', 'POST');
-      }
-      const testResult = yield call(testImg, result.user.avatar);
-
+      const result = yield call(Api, 'api/getUserInfoByToken', 'POST');
       yield put({
         type: 'callGetUserInfo',
         payload: {
           isLogin: result.success,
-          customer,
           ...(result instanceof Object ? result.user : {}),
-          imgBlocked: testResult === 'fail',
+          // imgBlocked: testResult === 'fail',
         },
       });
       yield cb && cb();
@@ -110,14 +105,12 @@ export default {
         state,
       });
       const customer = yield select(s => s.user.customer);
-      const testResult = yield call(testImg, result.avatar);
       yield put({
         type: 'callLogin',
         payload: {
           isLogin: result.success,
           ...(result instanceof Object ? result : {}),
           customer,
-          imgBlocked: testResult === 'fail',
         },
       });
       return result;
@@ -162,25 +155,4 @@ export default {
       return payload;
     },
   },
-  subscriptions: {
-    setup({ dispatch, history }, state) {
-      // eslint-disable-line
-      // history.listen(location => {
-      //     if (location.pathname === '/home') {
-      //         if (!state.isLogin && !!Cookies.get('user')) {
-      //             dispatch({ type: 'getUserInfo' })
-      //         }
-      //     }
-      // })
-    },
-  },
 };
-
-function testImg(avatar) {
-  return new Promise(resolve => {
-    const testImg = new Image();
-    testImg.src = avatar;
-    testImg.onload = _ => resolve('success');
-    testImg.onerror = _ => resolve('fail');
-  });
-}

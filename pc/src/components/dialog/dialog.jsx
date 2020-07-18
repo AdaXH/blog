@@ -45,15 +45,6 @@ const Dialog = props => {
           Notification.fail({ msg: 'not avaliabe !' });
           return;
         }
-        const date = new Date();
-        const d =
-          date.getFullYear() +
-          '-' +
-          (date.getMonth() + 1 < 10
-            ? `0${date.getMonth() + 1}`
-            : date.getMonth() + 1) +
-          '-' +
-          (date.getDate() < 10 ? `0${date.getDate()}` : date.getDate());
 
         const setImgResult = await setDynamicImg(_id);
         if (setImgResult)
@@ -62,7 +53,7 @@ const Dialog = props => {
           });
         await dispatch({
           type: 'dynamic/addDynamic',
-          date: d,
+          date: Date.now(),
           title: _title,
           content: data,
           img: setImgResult.img,

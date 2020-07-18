@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import { Base64 } from 'js-base64';
 import Notification from '@/wrapComponent/Notification';
-import { getDate } from './util';
+import { getDate, relativetime } from './util';
 import styles from '../index.less';
 
 const UI = props => {
@@ -65,7 +65,7 @@ const UI = props => {
     });
   };
   if (!dynamicDetail.visible) return null;
-  const { summary, img, msg = [] } = dynamicDetail;
+  const { content, img, msg = [], title } = dynamicDetail;
   return (
     <div className={styles.detailWrap}>
       <div className={styles.dynamicDetail} style={{ top: top }}>
@@ -73,7 +73,10 @@ const UI = props => {
           className={styles.dynamicDetailImg}
           style={{ backgroundImage: 'url(' + img + ')' }}
         />
-        <div className={styles.dynamicDetailContent}>{summary}</div>
+        <div className={styles.dynamicDetailContent}>
+          <div className={styles.momentTitle}>{title}</div>
+          {content}
+        </div>
         <div className={styles.dynamicOperation}>
           <div
             onClick={() => upvote(dynamicDetail)}
@@ -104,7 +107,7 @@ const UI = props => {
               {dynamicDetail.msg.reverse().map(item => (
                 <li key={item._id} className={styles.dynamicMsgItem}>
                   <div className={styles.dynamicName}>
-                    {item.name || '神秘人'} 在 {item.date} 评论：
+                    {item.name || '神秘人'} 在 {relativetime(item.date)} 评论：
                   </div>
                   <div className={styles.dynamicMsgContent}>{item.context}</div>
                 </li>

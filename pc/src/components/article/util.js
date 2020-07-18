@@ -1,6 +1,14 @@
 import { ARTICLE_TYPE } from './constant';
 
 export function filterData(data, type) {
+  // 按时间筛选文章
+  if (!isNaN(type)) {
+    return data.filter(item => {
+      if (item.year) return item.year === type;
+      const year = new Date(item.date).getFullYear() + '';
+      return item.year === year;
+    });
+  }
   if (type === 'All' || type === 'Time') return data;
   return data.filter(item => item.type === type);
 }

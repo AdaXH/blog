@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'dva';
 import { setCache, getCache, hasChange } from '@/utils/functions';
 import { useDidMount } from '@/utils/hooks';
 import { getDynamic } from '@/utils/service';
 import Loading from '../../wrapComponent/Loading';
 import Pagination from '../pagination/pagination';
-import { randomItem, randromCurrent } from './util';
+import { randomItem, randromCurrent, relativetime } from './util';
 import styles from './index.less';
 
 const Dynamic = props => {
@@ -58,7 +58,7 @@ const Dynamic = props => {
               <div className={styles.dynamicTitle}>{item.title}</div>
               <div className={styles.dynamicSummary}>{item.content}</div>
             </div>
-            <div className={styles.dynamicDate}>{item.date}</div>
+            <div className={styles.dynamicDate}>{relativetime(item.date)}</div>
           </li>
         ))}
       </ul>

@@ -37,14 +37,14 @@ export default {
       const result = [];
 
       for (let item of allData) {
-        if (regEx.test(item.summary) || regEx.test(item.content)) {
-          let index = item.summary && item.summary.indexOf(data);
+        if (regEx.test(item.title) || regEx.test(item.content)) {
+          let index = item.title && item.title.indexOf(data);
           result.push({
             date: !item.upvote ? item.year + '-' + item.date : item.date,
             type: item.upvote ? '动态' : '文章',
             summary: item.upvote
               ? item.content
-              : item.summary.slice(index, index + data.length + 100),
+              : item.title.slice(index, index + data.length + 100),
             _id: item._id,
           });
         }

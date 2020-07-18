@@ -1,3 +1,6 @@
+import moment from 'moment';
+moment.lang('zh-cn');
+
 export function randromCurrent(start = 0, end = 5) {
   const lis = document.getElementsByClassName('_dynamicItem');
   if (!!lis) {
@@ -30,4 +33,14 @@ export function randomItem() {
       lis[i].style.display = 'none';
     }
   }
+}
+
+export function relativetime(date) {
+  let target = Number(date);
+  if (/-/.test(date)) {
+    target = new Date(date).getTime();
+  }
+  return moment(moment(new Date(target)).format('YYYY-MM-DD/HH:mm:ss'))
+    .startOf('minute')
+    .fromNow();
 }

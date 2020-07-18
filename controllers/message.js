@@ -123,18 +123,6 @@ routerExports._repeatMsg = {
   url: '/repeatmsg',
   route: async (ctx) => {
     const { _id, toRepeat, info } = ctx.request.body
-    let date = new Date()
-    let minute = date.getMinutes()
-    const m = minute < 10 ? minute + 1 : '0' + minute
-    let seconds =
-      date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()
-    let hour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()
-    let year = date.getFullYear()
-    let month =
-      date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
-    let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
-    let d =
-      year + '/' + month + '/' + day + ' ' + hour + ':' + m + ':' + seconds
     try {
       const payload = getJWTPayload(ctx.headers.authorization)
       if (!payload) throw 'token认证失败'
@@ -143,7 +131,7 @@ routerExports._repeatMsg = {
       if (user.name === toRepeat) throw '请勿回复自己'
       const msg = {
         toRepeat,
-        date: d,
+        date: Date.now(),
         info,
         name: user.name,
       }
@@ -152,25 +140,6 @@ routerExports._repeatMsg = {
       const newRepeat = [...currentMsg.repeat, msg]
       await Message.updateOne({ _id }, { $set: { repeat: newRepeat } })
       const data = await Message.find({})
-      let result = []
-      if (data) {
-        for (let item of data) {
-          if (item.repeat && item.repeat.length !== 0)
-            for (let repeat of item.repeat) {
-              let temp = new Date(repeat.date).getTime()
-              repeat.date = timeago(temp)
-            }
-        }
-        result = data.sort((a, b) => {
-          const time1 = new Date(
-            a.date.replace(/-----/g, ' ').replace(/ : /g, ':')
-          ).getTime()
-          const time2 = new Date(
-            b.date.replace(/-----/g, ' ').replace(/ : /g, ':')
-          ).getTime()
-          return time1 - time2
-        })
-      }
       if (toRepeatUser.email) {
         sendEmail(
           `hi，${
@@ -244,7 +213,6 @@ routerExports._leaveMsg = {
         '留言回复通知'
       )
     } catch (error) {
-      console.log('error', error)
       ctx.body = {
         success: false,
         errorMsg: error,

@@ -7,5 +7,6 @@ module.exports = {
     'favicon.ico',
     'PhantomJS',
     'index.php',
+    'pc-src',
   ],
 }

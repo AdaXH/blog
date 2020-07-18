@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { setCache, getCache, hasChange } from '@/utils/functions';
+import { setCache, getCache, hasChange, relativeTime } from '@/utils/functions';
 import { useDidMount } from '@/utils/hooks';
 import { getArticles } from '@/utils/service';
 import Loading from '@/wrapComponent/Loading';
@@ -60,9 +60,7 @@ export default ({ history }) => {
                     {item.type && item.type.slice(0, 1)}
                   </div>
                   <div className={styles.articleDate}>
-                    <span>
-                      {item.year}-{item.date}
-                    </span>
+                    <span>{relativeTime(item.date)}</span>
                   </div>
                   <div className={styles.articleTitle}>{item.title}</div>
                 </li>

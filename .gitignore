@@ -26,5 +26,7 @@ backup.zip
 /public/upload
 /pc/node_modules/
 /umi-mobile/node_modules
+/common/util.js
+serverConfig.js
 
 /public/sass/*.map

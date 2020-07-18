@@ -1,3 +1,5 @@
+import moment from 'moment';
+moment.lang('zh-cn');
 export function getDate() {
   const d = new Date();
   const year = d.getFullYear();
@@ -16,4 +18,14 @@ export function getDate() {
     ':' +
     (minute < 10 ? '0' + minute : minute)
   );
+}
+
+export function relativetime(date) {
+  let target = date;
+  if (/--/.test(date)) {
+    target = new Date(date.replace(/--/g, '/')).getTime();
+  }
+  return moment(moment(new Date(Number(target))).format('YYYY-MM-DD/HH:mm:ss'))
+    .startOf('minute')
+    .fromNow();
 }
