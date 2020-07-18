@@ -3,8 +3,8 @@ const { reMapError } = require('../common/util')
 
 //全局生效:
 SinaCloud.config = new SinaCloud.Config({
-  accessKeyId: '1b24azces6uiVWvMDbnN',
-  secretAccessKey: '59769489567c92ab6d05026ec8322c4c503c17f2',
+  accessKeyId: '云存储keyId',
+  secretAccessKey: '云存储key',
   sslEnabled: false,
 })
 // var myBucket = new SinaCloud.S3({params: {Bucket: 'ada.bucket'}});
