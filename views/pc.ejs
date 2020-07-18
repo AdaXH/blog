@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="KeyWords" content="向银龙,向晗,Ada,主页,前端弱鸡,blog" />
+    <meta name="Description" content="向银龙 向晗 Ada 主页 前端弱鸡 blog" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>向银龙 向晗</title>
+    <link rel="canonical" href="http://www.adaxh.site" />
+    <link rel="stylesheet" href="/live2d/css/live2d.css" />
+    <script>
+      ;(function() {
+        var canonicalURL, curProtocol
+        var x = document.getElementsByTagName('link')
+        if (x.length > 0) {
+          for (i = 0; i < x.length; i++)
+            if (x[i].rel.toLowerCase() == 'canonical' && x[i].href)
+              canonicalURL = x[i].href
+        }
+        if (!canonicalURL) curProtocol = window.location.protocol.split(':')[0]
+        else curProtocol = canonicalURL.split(':')[0]
+        if (!canonicalURL) canonicalURL = window.location.href
+        !(function() {
+          var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,
+            r = canonicalURL,
+            t = document.referrer
+          if (!e.test(r)) {
+            var n =
+              String(curProtocol).toLowerCase() === 'https'
+                ? 'https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif'
+                : '//api.share.baidu.com/s.gif'
+            t
+              ? ((n += '?r=' + encodeURIComponent(document.referrer)),
+                r && (n += '&l=' + r))
+              : r && (n += '?l=' + r)
+            var i = new Image()
+            i.src = n
+          }
+        })(window)
+      })()
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://at.alicdn.com/t/font_1007584_872p8dktes3.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://at.alicdn.com/t/font_1007584_w1x2acv6cb.css"
+    />
+    <style>
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: filter 1s;
+      }
+    </style>
+    <link rel="stylesheet" href="/pc-src/styles.css" />
+    <script>
+      window.debug = function() {
+        return /localhost/.test(window.location.href)
+      }
+      var timer = undefined
+      window.live2dMsg = function(msg, timeOut = 8000) {
+        var msgContainer = document.getElementById('live2d_msg')
+        if (timer) clearTimeout(timer)
+        msgContainer.style.cssText = 'opacity: 1'
+        msgContainer.innerHTML = msg
+        timer = setTimeout(function() {
+          msgContainer.style.cssText = 'opacity: 0'
+        }, timeOut)
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script src="/pc-src/pc.js"></script>
+    <script src="/pc-src/2.pc.js"></script>
+    <script src="/pc-src/0.pc.js"></script>
+    <script type="text/javascript" src="/live2d/js/message.js"></script>
+    <div id="landlord">
+      <div class="message" id="live2d_msg"></div>
+      <canvas id="live2d" width="200" height="400" class="live2d"></canvas>
+    </div>
+    <script>
+      ;(function() {
+        var bp = document.createElement('script')
+        var curProtocol = window.location.protocol.split(':')[0]
+        if (curProtocol === 'https') {
+          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js'
+        } else {
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js'
+        }
+        var s = document.getElementsByTagName('script')[0]
+        s.parentNode.insertBefore(bp, s)
+      })()
+    </script>
+    <script type="text/javascript">
+      var message_Path = '/live2d/'
+      var home_Path = 'https://www.adaxh.site'
+    </script>
+    <script type="text/javascript" src="/live2d/js/live2d.js"></script>
+    <script type="text/javascript">
+      loadlive2d('live2d', '/live2d/model/shizuku/model.json')
+    </script>
+  </body>
+</html>
