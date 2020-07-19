@@ -229,12 +229,12 @@
         .repeatList {
           padding: 20px;
           font-size: 13px;
-          animation: formRight 1s;
-          opacity: 0;
-          -webkit-animation-fill-mode: forwards;
-          animation-fill-mode: forwards;
-          -webkit-transform: translate3d(100px, 0, 0);
-          transform: translate3d(100px, 0, 0);
+          // animation: formRight 1s;
+          // opacity: 1;
+          // -webkit-animation-fill-mode: forwards;
+          // animation-fill-mode: forwards;
+          // -webkit-transform: translate3d(100px, 0, 0);
+          // transform: translate3d(100px, 0, 0);
           .repeatItem:nth-of-type(1) {
             padding-top: 0;
           }
@@ -242,6 +242,11 @@
             line-height: 1.5;
             padding: 20px 162px 0 20px;
             position: relative;
+            animation-name: fromTop;
+            animation-duration: .5s;
+            animation-fill-mode: forwards;
+            opacity: 0;
+            transform: translate3d(0,-30px,0);
             .msgOperation::after {
               content: '';
               position: absolute;
@@ -294,12 +299,24 @@
               color: white;
             }
             .repeatInfo {
-              font-size: 13px;
+              .nameInfo {
+                display: inline-block;
+                font-size: 13px;
+              }
+              img {
+                display: inline-block;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: white;
+                margin-right: 10px;
+              }
             }
             .repeatContent {
-              padding-left: 10px;
+              margin-left: 60px;
               font-size: 13px;
               position: relative;
+              word-break: break-all;
             }
           }
         }
@@ -356,20 +373,23 @@
             bottom: 10px;
             right: 150px;
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.3);
-            width: 60px;
+            color: rgba(255, 255, 255, 0.75);;
+            .count {
+              position: relative;
+              top: -1px;
+            }
             div {
-              float: left;
-              // margin-left: 10px;
+              display: inline-block;
               transition: all 0.4s;
               line-height: 24px;
               cursor: pointer;
             }
-            div:nth-of-type(2) {
-              float: right;
+            div:nth-of-type(1) {
+              margin-right: 10px;
             }
             div:hover {
               color: white;
+              // transform: scale(1.1);
             }
           }
         }
@@ -395,7 +415,7 @@
           font-weight: bold;
           font-size: 15px;
           margin-left: 20px;
-          div:nth-of-type(2) {
+          .msgDate {
             color: rgba(255, 255, 255, 0.7);
             font-weight: normal;
             font-size: 13px;

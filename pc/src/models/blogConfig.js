@@ -49,11 +49,11 @@ export default {
   subscriptions: {
     setup({ history, dispatch }) {
       return history.listen(({ pathname }) => {
-        if (pathname === '/home') {
-          dispatch({
-            type: 'getConfig',
-          });
-        }
+        // if (pathname === '/home') {
+        dispatch({
+          type: 'getConfig',
+        });
+        // }
       });
     },
   },

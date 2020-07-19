@@ -1,17 +1,15 @@
 const mongoose = require('mongoose')
+const userModel = require('./userModel');
 
 module.exports = mongoose.model('messages', mongoose.Schema({
-    name: String,
+    ...userModel,
     content: String,
     date: String,
     repeat: Array({
         info: String,
         date: String,
-        name: String,
-        toRepeat: String
+        toRepeat: String,
+        toRepeatUser: userModel,
+        ...userModel,
     }),
-    avatar: {
-        default: '/upload/user_avatar/default_avatar.jpg',
-        type: String
-    }
 }))

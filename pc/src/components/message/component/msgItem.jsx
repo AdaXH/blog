@@ -6,7 +6,7 @@ import { deleteMsgById, repeatMsg } from '../service';
 import { escapeData, renderDate } from '../util';
 import styles from '../index.less';
 
-export default props => {
+export default (props) => {
   const {
     item,
     index,
@@ -26,7 +26,7 @@ export default props => {
       return true;
     }
   }
-  const deleteMsg = async _id => {
+  const deleteMsg = async (_id) => {
     if (noLogin()) return;
     const res = await deleteMsgById({ _id });
     if (res.success) {
@@ -35,7 +35,7 @@ export default props => {
   };
   const leaveMsg = (_id, toRepeat) => {
     if (noLogin()) return;
-    const cb = async value => {
+    const cb = async (value) => {
       if (!value || value.trim() === '') {
         Notification.fail({
           msg: '输入不规范',
@@ -73,14 +73,17 @@ export default props => {
       </div>
       <div className={styles.mssageName}>
         <div className={styles.leaveInfo}>
-          <div>{item.name}</div>
-          <div>{renderDate(item.date)}</div>
+          <div>
+            {item.name}{' '}
+            <span className={styles.msgDate}>在{renderDate(item.date)}说</span>
+          </div>
         </div>
       </div>
       <div className={styles.msgContent}>
         {item.content}
         <div className={styles.moreCon}>
           <div onClick={() => setState({ showRepeat: !showRepeat })}>
+            <span className={styles.count}>{item.repeat.length}</span>
             <i
               className={`iconfont ${
                 showRepeat ? 'icon-quxiao' : 'icon-zhankai'

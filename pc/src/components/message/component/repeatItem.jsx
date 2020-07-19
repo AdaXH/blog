@@ -4,22 +4,27 @@ import { deleteInnerRepeat } from '../service';
 import { relativetime } from './util';
 import styles from '../index.less';
 
-export default props => {
+export default (props) => {
   const { list, ...others } = props;
-  if (!list.length) return <div className={styles.repeatList}>empty ~ </div>;
+  if (!list.length)
+    return (
+      <div className={styles.repeatList}>
+        <span className={styles.repeatItem}>empty ~ </span>
+      </div>
+    );
   return (
     <ul className={styles.repeatList}>
-      {list.map(item => {
-        return <Item item={item} key={item._id} {...others} />;
+      {list.map((item, index) => {
+        return <Item index={index} item={item} key={item._id} {...others} />;
       })}
     </ul>
   );
 };
 
-const Item = props => {
-  const { item, parentId, leaveMsg, updateRepeat } = props;
+const Item = (props) => {
+  const { item, parentId, leaveMsg, updateRepeat, index } = props;
   const [showOperation, setState] = useState(false);
-  const deleteMsg = async _id => {
+  const deleteMsg = async (_id) => {
     const result = await deleteInnerRepeat({
       _id,
       _parent_id: parentId,
@@ -30,10 +35,17 @@ const Item = props => {
       Notification.fail({ msg: result.errorMsg });
     }
   };
+  const toRepeat = item.toRepeatUser ? item.toRepeatUser.name : item.toRepeat;
+  const style = {
+    animationDelay: `${index * 0.15}s`,
+  };
   return (
-    <li key={item._id} className={styles.repeatItem}>
+    <li key={item._id} className={styles.repeatItem} style={style}>
       <div className={styles.repeatInfo}>
-        {item.name} {relativetime(item.date)} @ {item.toRepeat}
+        <img src={item.avatar} alt="" />
+        <div className={styles.nameInfo}>
+          {item.name} {relativetime(item.date)} @ {toRepeat}
+        </div>
       </div>
       <div className={styles.repeatContent}>
         {item.info}

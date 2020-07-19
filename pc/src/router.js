@@ -49,7 +49,6 @@ export default ({ history }) => {
     if (loadStyle) {
       change();
     }
-    console.log('loadStyle', loadStyle);
   }, [loadStyle]);
   const loadClass = classnames({
     [styles.loadFinish]: loadStyle,

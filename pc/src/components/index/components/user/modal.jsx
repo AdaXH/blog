@@ -8,7 +8,7 @@ import EmptyForm from './emptyForm';
 import { validatorPwd } from './util';
 import styles from './index.less';
 
-export default Form.create()(props => {
+export default Form.create()((props) => {
   const {
     visible,
     setVisible: close,
@@ -36,6 +36,8 @@ export default Form.create()(props => {
         if (value.password) {
           msg = '已更改，请重新登录！';
           dispatch({ type: 'user/signOut' });
+        } else {
+          dispatch({ type: 'user/getUserInfo', payload: {} });
         }
         close();
         Notification.success({ msg });
@@ -78,8 +80,8 @@ export default Form.create()(props => {
           initialValue: name,
           rules: [
             {
-              required: false,
-              message: '请输入标题',
+              required: true,
+              message: '请输入用户名',
             },
           ],
         })(<Input />)}
@@ -118,8 +120,8 @@ export default Form.create()(props => {
         <input
           type="file"
           title=""
-          onChange={info =>
-            handleUpload(info, avatar => setFieldsValue({ avatar }))
+          onChange={(info) =>
+            handleUpload(info, (avatar) => setFieldsValue({ avatar }))
           }
         />
         {user.imgBlocked && <div>头像资源被内网拦截</div>}

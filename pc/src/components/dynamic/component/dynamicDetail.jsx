@@ -5,7 +5,7 @@ import Notification from '@/wrapComponent/Notification';
 import { getDate, relativetime } from './util';
 import styles from '../index.less';
 
-const UI = props => {
+const UI = (props) => {
   const {
     dynamic: { dynamicDetail },
     dispatch,
@@ -26,12 +26,12 @@ const UI = props => {
       },
     });
   };
-  const openDialog = _id => {
+  const openDialog = (_id) => {
     if (!user || !user.isLogin) {
       Notification.fail({ msg: '登陆就能评论啦' });
       return;
     }
-    const cb = data => {
+    const cb = (data) => {
       if (data === '' || (data.trim && data.trim() === '')) {
         Notification.fail({ msg: '输入不规范' });
         return;
@@ -46,7 +46,7 @@ const UI = props => {
           _id,
           name: Base64.encode(user.name),
         },
-      }).then(current => {
+      }).then((current) => {
         dispatch({ type: 'dialog/hide' });
         Notification[current ? 'success' : 'fail']({
           msg: current ? '操作成功' : '操作失败',
@@ -59,7 +59,8 @@ const UI = props => {
     });
   };
 
-  const toggleOpen = () => {
+  const toggleOpen = (msg) => {
+    if (!msg.length) return;
     dispatch({
       type: 'dynamic/toggleOpen',
     });
@@ -85,7 +86,7 @@ const UI = props => {
             <i className="icon-dianzan iconfont" />
             <span>{dynamicDetail.upvote}</span>
           </div>
-          <div onClick={() => toggleOpen()} className={styles.open}>
+          <div onClick={() => toggleOpen(msg)} className={styles.open}>
             <span>{msg.length}</span>
             <i
               className={
@@ -104,7 +105,7 @@ const UI = props => {
         {dynamicDetail.open && dynamicDetail.msg && (
           <div className={styles.dynamicMsg}>
             <ul className={styles.msgList}>
-              {dynamicDetail.msg.reverse().map(item => (
+              {dynamicDetail.msg.reverse().map((item) => (
                 <li key={item._id} className={styles.dynamicMsgItem}>
                   <div className={styles.dynamicName}>
                     {item.name || '神秘人'} 在 {relativetime(item.date)} 评论：

@@ -5,6 +5,7 @@ const Customer = require("../dbmodel/Customer");
 const Mood = require("../dbmodel/Mood");
 const User = require("../dbmodel/User");
 const { timeago } = require("../common/util");
+const { setAllAvatar, queryUser } = require("../common/apiPrefix");
 
 const routerExports = {};
 
@@ -116,7 +117,6 @@ routerExports.getArticles = {
   url: "/getArticles",
   route: async (ctx, next) => {
     try {
-<<<<<<< HEAD
       const article = await Article.find();
       const newArticle = article.reverse().map(item => {
         const { year, date, time = "0:0:0" } = item;
@@ -127,17 +127,6 @@ routerExports.getArticles = {
         return item;
       });
       ctx.body = { success: true, data: newArticle };
-=======
-      const article = await Article.find()
-      const newArticle = article.reverse().map((item) => {
-        const { year, date, time = '0:0:0' } = item
-        if (/-/.test(date)) {
-          item.date = new Date(`${year}-${date}/${time}`)
-        }
-        return item
-      })
-      ctx.body = { success: true, data: newArticle }
->>>>>>> aace511cc61549ec0cbd42c79e9f39b2cf71ddd8
     } catch (error) {
       ctx.body = {
         success: false,
@@ -147,43 +136,22 @@ routerExports.getArticles = {
   },
 };
 
-function reMapArticle(result) {
-  for (let item of result) {
-    // const title = /<h2>+\w{1,} +| [\u4e00-\u9fa5]{1,}<\/h2>/.exec(item.summary)
-    const value = item.summary.replace(/[0-9]+|[a-z]+|[A-Z]+|<+|>/g, "");
-    item.title = value.slice(0, 5) || "";
-  }
-  return result;
-}
-
-function setAvatar(name) {
-  return new Promise(resolve => {
-    User.findOne({ name }).then(result => {
-      if (result) resolve(result.avatar || "");
-      else resolve("");
-    });
-  });
-}
-
 routerExports.getAllMessages = {
   method: "get",
   url: "/getAllMessages",
-  route: async (ctx, nect) => {
+  route: async (ctx) => {
     try {
+      ctx.body = {success: true}
       const result = await Message.find({});
-      async function setAllAvatar(result) {
-        for (let item of result) {
-          const avatar = await setAvatar(item.name);
-          item.avatar = avatar;
-        }
-        return result;
-      }
-<<<<<<< HEAD
       const msgWithAvatar = await setAllAvatar(result);
       for (let item of msgWithAvatar) {
         item.date = checkTime(item.date);
         if (item.repeat && item.repeat.length) {
-          item.repeat = item.repeat.reverse();
+          item.repeat.forEach(async itemR => {
+            const { toRepeatUser } = itemR;
+            itemR.toRepeatUser = await queryUser((toRepeatUser && toRepeatUser.userId) ? toRepeatUser : { name: item.name });
+          })
+          item.repeat = await setAllAvatar(item.repeat.reverse());
         }
       }
       function checkTime(time) {
@@ -198,29 +166,8 @@ routerExports.getAllMessages = {
         return b.date - a.date;
       });
       ctx.body = { success: true, data: _result };
-=======
-      const msgWithAvatar = await setAllAvatar(result)
-      for (let item of msgWithAvatar) {
-        item.date = checkTime(item.date)
-        if (item.repeat && item.repeat.length) {
-          item.repeat = item.repeat.reverse()
-        }
-      }
-      function checkTime(time) {
-        if (/-----+| /.test(time)) {
-          return Number(
-            new Date(time.replace(/-----/g, '/').replace(/ /g, '')).getTime()
-          )
-        }
-        return Number(time)
-      }
-      const _result = msgWithAvatar.sort((a, b) => {
-        return b.date - a.date
-      })
-      ctx.body = { success: true, data: _result }
->>>>>>> aace511cc61549ec0cbd42c79e9f39b2cf71ddd8
     } catch (err) {
-      console.log(err);
+      console.log('errr', err);
       ctx.body = {
         success: false,
         errorMsg: err,
