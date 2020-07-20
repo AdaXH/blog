@@ -1,17 +1,17 @@
-const Message = require("../dbmodel/Message");
-const Article = require("../dbmodel/Article");
-const Dynamic = require("../dbmodel/Dynamic");
-const Customer = require("../dbmodel/Customer");
-const Mood = require("../dbmodel/Mood");
-const User = require("../dbmodel/User");
-const { timeago } = require("../common/util");
-const { setAllAvatar, queryUser } = require("../common/apiPrefix");
+const Message = require('../dbmodel/Message');
+const Article = require('../dbmodel/Article');
+const Dynamic = require('../dbmodel/Dynamic');
+const Customer = require('../dbmodel/Customer');
+const Mood = require('../dbmodel/Mood');
+const User = require('../dbmodel/User');
+const { timeago } = require('../common/util');
+const { setAllAvatar, queryUser } = require('../common/apiPrefix');
 
 const routerExports = {};
 
 routerExports.getCustomer = {
-  method: "get",
-  url: "/get-customer",
+  method: 'get',
+  url: '/get-customer',
   route: async (ctx, next) => {
     try {
       const data = await callGetCustomer();
@@ -32,18 +32,18 @@ routerExports.getCustomer = {
 function callGetCustomer() {
   return new Promise((resolve, reject) => {
     Customer.findOne({})
-      .then(data => {
-        data ? resolve(data) : reject("网络出错");
+      .then((data) => {
+        data ? resolve(data) : reject('网络出错');
       })
-      .catch(err =>
+      .catch((err) =>
         reject(err instanceof Object ? JSON.stringify(err) : err.toString())
       );
   });
 }
 
 routerExports.addCustomer = {
-  method: "post",
-  url: "/add-customer",
+  method: 'post',
+  url: '/add-customer',
   route: async (ctx, next) => {
     const { number } = ctx.request.body;
     try {
@@ -60,7 +60,7 @@ routerExports.addCustomer = {
 function moodArr(time) {
   return new Promise((resolve, reject) => {
     // console.log('pc: ' + new Date())
-    console.log("native: " + time);
+    console.log('native: ' + time);
     Mood.find({}, (err, res) => {
       err ? reject([]) : resolve(res);
     });
@@ -73,11 +73,11 @@ function articleArr() {
       const result = res
         .sort((a, b) => {
           return (
-            new Date(b.year + "-" + b.date).getTime() -
-            new Date(a.year + "-" + a.date).getTime()
+            new Date(b.year + '-' + b.date).getTime() -
+            new Date(a.year + '-' + a.date).getTime()
           );
         })
-        .map(item => {
+        .map((item) => {
           delete item._doc.summary;
           return item;
         });
@@ -113,13 +113,13 @@ function messageArr() {
 }
 ///<h2>+\w{1,}<\/h2>/.exec('aaa11111<h2>title</h2>
 routerExports.getArticles = {
-  method: "get",
-  url: "/getArticles",
+  method: 'get',
+  url: '/getArticles',
   route: async (ctx, next) => {
     try {
       const article = await Article.find();
-      const newArticle = article.reverse().map(item => {
-        const { year, date, time = "0:0:0" } = item;
+      const newArticle = article.reverse().map((item) => {
+        const { year, date, time = '0:0:0' } = item;
         if (/-/.test(date)) {
           item.date = new Date(`${year}-${date}/${time}`);
         }
@@ -137,27 +137,31 @@ routerExports.getArticles = {
 };
 
 routerExports.getAllMessages = {
-  method: "get",
-  url: "/getAllMessages",
+  method: 'get',
+  url: '/getAllMessages',
   route: async (ctx) => {
     try {
-      ctx.body = {success: true}
+      ctx.body = { success: true };
       const result = await Message.find({});
       const msgWithAvatar = await setAllAvatar(result);
       for (let item of msgWithAvatar) {
         item.date = checkTime(item.date);
         if (item.repeat && item.repeat.length) {
-          item.repeat.forEach(async itemR => {
+          item.repeat.forEach(async (itemR) => {
             const { toRepeatUser } = itemR;
-            itemR.toRepeatUser = await queryUser((toRepeatUser && toRepeatUser.userId) ? toRepeatUser : { name: item.name });
-          })
+            itemR.toRepeatUser = await queryUser(
+              toRepeatUser && toRepeatUser.userId
+                ? toRepeatUser
+                : { name: item.name }
+            );
+          });
           item.repeat = await setAllAvatar(item.repeat.reverse());
         }
       }
       function checkTime(time) {
         if (/-----+| /.test(time)) {
           return Number(
-            new Date(time.replace(/-----/g, "/").replace(/ /g, "")).getTime()
+            new Date(time.replace(/-----/g, '/').replace(/ /g, '')).getTime()
           );
         }
         return Number(time);
@@ -177,58 +181,57 @@ routerExports.getAllMessages = {
 };
 
 routerExports.routerIndex = {
-  method: "get",
-  url: "/*",
+  method: 'get',
+  url: '/*',
   route: async (ctx, next) => {
     const userAgent = /Mobile+|iPhone+|Android/.test(
-      ctx.request.header["user-agent"]
+      ctx.request.header['user-agent']
     )
-      ? "Mobile"
-      : "pc";
+      ? 'Mobile'
+      : 'pc';
     const {
       request: { url },
     } = ctx;
     const date = new Date();
-    const time = `${url || ""} : ${date.getFullYear()}年${
-      date.getMonth() + 1
-    }月${date.getDate()}号 : ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`;
+    const time = `${url || ''} : ${date.getFullYear()}年${date.getMonth() +
+      1}月${date.getDate()}号 : ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`;
 
     // Mobile
-    if (userAgent === "Mobile") {
-      await ctx.render("mobile");
+    if (userAgent === 'Mobile') {
+      await ctx.render('mobile');
     } else if (/twui/.test(url)) {
-      console.log("twui: ", time);
-      await ctx.render("twui");
+      console.log('twui: ', time);
+      await ctx.render('twui');
     } else if (/native/.test(url)) {
       // console.log('Native:  ' + time)
-      if (userAgent === "pc") {
+      if (userAgent === 'pc') {
         // native-version
         try {
           const mood = await moodArr(time);
           const article = await articleArr();
           const message = await messageArr();
           const dynamic = await dynamicArr();
-          const dynamicTemp = dynamic.map(item => {
+          const dynamicTemp = dynamic.map((item) => {
             let result = {};
             if (item._doc)
               result = {
                 ...item._doc,
                 img: !!item._doc.img
-                  ? item._doc.img.replace(/jpeg/g, "jpg")
-                  : "",
+                  ? item._doc.img.replace(/jpeg/g, 'jpg')
+                  : '',
               };
             else
               result = {
                 ...item,
-                img: !!item.img ? item.img.replace(/jpeg/g, "jpg") : "",
+                img: !!item.img ? item.img.replace(/jpeg/g, 'jpg') : '',
               };
             return result;
           });
           const dynamicSort = dynamicTemp.sort((b, a) => {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
           });
-          await ctx.render("native", {
-            title: "Ada - 个人主页",
+          await ctx.render('native', {
+            title: 'Ada - 个人主页',
             mood,
             article,
             message: message.reverse(),
@@ -236,8 +239,8 @@ routerExports.routerIndex = {
           });
         } catch (error) {
           console.log(error);
-          await ctx.render("native", {
-            title: "Ada - 个人主页",
+          await ctx.render('native', {
+            title: 'Ada - 个人主页',
             mood: [],
             article: [],
             message: [],
@@ -249,7 +252,7 @@ routerExports.routerIndex = {
     // Dva
     else {
       // console.log('dva:    ' + time)
-      await ctx.render("pc");
+      await ctx.render('pc');
     }
   },
 };
