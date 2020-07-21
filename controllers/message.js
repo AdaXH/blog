@@ -18,25 +18,24 @@ routerExports.deleteInnerRepeat = {
   method: 'post',
   url: '/deleteInnerRepeat',
   route: async (ctx, next) => {
-    const { _id, _parent_id } = ctx.request.body;
+    const { _id, _parent_id, toRepeatUserId } = ctx.request.body;
     try {
       const payload = getJWTPayload(ctx.headers.authorization);
       if (!payload) throw 'token认证失败';
       const user = await User.findOne({ _id: payload._id });
       if (!user) throw '当前用户不存在或会话已过期';
+      if (toRepeatUserId !== payload._id && !user.admin) {
+        throw '只能删除自己的回复';
+      }
       const curMsg = await Message.findOne({ _id: _parent_id });
       if (!curMsg) {
         throw '该条回复不存在';
       }
       const repeat = curMsg.repeat.filter((item) => item._id != _id);
-      const na = curMsg.repeat.filter((item) => item._id == _id)[0].name;
-      if (!user) throw '用户不存在';
-      if (payload._id === user._id || user.admin) {
-        await Message.updateOne(
-          { _id: _parent_id },
-          { $set: { repeat: [...repeat] } }
-        );
-      } else throw '只能删除自己的回复';
+      await Message.updateOne(
+        { _id: _parent_id },
+        { $set: { repeat: [...repeat] } }
+      );
       ctx.body = { success: true, data: repeat };
     } catch (error) {
       ctx.body = {
@@ -121,20 +120,23 @@ routerExports._repeatMsg = {
   method: 'post',
   url: '/repeatmsg',
   route: async (ctx) => {
-    const { _id, toRepeat, info } = ctx.request.body;
+    const { _id, toRepeat, info, toRepeatId } = ctx.request.body;
     try {
       const payload = getJWTPayload(ctx.headers.authorization);
       if (!payload) throw 'token认证失败';
       const user = await User.findOne({ _id: payload._id });
       if (!user) throw '当前用户不存在';
-      if (payload._id === _id) throw '请勿回复自己';
-      const repeatUserVo = (await queryUser({ name: toRepeat })) || {};
+      if (payload._id === toRepeatId) throw '请勿回复自己';
+      const repeatUserVo = await queryUser({ userId: toRepeatId });
+      const { name, avatar, eamil } = user;
       const msg = {
+        userId: payload._id,
         toRepeat,
         date: Date.now(),
         info,
-        name: user.name,
-        userId: payload._id,
+        name,
+        avatar,
+        eamil,
         toRepeatUser: repeatUserVo,
       };
       const currentMsg = await Message.findOne({ _id });
@@ -196,13 +198,17 @@ routerExports._leaveMsg = {
       const payload = getJWTPayload(ctx.headers.authorization);
       if (!payload) throw 'token认证失败';
       if (!date || !content) throw '入参错误';
-      const user = await User.findOne({ _id: payload._id });
+      const user = await User.findOne(
+        { _id: payload._id },
+        { name: 1, avatar: 1, email: 1 }
+      );
       const data = await new Message({
         name: user.name,
         date,
         content: newContent,
         repeat: [],
         userId: payload._id,
+        ...user,
       }).save();
       if (/default_avatar/.test(data.avatar)) {
         const user = await User.findOne({ _id: payload._id });

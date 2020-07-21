@@ -4,7 +4,7 @@ import { useDidMount } from '@/util/hooks';
 import { getCache, setCache } from '@/util/functions';
 import Repeat from './repeat';
 import { queryMessage } from './service';
-import { setStyle } from './util';
+import { setStyle, relativetime } from './util';
 
 import styles from './index.less';
 
@@ -38,11 +38,11 @@ export default ({ theme }) => {
   });
   return (
     <div className={cla}>
-      <a className={styles.friendItem}>
+      <div className={styles.friendItem}>
         <div className={styles.view}>
           <div className={styles.title}>留言板</div>
         </div>
-      </a>
+      </div>
       {data.map(({ _id, avatar, content, name, repeat, date, toggle }, index) => {
         return (
           <div className={styles.friendItem} key={_id} style={setStyle(index)}>
@@ -51,7 +51,7 @@ export default ({ theme }) => {
             </div>
             <div className={styles.view}>
               <div className={styles.title}>
-                {name}: <span className={styles.date}>{date && date.replace(/-----/, '')}</span>
+                {name}: <span className={styles.date}>{relativetime(date)}</span>
               </div>
               <div className={styles.desc}>
                 {content}

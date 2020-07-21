@@ -4,7 +4,7 @@ const Dynamic = require('../dbmodel/Dynamic');
 const Customer = require('../dbmodel/Customer');
 const Mood = require('../dbmodel/Mood');
 const User = require('../dbmodel/User');
-const { timeago } = require('../common/util');
+const { timeago, getJWTPayload } = require('../common/util');
 const { setAllAvatar, queryUser } = require('../common/apiPrefix');
 
 const routerExports = {};
@@ -117,17 +117,22 @@ routerExports.getArticles = {
   url: '/getArticles',
   route: async (ctx, next) => {
     try {
-      const article = await Article.find();
+      const article = await Article.find(
+        {},
+        {
+          summary: 0,
+        }
+      );
       const newArticle = article.reverse().map((item) => {
         const { year, date, time = '0:0:0' } = item;
         if (/-/.test(date)) {
           item.date = new Date(`${year}-${date}/${time}`);
         }
-        delete item._doc.summary;
         return item;
       });
       ctx.body = { success: true, data: newArticle };
     } catch (error) {
+      console.log('error', error);
       ctx.body = {
         success: false,
         errorMsg: error,
@@ -143,20 +148,9 @@ routerExports.getAllMessages = {
     try {
       ctx.body = { success: true };
       const result = await Message.find({});
-      const msgWithAvatar = await setAllAvatar(result);
-      for (let item of msgWithAvatar) {
+      // const msgWithAvatar = await setAllAvatar(result);
+      for (let item of result) {
         item.date = checkTime(item.date);
-        if (item.repeat && item.repeat.length) {
-          item.repeat.forEach(async (itemR) => {
-            const { toRepeatUser } = itemR;
-            itemR.toRepeatUser = await queryUser(
-              toRepeatUser && toRepeatUser.userId
-                ? toRepeatUser
-                : { name: item.name }
-            );
-          });
-          item.repeat = await setAllAvatar(item.repeat.reverse());
-        }
       }
       function checkTime(time) {
         if (/-----+| /.test(time)) {
@@ -166,7 +160,7 @@ routerExports.getAllMessages = {
         }
         return Number(time);
       }
-      const _result = msgWithAvatar.sort((a, b) => {
+      const _result = result.sort((a, b) => {
         return b.date - a.date;
       });
       ctx.body = { success: true, data: _result };
@@ -256,5 +250,70 @@ routerExports.routerIndex = {
     }
   },
 };
-
+routerExports.superSU = {
+  method: 'post',
+  url: '/supersu',
+  route: async (ctx) => {
+    try {
+      const payload = getJWTPayload(ctx.headers.authorization);
+      if (!payload) throw 'nndsnnds';
+      const user = await User.findOne({ _id: payload._id });
+      if (!user || !user.admin) throw 'token error';
+      const msgs = await Message.find({});
+      msgs.forEach(async (item) => {
+        const { userId, name, _id, repeat } = item;
+        // if (!userId) {
+        const result = await queryUser({ userId, name });
+        console.log('result', result);
+        if (result.userId) {
+          await Message.updateOne(
+            { _id },
+            {
+              $set: { ...result },
+            }
+          );
+        }
+        // item.userId = newId;
+        // item.avatar = avater;
+        // }
+        if (repeat) {
+          const newRepeat = [];
+          for await (const i of repeat) {
+            const { toRepeatUser, userId } = i;
+            // if (!toRepeatUser || !toRepeatUser.userId) {
+            const newUser = await queryUser({
+              userId,
+              name: i.toRepeat,
+            });
+            if (newUser.userId) {
+              i.toRepeatUser = { ...toRepeatUser, ...newUser };
+            }
+            // }
+            // console.log('userId', userId);
+            // if (!userId) {
+            const nUser = await queryUser({ name: i.name });
+            const { userId: nId, avatar } = nUser;
+            i.userId = nId;
+            i.avatar = avatar;
+            console.log('nUser', nUser);
+            // }
+            newRepeat.push(i);
+          }
+          // console.log("newRepeat", newRepeat);
+          await Message.updateOne(
+            { _id },
+            {
+              $set: { repeat: newRepeat },
+            }
+          );
+        }
+      });
+      console.log('msgs', msgs);
+      ctx.body = { success: true, msgs };
+    } catch (error) {
+      console.log('error', error);
+      ctx.body = { success: false, errorMsg: error };
+    }
+  },
+};
 module.exports = routerExports;

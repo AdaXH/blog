@@ -43,11 +43,11 @@ export default ({ theme }) => {
   });
   return (
     <div className={cla}>
-      <a className={styles.friendItem}>
+      <div className={styles.friendItem}>
         <div className={styles.view}>
           <div className={styles.title}>动态</div>
         </div>
-      </a>
+      </div>
       {data.map(({ _id, content, title, img, upvote = 0 }, index) => {
         return (
           <div className={styles.friendItem} key={_id} style={setStyle(index)}>
