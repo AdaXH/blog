@@ -24,15 +24,15 @@ module.exports = {
   timeago,
   sendEmail: async (
     content,
-    target = '18668465750@163.com',
-    title = '友情链接通知'
+    target,
+    title
   ) => {
     try {
-      const SMTP = 'jvqldmrnxehuchic';
+      const SMTP = 'your smtp code';
       const server = new SMTPClient({
-        user: 'adaxh@qq.com',
+        user: 'address',
         password: SMTP,
-        host: 'smtp.qq.com',
+        host: 'host',
         ssl: true,
       });
       //开始发送邮件
