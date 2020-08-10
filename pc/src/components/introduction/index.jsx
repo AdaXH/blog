@@ -251,18 +251,18 @@ export default class UI extends React.PureComponent {
     }
   }
   render() {
-    const { html } = this.state;
+    const { html, show } = this.state;
     return (
       <div className={s.aboutContainer}>
         <div ref="ref" className={s.contentSlideFromLeft + ' ' + s.diyView}>
-          {this.state.show && (
+          {html()}
+          {show && (
             <Icon
               onClick={() => this.toggleStatus()}
               className={s.togleStatus}
               type="redo"
             />
           )}
-          {html()}
         </div>
         <div className={s.inputText + ' ' + s.contentSlideFromRight}>
           <div className={s.Scrool}>{this.state.text}</div>

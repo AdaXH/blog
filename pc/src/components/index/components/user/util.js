@@ -2,7 +2,7 @@ import Notification from '../../../../wrapComponent/Notification';
 
 export function handleFile(file, dispatch, userName, callback) {
   const { name } = file;
-  if (!/png+|jpeg+|gif+|GIF+|PNG+|JPEG/.test(file.type)) {
+  if (!/image/.test(file.type)) {
     Notification.fail({ msg: '不支持的图片类型' });
     return;
   }

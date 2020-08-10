@@ -24,10 +24,11 @@ export default (props) => {
 const Item = (props) => {
   const { item, parentId, leaveMsg, updateRepeat, index } = props;
   const [showOperation, setState] = useState(false);
-  const deleteMsg = async (_id) => {
+  const deleteMsg = async ({ _id, userId }) => {
     const result = await deleteInnerRepeat({
       _id,
       _parent_id: parentId,
+      toRepeatUserId: userId,
     });
     if (result.success) {
       updateRepeat(parentId, result.data);
@@ -44,7 +45,10 @@ const Item = (props) => {
       <div className={styles.repeatInfo}>
         <img src={item.avatar} alt="" />
         <div className={styles.nameInfo}>
-          {item.name} {relativetime(item.date)} @ {toRepeat}
+          <span>
+            {item.name} @ {toRepeat}
+          </span>
+          <span>{relativetime(item.date)}</span>
         </div>
       </div>
       <div className={styles.repeatContent}>
@@ -55,10 +59,10 @@ const Item = (props) => {
       </div>
       {showOperation && (
         <div className={styles.msgOperation}>
-          <div onClick={() => leaveMsg(parentId, item.name)}>
+          <div onClick={() => leaveMsg(parentId, item.name, item.userId)}>
             <i className="iconfont icon-liuyan-A" />
           </div>
-          <div onClick={() => deleteMsg(item._id)}>
+          <div onClick={() => deleteMsg(item)}>
             <i className="iconfont icon-shanchu" />
           </div>
         </div>

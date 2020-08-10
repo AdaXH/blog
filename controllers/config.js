@@ -1,12 +1,12 @@
 const routerExports = {};
-const Config = require('./../dbmodel/BlogConfig');
-const User = require('./../dbmodel/User');
-const { parseToken, reMapError } = require('../common/util');
+const Config = require("./../dbmodel/BlogConfig");
+const User = require("./../dbmodel/User");
+const { parseToken, reMapError } = require("../common/util");
 
 routerExports.updateConfig = {
-  method: 'post',
-  url: '/updateConfig',
-  route: async (ctx) => {
+  method: "post",
+  url: "/updateConfig",
+  route: async ctx => {
     const { config } = ctx.request.body;
     try {
       await Config.updateOne({}, { $set: { ...config } });
@@ -14,7 +14,6 @@ routerExports.updateConfig = {
         success: true,
       };
     } catch (error) {
-      console.log(error);
       ctx.body = {
         success: false,
         errorMsg: error,
@@ -24,9 +23,9 @@ routerExports.updateConfig = {
 };
 
 routerExports.getConfig = {
-  method: 'get',
-  url: '/getConfig',
-  route: async (ctx) => {
+  method: "get",
+  url: "/getConfig",
+  route: async ctx => {
     try {
       const config = await Config.findOne({});
       ctx.body = {
@@ -34,7 +33,6 @@ routerExports.getConfig = {
         config,
       };
     } catch (error) {
-      console.log(error);
       ctx.body = {
         success: false,
         errorMsg: error,

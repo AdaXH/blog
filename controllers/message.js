@@ -127,7 +127,10 @@ routerExports._repeatMsg = {
       const user = await User.findOne({ _id: payload._id });
       if (!user) throw '当前用户不存在';
       if (payload._id === toRepeatId) throw '请勿回复自己';
-      const repeatUserVo = await queryUser({ userId: toRepeatId });
+      const repeatUserVo = await queryUser({
+        userId: toRepeatId,
+        name: toRepeat,
+      });
       const { name, avatar, eamil } = user;
       const msg = {
         userId: payload._id,
@@ -146,19 +149,18 @@ routerExports._repeatMsg = {
         sendEmail(
           `hi，${
             repeatUserVo.name
-          }，你在https://adaxh.site 的留言板有了新的回复～\n
-          ${user.name} 说 ：\n
-          “${info}”
+          }，你在https://adaxh.site 的留言板有了新的回复～\n${
+            user.name
+          } 说 ：\n“${info}”
         `,
-          undefined,
+          repeatUserVo.email,
           '留言回复通知'
         );
       }
       const newMsg = await Message.findOne({ _id });
-      newMsg.repeat = await setAllAvatar(newMsg.repeat.reverse());
+      newMsg.repeat = await setAllAvatar(newMsg.repeat);
       ctx.body = { success: true, data: { ...newMsg._doc } };
     } catch (error) {
-      console.log('error', error);
       ctx.body = {
         success: false,
         errorMsg: error,
@@ -214,7 +216,7 @@ routerExports._leaveMsg = {
         const user = await User.findOne({ _id: payload._id });
         data.avatar = user.avatar;
       }
-      ctx.body = { success: true, data };
+      ctx.body = { success: true };
       sendEmail(
         `${user.name}（${user.email}）给你留言了：${newContent}`,
         undefined,
@@ -224,6 +226,29 @@ routerExports._leaveMsg = {
       ctx.body = {
         success: false,
         errorMsg: error,
+      };
+    }
+  },
+};
+
+routerExports.getAllMessage = {
+  method: 'post',
+  url: '/getAllMessage',
+  route: async (ctx) => {
+    try {
+      const { page = 1, pageSize = 10 } = ctx.request.body;
+      ctx.body = { success: true };
+      const result = await Message.find({})
+        .sort({ _id: -1 })
+        .skip((page - 1) * pageSize)
+        .limit(pageSize);
+      const totalCount = await Message.find().count();
+      const msgWithAvatar = await setAllAvatar(result);
+      ctx.body = { success: true, data: msgWithAvatar, totalCount };
+    } catch (err) {
+      ctx.body = {
+        success: false,
+        errorMsg: err,
       };
     }
   },

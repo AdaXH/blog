@@ -28,8 +28,9 @@ export function randomItem() {
       lis[i].style.opacity = '0';
       lis[
         i
-      ].style.transform = `translateX(${x}px) translateZ(${x}px) translateY(${op *
-        y}px)`;
+      ].style.transform = `translateX(${x}px) translateZ(${x}px) translateY(${
+        op * y
+      }px)`;
       lis[i].style.display = 'none';
     }
   }
@@ -40,7 +41,8 @@ export function relativetime(date) {
   if (/-/.test(date)) {
     target = new Date(date).getTime();
   }
-  return moment(moment(new Date(target)).format('YYYY-MM-DD/HH:mm:ss'))
-    .startOf('minute')
-    .fromNow();
+  return moment(new Date(target)).format('YYYY-MM-DD HH:mm:ss');
+  // return moment(moment(new Date(target)).format('YYYY-MM-DD/HH:mm:ss'))
+  //   .startOf('minute')
+  //   .fromNow();
 }

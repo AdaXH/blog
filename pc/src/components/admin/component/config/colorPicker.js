@@ -4,19 +4,10 @@ import { SketchPicker } from 'react-color';
 import styles from './index.less';
 export const ColorPicker = props => {
   const { color: resColor = '' } = props;
-  const rgbaString = resColor.replace(/rgba+|\(+|\)/g, '');
-  const rgbaArr = rgbaString.split(',');
-  const [r, g, b, a] = rgbaArr;
-  const rgbaObj = {
-    r,
-    g,
-    b,
-    a,
-  };
   const [state, setState] = useState({
     color: props.color,
     visible: false,
-    rgb: rgbaObj,
+    rgb: '',
   });
 
   const onChange = ({ rgb, hex }) => {
@@ -28,7 +19,19 @@ export const ColorPicker = props => {
       rgb,
     });
   };
-
+  useEffect(
+    () => {
+      const rgbaString = resColor.replace(/rgba+|\(+|\)/g, '');
+      const rgbaArr = rgbaString.split(',');
+      const [r, g, b, a] = rgbaArr;
+      setState({
+        ...state,
+        rgb: { r, g, b, a },
+        color: `rgba(${r},${g},${b},${a})`,
+      });
+    },
+    [resColor]
+  );
   useEffect(
     () => {
       const { setFieldsValue, code } = props;
@@ -41,7 +44,6 @@ export const ColorPicker = props => {
   );
 
   const handleEvent = e => e.stopPropagation();
-
   const { visible, color, rgb } = state;
   return (
     <div>

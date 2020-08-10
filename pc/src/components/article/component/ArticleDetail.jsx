@@ -5,6 +5,7 @@ import Notification from '@/wrapComponent/Notification';
 import { getParam, relativeTime } from '@/utils/functions';
 import Api from '@/utils/request';
 import Loading from '@/wrapComponent/Loading';
+import ArticleMsg from './articleMsg';
 import styles from '../index.less';
 
 export default ({ history, dispatch }) => {
@@ -31,6 +32,7 @@ export default ({ history, dispatch }) => {
   const handleClose = () => {
     history.push('/article');
   };
+  if (!data) return null;
   return (
     <div className={styles.container__}>
       <div className={styles.left} onClick={() => handleClose()}>
@@ -48,17 +50,19 @@ export default ({ history, dispatch }) => {
                     <div>浏览：{data.viewer}</div>
                   </div>
                   <div className={styles.content}>
-                    {ReactHtmlParser(
-                      data.summary.replace(
-                        /contenteditable="true"+|placeholder="Compose an epic..."+|<\/?br>/g,
-                        ''
-                      )
-                    )}
+                    {data.summary &&
+                      ReactHtmlParser(
+                        data.summary.replace(
+                          /contenteditable="true"+|placeholder="Compose an epic..."+|<\/?br>/g,
+                          ''
+                        )
+                      )}
                   </div>
                 </div>
               </div>
             )}
           </div>
+          <ArticleMsg data={data.message} articleId={data._id} />
         </div>
       </div>
     </div>

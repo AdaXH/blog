@@ -8,6 +8,7 @@ export const NO_LOADING_API = [
   '/getUserInfoByToken',
   '/getArticles',
   '/getAllMessages',
+  '/getAllMessage',
   '/getDynamic',
   '/getConfig',
   '/queryArticleById',
@@ -16,3 +17,9 @@ export const NO_LOADING_API = [
 ];
 
 export const NOERROR_API = ['/getUserInfoByToken'];
+
+// 全屏的路由
+export const FULL_SCREEN_PATH = [
+  '/friend-ship', // 友情链接
+  '/admin', // 管理员
+];

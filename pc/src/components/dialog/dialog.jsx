@@ -3,7 +3,7 @@ import styles from './dialog.less';
 import Notification from '../../wrapComponent/Notification';
 import { connect } from 'dva';
 
-const Dialog = props => {
+const Dialog = (props) => {
   const { dialog, dispatch } = props;
   const isDynamic = dialog.type && dialog.type === 'dynamic';
   const isNew = dialog.type && dialog.type === 'newDynamic';
@@ -20,11 +20,17 @@ const Dialog = props => {
           name: isDynamic ? dialog.dynamic.img : '',
         })
       : ['', ''];
-  const setDynamicImg = _id =>
-    dispatch({
+  const setDynamicImg = (_id, imgP) => {
+    return dispatch({
       type: 'dynamic/setDynamicImg',
-      payload: { dataUrl: img.url, name: img.name, _id },
+      payload: {
+        dataUrl: img.url,
+        name: img.name,
+        _id,
+        img: dialog.dynamic.img,
+      },
     });
+  };
 
   const onSubmit = async () => {
     const data = document.querySelector('.dialogText').value;
@@ -35,18 +41,18 @@ const Dialog = props => {
     } else {
       // new moments
       const {
-        dynamic: { _id, title, content },
+        dynamic: { _id, title, content, img: curImg },
         type,
       } = dialog;
       const _title = document.querySelector('#editTitle').value;
       if (type === 'newDynamic') {
         // new
-        if (!_title || !data || (_title.trim() === 0 || data.trim() === 0)) {
+        if (!_title || !data || _title.trim() === 0 || data.trim() === 0) {
           Notification.fail({ msg: 'not avaliabe !' });
           return;
         }
 
-        const setImgResult = await setDynamicImg(_id);
+        const setImgResult = await setDynamicImg(_id, curImg);
         if (setImgResult)
           Notification[setImgResult.success ? 'success' : 'fail']({
             msg: setImgResult.success ? 'upload success' : setImgResult,
@@ -58,7 +64,7 @@ const Dialog = props => {
           content: data,
           img: setImgResult.img,
           upvote: 1,
-        }).then(result => {
+        }).then((result) => {
           result.success && dispatch({ type: 'dialog/hide' });
           Notification[result.success ? 'success' : 'fail']({
             msg: result.success ? 'success' : result,
@@ -78,13 +84,18 @@ const Dialog = props => {
             Notification[setImgResult.success ? 'success' : 'fail']({
               msg: setImgResult.success ? 'upload success' : setImgResult,
             });
-          await dispatch({
-            type: 'dynamic/updateDynamic',
+          const payload = {
             title: _title,
             content: data,
             _id,
-            img: setImgResult.img,
-          }).then(result => {
+          };
+          if (dialog.dynamic.img !== img.url) {
+            payload.img = setImgResult.img;
+          }
+          await dispatch({
+            type: 'dynamic/updateDynamic',
+            ...payload,
+          }).then((result) => {
             Notification[result ? 'success' : 'fail']({
               msg: result ? 'success' : result,
             });
@@ -95,7 +106,7 @@ const Dialog = props => {
     }
   };
 
-  const handleFile = info => {
+  const handleFile = (info) => {
     const file = info.nativeEvent.target.files[0];
     const { name } = file;
     if (!/png+|jpeg+|gif+|GIF+|PNG+|JPEG/.test(file.type)) {
@@ -104,7 +115,7 @@ const Dialog = props => {
     }
     const fileReader = new FileReader();
     fileReader.readAsDataURL(file);
-    fileReader.onload = e => setImg({ url: e.target.result, name });
+    fileReader.onload = (e) => setImg({ url: e.target.result, name });
   };
 
   return (
@@ -132,7 +143,7 @@ const Dialog = props => {
             )}
             <textarea
               style={{ height: `${isDynamic || isNew ? '300px' : '340px'}` }}
-              onChange={e => handleKeyDown(e, props)}
+              onChange={(e) => handleKeyDown(e, props)}
               defaultValue={content}
               placeholder={dialog.placeholder || ''}
               className="dialogText"
@@ -142,7 +153,7 @@ const Dialog = props => {
               <div className={styles.editImg}>
                 <img id="dynamicImgEdit" src={img.url} alt="img" />
                 <input
-                  onChange={e => handleFile(e, props)}
+                  onChange={(e) => handleFile(e, props)}
                   type="file"
                   className={styles.editUpload}
                 />

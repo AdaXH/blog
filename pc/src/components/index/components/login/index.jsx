@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Base64 } from 'js-base64';
 import { useSetState } from 'react-use';
 import ReactHtmlParser from 'react-html-parser';
-import Api from '../../../../utils/request';
-import { useDidMount } from '../../../../utils/hooks';
+import Api from '@/utils/request';
+import Notification from '@/wrapComponent/Notification';
+import { useDidMount } from '@/utils/hooks';
+import { resetObj } from '@/utils/functions';
 import { setContent, checkValue } from './util';
-import Notification from '../../../../wrapComponent/Notification';
+import FindPwd from './forgetPwd';
 import styles from './index.less';
 export default props => {
   const { dispatch } = props;
@@ -22,15 +24,18 @@ export default props => {
   const onSetValue = (val, code) => {
     setState({ [code]: val });
   };
+  useEffect(
+    () => {
+      setState(resetObj(values));
+    },
+    [isLogin]
+  );
   const getCaptcha = () =>
     Api('api/getCaptcha', 'POST', {}, true).then(svg => setSvg(svg));
   useDidMount(() => getCaptcha());
-
   const content = setContent(isLogin, values);
-
   const handleSubmit = () => {
     const { name, pwd, captcha: captchaCode, email } = values;
-    console.log('1111', values);
     const hasError = checkValue(isLogin ? 'login' : 'register', values);
     if (hasError) {
       Notification.fail({ msg: hasError });
@@ -72,7 +77,6 @@ export default props => {
       handleSubmit();
     }
   };
-
   return (
     <div className={styles.rightContainer}>
       <div className={styles.top}>
@@ -98,7 +102,7 @@ export default props => {
             <span>{text}</span>
             {code !== 'captcha' ? (
               <input
-                autoComplete="off"
+                autoComplete="new-password"
                 value={value}
                 type={type}
                 onChange={e => onSetValue(e.target.value, code)}
@@ -107,7 +111,7 @@ export default props => {
             ) : (
               <div className={styles.inputItem}>
                 <input
-                  autoComplete="off"
+                  autoComplete="new-password"
                   onChange={e => onSetValue(e.target.value, code)}
                   value={captcha}
                   type="text"
@@ -122,8 +126,13 @@ export default props => {
         ))}
         <div className={styles.inputItem}>
           <div onClick={handleSubmit} className={styles.btn}>
-            {isLogin ? '登陆' : '点击注册'}
+            {isLogin ? '登录' : '点击注册'}
           </div>
+          {isLogin && (
+            <a onClick={e => e.stopPropagation()}>
+              <FindPwd />
+            </a>
+          )}
         </div>
       </div>
     </div>

@@ -15,3 +15,7 @@ export async function repeatMsg(data) {
 export async function deleteInnerRepeat(data) {
   return Api('api/deleteInnerRepeat', 'POST', data);
 }
+
+export function getAllMessage(data) {
+  return Api('api/getAllMessage', 'POST', data);
+}

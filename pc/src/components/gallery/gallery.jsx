@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import s from './extra.less';
 
 const Extra = ({ image }) => {
-  const handleShow = e => {
+  const handleShow = (e) => {
     const { target } = e.nativeEvent;
     if (target.tagName.toUpperCase() === 'IMG') {
       const mask = document.getElementsByClassName(s.bigImg)[0];
@@ -12,9 +12,9 @@ const Extra = ({ image }) => {
       const img = new Image();
       img.src = target.src;
 
-      const loadFn = _ => {
+      const loadFn = (_) => {
         const realWidth = _.target.width;
-        const MAX_HEIGHT = 500;
+        const MAX_HEIGHT = 340;
         const realHeight = _.target.height;
         const radioWidth = (MAX_HEIGHT * realWidth) / realHeight; // 等比例宽度
         target.style.cssText = `width:${
@@ -25,7 +25,7 @@ const Extra = ({ image }) => {
         mask.style.display = 'block';
         mask.addEventListener(
           'click',
-          _ => {
+          (_) => {
             target.style.cssText = `width:${IMG_WIDTH}px; height: ${IMG_HEIGHT}px;opacity: 0.5; z-index:0;`;
             mask.style.display = 'none';
           },
@@ -33,7 +33,7 @@ const Extra = ({ image }) => {
         );
       };
 
-      img.onload = _ => {
+      img.onload = (_) => {
         loadFn(_);
       };
     }
@@ -48,7 +48,7 @@ const Extra = ({ image }) => {
           {/* <img src="" alt="" /> */}
         </div>
       </div>
-      <div className={s.galleryContainer} onClick={e => handleShow(e)}>
+      <div className={s.galleryContainer} onClick={(e) => handleShow(e)}>
         {image.map((item, i) => {
           return (
             <div key={i} className={s.imgContainer}>

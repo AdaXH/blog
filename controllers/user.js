@@ -6,8 +6,12 @@ const SinaCloud = require('scs-sdk');
 // const accessKey = require('../bucketConfig').accessKey
 const jwt = require('jsonwebtoken');
 const svgCaptcha = require('svg-captcha');
-const { getJWTPayload, parseToken, reMapError } = require('../common/util');
-const { findOne } = require('./../dbmodel/User');
+const {
+  getJWTPayload,
+  parseToken,
+  randomCode,
+  sendEmail,
+} = require('../common/util');
 
 const secret = 'secret';
 
@@ -166,6 +170,10 @@ routerExports.login = {
       delete user._doc.password;
       user.name = name;
       console.log(name + ' 上线');
+      await User.updateOne(
+        { name: user.name },
+        { $set: { lastLoginTime: Date.now() } }
+      );
       ctx.body = {
         success: true,
         ...user._doc,
@@ -200,6 +208,10 @@ routerExports.getUserInfoByToken = {
       const user = await User.findOne({ _id: payload._id });
       delete user._doc.password;
       console.log(user.name + ' 重新连接');
+      await User.updateOne(
+        { _id: payload._id },
+        { $set: { lastLoginTime: Date.now() } }
+      );
       ctx.body = {
         success: true,
         user,
@@ -310,7 +322,15 @@ routerExports.setAvatar = {
   route: async (ctx, res) => {
     const { avatar, name, fileName } = ctx.request.body;
     try {
-      const src = await callSaveAvatarToBucket(avatar, payload._id, fileName);
+      const {
+        headers: { authorization },
+      } = ctx;
+      const tokenParse = parseToken(authorization);
+      const src = await callSaveAvatarToBucket(
+        avatar,
+        tokenParse._id,
+        fileName
+      );
       ctx.body = {
         success: true,
         src,
@@ -421,8 +441,139 @@ routerExports.updateUserInfo = {
       if ('admin' in others) {
         delete others.admin;
       }
+      if ('superAdmin' in others) {
+        delete others.superAdmin;
+      }
       await User.updateOne({ _id }, { $set: others });
       ctx.body = { success: true };
+    } catch (error) {
+      ctx.body = { success: false, errorMsg: error };
+    }
+  },
+};
+
+routerExports.queryUsers = {
+  method: 'post',
+  url: '/queryUsers',
+  route: async (ctx) => {
+    try {
+      const users = await User.find(
+        {},
+        {
+          name: 1,
+          lastLoginTime: 1,
+          email: 1,
+          avatar: 1,
+          admin: 1,
+        }
+      ).sort({ lastLoginTime: -1 });
+      ctx.body = { success: true, data: users };
+    } catch (error) {
+      ctx.body = { success: false, errorMsg: error };
+    }
+  },
+};
+
+routerExports.changeUserStatus = {
+  method: 'post',
+  url: '/changeUserStatus',
+  route: async (ctx) => {
+    const {
+      request: {
+        body: { userId, status },
+      },
+      headers: { authorization },
+    } = ctx;
+    try {
+      const payload = getJWTPayload(authorization);
+      const { superAdmin, admin } = await User.findOne(
+        { _id: payload._id },
+        { admin: 1, superAdmin: 1 }
+      );
+      if (!admin || !superAdmin) throw '暂无权限';
+      await User.updateOne({ _id: userId }, { $set: { admin: status } });
+      ctx.body = { success: true };
+    } catch (error) {
+      ctx.body = { success: false, errorMsg: error };
+    }
+  },
+};
+
+routerExports.deleteUser = {
+  method: 'post',
+  url: '/deleteUser',
+  route: async (ctx) => {
+    const {
+      request: {
+        body: { userId },
+      },
+      headers: { authorization },
+    } = ctx;
+    try {
+      const payload = getJWTPayload(authorization);
+      const { superAdmin, admin } = await User.findOne({ _id: payload._id });
+      if (!admin || !superAdmin) {
+        throw '暂无权限';
+      }
+      await User.deleteOne({ _id: userId });
+      ctx.body = { success: true };
+    } catch (error) {
+      ctx.body = { success: false, errorMsg: error };
+    }
+  },
+};
+
+routerExports.sendCodeToEmail = {
+  method: 'post',
+  url: '/sendCodeToEmail',
+  route: async (ctx) => {
+    try {
+      const {
+        request: {
+          body: { email },
+        },
+      } = ctx;
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw '该邮箱未注册，如果您注册时没有绑定邮箱，请找管理员帮您绑定';
+      }
+      const emailCode = randomCode(4);
+      ctx.session.emailCode = emailCode;
+      sendEmail(
+        `hi~ ${
+          user.name
+        }：\n这是您在https://adaxh.site\n找回密码的验证码：${emailCode}\n请妥善保管，以防泄漏`,
+        email,
+        '找回密码-验证码'
+      );
+      ctx.body = {
+        success: true,
+      };
+    } catch (error) {
+      ctx.body = { success: false, errorMsg: error };
+    }
+  },
+};
+
+routerExports.resetPassword = {
+  method: 'post',
+  url: '/resetPassword',
+  route: async (ctx) => {
+    try {
+      const {
+        request: {
+          body: { code, pwd, email },
+        },
+      } = ctx;
+      if (code !== ctx.session.emailCode) {
+        throw '验证码不正确';
+      }
+      const user = await User.findOne({ email });
+      if (!user) throw '用户已不存在!';
+      await User.updateOne({ email }, { $set: { password: pwd } });
+      ctx.body = {
+        success: true,
+      };
     } catch (error) {
       ctx.body = { success: false, errorMsg: error };
     }

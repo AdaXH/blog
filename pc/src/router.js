@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Route, Switch, Redirect, Router } from 'dva/router';
 import PreLoad from '@/wrapComponent/preLoad';
 import Api from '@/utils/request';
-import { setCache, delay } from '@/utils/functions';
+import { setCache } from '@/utils/functions';
+import { FULL_SCREEN_PATH } from '@/utils/constant';
 import Dialog from './components/dialog/dialog';
 import DynamicDetail from './components/dynamic/component/dynamicDetail';
 import styles from './common/container.less';
@@ -26,13 +27,16 @@ export default ({ history }) => {
       const {
         location: { pathname },
       } = history;
-      changeStyle(pathname === '/friend-ship');
+      changeStyle(FULL_SCREEN_PATH.includes(pathname));
     });
     async function preLoad() {
       for (const item of CHACHE_DATA) {
-        const result = await Api(item.api);
+        const result = await Api(item.api, item.method || 'GET');
         if (result.success) {
           setCache(item.key, result.data);
+          if (item.extraKey) {
+            setCache(item.extraKey, result[item.extraKey]);
+          }
         }
       }
     }
@@ -40,16 +44,19 @@ export default ({ history }) => {
     changeLoad(true);
     // await delay(2);
   });
-  useEffect(() => {
-    async function change() {
-      setTimeout(() => {
-        setLoading(false);
-      }, 800);
-    }
-    if (loadStyle) {
-      change();
-    }
-  }, [loadStyle]);
+  useEffect(
+    () => {
+      async function change() {
+        setTimeout(() => {
+          setLoading(false);
+        }, 800);
+      }
+      if (loadStyle) {
+        change();
+      }
+    },
+    [loadStyle]
+  );
   const loadClass = classnames({
     [styles.loadFinish]: loadStyle,
   });
@@ -68,7 +75,7 @@ export default ({ history }) => {
           })}
         >
           <Switch>
-            {routes.map((route) => {
+            {routes.map(route => {
               const { path, Component, exact } = route;
               const cfg = {
                 path,

@@ -7,6 +7,7 @@ import Article from './article';
 import Config from './component/config/index';
 import Gallery from './galleryManage';
 import Friends from './component/friends';
+import Users from './component/userConfig';
 import styles from './admin.less';
 
 const { TabPane } = Tabs;
@@ -14,40 +15,30 @@ const { TabPane } = Tabs;
 export default connect(({ user }) => ({
   user,
 }))(props => {
-  console.log('Config', Config);
   const tabs = [
-    {
-      component: () => <Dynamic />,
-      description: 'Moments',
-    },
+    { component: () => <Dynamic />, description: 'Moments', title: '动态' },
     {
       component: () => <Article {...props.history} />,
       description: 'Article',
+      title: '文章',
     },
-    {
-      component: () => <Gallery />,
-      description: 'Gallery',
-    },
+    { component: () => <Gallery />, description: 'Gallery', title: '图库' },
     {
       component: () => <Config />,
       description: 'Blog config',
+      title: '主页配置',
     },
-    {
-      component: () => <Friends />,
-      description: 'Friends',
-    },
+    { component: () => <Friends />, description: 'Friends', title: '友情链接' },
+    { component: () => <Users />, description: 'Users', title: '用户' },
   ];
   const { user } = props;
   const permission = user.isLogin && Cookies.get('user') && user.admin;
   return (
-    <div
-      className={styles.adminContainer}
-      style={{ background: permission ? 'white' : 'none' }}
-    >
-      {'permission' ? (
+    <div className={styles.adminContainer}>
+      {permission ? (
         <Tabs defaultActiveKey="Moments">
           {tabs.map(item => (
-            <TabPane tab={item.description} key={item.description}>
+            <TabPane tab={item.title} key={item.description}>
               {item.component()}
             </TabPane>
           ))}

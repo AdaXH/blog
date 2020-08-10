@@ -66,17 +66,18 @@ const UI = (props) => {
     });
   };
   if (!dynamicDetail.visible) return null;
-  const { content, img, msg = [], title } = dynamicDetail;
+  const { content, img, msg = [], title, _id } = dynamicDetail;
   return (
     <div className={styles.detailWrap}>
       <div className={styles.dynamicDetail} style={{ top: top }}>
         <div
           className={styles.dynamicDetailImg}
           style={{ backgroundImage: 'url(' + img + ')' }}
+          key={img}
         />
-        <div className={styles.dynamicDetailContent}>
+        <div className={styles.dynamicDetailContent} key={_id}>
           <div className={styles.momentTitle}>{title}</div>
-          {content}
+          <span>{content}</span>
         </div>
         <div className={styles.dynamicOperation}>
           <div

@@ -1,13 +1,13 @@
 const start = `
-// 请允许我先自我介绍一下：
-export const renderMyself = props => {
+export default props => {
+  if (!props.user) return null;
   const { user: { name, gender,  age, skill = '', hobby } } = props;
   const [action, toggleAction] = useState(false);
   const className = action ? 'className1' : 'anotherName';
  return(
     <div className={className}>
         <p>姓名：{name}</p>
-        /*等等文字太暗看不到*/ => color:white
+        /*等等文字太暗看不到*/ => backgroung:white
         /*再往左边靠*/ => text-align:left
         /*好像有点小拥挤？*/=> padding:10px
         <p>性别：{gender}</p> /*废话*/

@@ -14,7 +14,7 @@ export default {
   effects: {
     *getConfig(action, { call, put, select }) {
       try {
-        const preConfig = yield select(state => state.blogConfig);
+        const preConfig = yield select((state) => state.blogConfig);
         if (preConfig.config) return;
         const result = yield call(Api, 'api/getConfig', 'GET');
         if (result.success && result.config) {
@@ -25,9 +25,7 @@ export default {
             },
           });
         }
-      } catch (error) {
-        console.log('error', error);
-      }
+      } catch (error) {}
     },
     *updateConfig({ config }, { call, put }) {
       try {

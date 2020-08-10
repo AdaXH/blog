@@ -25,7 +25,8 @@ export function getDate() {
 
 export function renderDate(date) {
   if (/-/.test(date)) return date.replace(/-----/, ' ');
-  return moment(moment(new Date(Number(date))).format('YYYY-MM-DD/HH:mm:ss'))
-    .startOf('minute')
-    .fromNow().replace(/ /g, '');
+  return moment(new Date(Number(date))).format('YYYY-MM-DD HH:mm:ss');
+  // .startOf('minute')
+  // .fromNow()
+  // .replace(/ /g, '');
 }

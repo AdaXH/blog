@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'dva';
 import Cookies from 'js-cookie';
 import { Base64 } from 'js-base64';
-import { setCache, getCache, hasChange } from '@/utils/functions';
 import { useDidMount } from '@/utils/hooks';
-import { getAllMessages } from '@/utils/service';
-import Pagination from '../pagination/pagination';
+import { setCache, getCache, hasChange } from '@/utils/functions';
+import { getAllMessage } from './service';
+import Pagination from '../pagination/newPagination';
 import Loading from '../../wrapComponent/Loading';
 import Notification from '../../wrapComponent/Notification';
 import MsgItem from './component/msgItem';
@@ -17,36 +17,50 @@ import styles from './index.less';
 
 const Message = props => {
   const { dispatch, user } = props;
-  const [data, setData] = useState(getCache('messages') || []);
   const [current, setCurrent] = useState(1);
-  useDidMount(async () => {
-    try {
-      if (!data.length) Loading.show();
-      const result = await getAllMessages();
-      if (result.success) {
-        if (hasChange(data, result.data)) {
-          setCache('messages', result.data);
-          setData(result.data);
-        }
-      }
-      await dispatch({ type: 'user/getUserInfo', payload: {} });
-    } catch (error) {
-      console.log('error', error);
-    } finally {
-      Loading.hide();
+  const [total, setTotal] = useState(getCache('totalCount') || 6);
+  const [data, setData] = useState(getCache(`message-${current}`) || []);
+  const container = useRef({});
+  async function fetchData(page = current) {
+    const key = `message-${page}`;
+    const oldData = getCache(key);
+    if (container.current) {
+      container.current.scrollTop = 0;
     }
-  });
+    if (oldData) {
+      setData(oldData);
+      setCurrent(page);
+    } else {
+      Loading.show();
+    }
+    const result = await getAllMessage({
+      page: page,
+      pageSize: MAX_PAGE_COUNT,
+    });
+    if (result.success) {
+      const { totalCount, data: newData } = result;
+      if (hasChange(oldData, newData)) {
+        setCache(key, data);
+        setData(newData);
+        setCache(key, newData);
+        setTotal(totalCount);
+        setCurrent(page);
+        Loading.hide();
+      }
+    }
+  }
   useEffect(
     () => {
-      setCache('messages', data);
+      setCache('totalCount', total);
     },
-    [data]
+    [total]
   );
-  const handlePage = page => {
-    const wrapList = document.querySelector('.' + styles.mssageList);
-    if (wrapList) wrapList.scrollTop = 0;
-    setCurrent(page);
-  };
+  useDidMount(async () => {
+    try {
+      await fetchData();
+      await dispatch({ type: 'user/getUserInfo', payload: {} });
+    } catch (error) {}
+  });
 
   const leaveMsg = (type, _id, toRepeat) => {
     const cb = async value => {
@@ -64,9 +78,7 @@ const Message = props => {
             name,
           });
           if (result.success) {
-            const newData = [result.data, ...data];
-            await setData(newData);
-            await handlePage(1, newData);
+            await fetchData(1);
             await dispatch({ type: 'dialog/hide' });
           } else {
             Notification.fail({
@@ -92,7 +104,7 @@ const Message = props => {
       type: 'dialog/open',
       payload: {
         placeholder:
-          type === 'repeat' ? '回复' + toRepeat + ': ' : '在这里写下宝贵的留言',
+          type === 'repeat' ? '回复' + toRepeat + ': ' : '在这里写下留言',
         cb,
         maxInput: 100,
       },
@@ -103,8 +115,9 @@ const Message = props => {
       dispatch({ type: 'message/init' });
     }
   };
-  const deleteMsgCallback = _id => {
-    setData(data.filter(item => item._id !== _id));
+  const deleteMsgCallback = () => {
+    // setData(data.filter((item) => item._id !== _id));
+    fetchData();
   };
   // 更新回复
   const updateRepeat = (_id, newRepeat) => {
@@ -124,8 +137,6 @@ const Message = props => {
       ? Notification.fail({ msg: '请先登录' })
       : leaveMsg('leaveMsg');
   };
-  const start = (current - 1) * MAX_PAGE_COUNT;
-  const renderData = data.slice(start, start + MAX_PAGE_COUNT);
   return (
     <div className={styles.messageContainer}>
       <FlyMsg data={data} />
@@ -139,27 +150,27 @@ const Message = props => {
           </div>
         </div>
         <div className={styles.messageListWrap}>
-          <ul className={styles.mssageList}>
-            {renderData.length &&
-              renderData.map((item, index) => (
-                <MsgItem
-                  item={item}
-                  index={index}
-                  key={item._id + index}
-                  user={user}
-                  deleteMsgCallback={deleteMsgCallback}
-                  dispatch={dispatch}
-                  updateRepeat={updateRepeat}
-                />
-              ))}
+          <ul className={styles.mssageList} ref={container}>
+            {data.map((item, index) => (
+              <MsgItem
+                item={item}
+                index={index}
+                key={item._id}
+                user={user}
+                deleteMsgCallback={deleteMsgCallback}
+                dispatch={dispatch}
+                updateRepeat={updateRepeat}
+              />
+            ))}
           </ul>
         </div>
         <div className={styles.pagination}>
           {data.length && (
             <Pagination
-              total={data.length}
+              total={total}
               pageSize={MAX_PAGE_COUNT}
-              onChange={page => handlePage(page, data)}
+              current={current}
+              onChange={page => fetchData(page)}
             />
           )}
         </div>

@@ -7,9 +7,7 @@ export function setOverLay(dom) {
     background: white;
     top: 0;
     `;
-  } catch (error) {
-    console.log('error', error);
-  }
+  } catch (error) {}
 }
 
 export function init(dom) {

@@ -8,7 +8,7 @@ import Pagination from '../pagination/pagination';
 import { randomItem, randromCurrent, relativetime } from './util';
 import styles from './index.less';
 
-const Dynamic = props => {
+const Dynamic = (props) => {
   const { dispatch, user } = props;
   const [data, setData] = useState(getCache('moments') || []);
   useDidMount(async () => {
@@ -25,7 +25,7 @@ const Dynamic = props => {
     }
     Loading.hide();
   });
-  const handlePage = index => {
+  const handlePage = (index) => {
     dispatch({ type: 'dynamic/closeDetail' });
     const SINGLE_PAGE_DATA_COUNT = 6;
     randomItem();
@@ -35,7 +35,7 @@ const Dynamic = props => {
     );
   };
 
-  const toDynamicDetail = payload => {
+  const toDynamicDetail = (payload) => {
     dispatch({ type: 'dynamic/dynamicDetail', payload });
   };
 
@@ -56,9 +56,11 @@ const Dynamic = props => {
             />
             <div className={styles.dynamicContent}>
               <div className={styles.dynamicTitle}>{item.title}</div>
-              <div className={styles.dynamicSummary}>{item.content}</div>
+              <div className={styles.dynamicSummary}>
+                <div>{relativetime(item.date)}</div>
+                <div>{item.content}</div>
+              </div>
             </div>
-            <div className={styles.dynamicDate}>{relativetime(item.date)}</div>
           </li>
         ))}
       </ul>
@@ -66,7 +68,7 @@ const Dynamic = props => {
         <Pagination
           total={data.length}
           pageSize={6}
-          onChange={page => handlePage(page)}
+          onChange={(page) => handlePage(page)}
         />
       </ul>
     </div>

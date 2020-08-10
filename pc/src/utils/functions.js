@@ -53,3 +53,12 @@ export function relativeTime(time) {
     .startOf('minute')
     .fromNow();
 }
+
+export function formatTime(time) {
+  return moment(new Date(Number(time))).format('YYYY-MM-DD HH:mm:ss');
+}
+
+export function resetObj(obj) {
+  Object.keys(obj).forEach(key => (obj[key] = ''));
+  return obj;
+}

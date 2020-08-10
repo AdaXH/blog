@@ -23,11 +23,8 @@
   background: white;
   padding: 20px;
   padding-right: 60px;
-  -webkit-animation: formRight 1s;
-  animation: formRight 1s;
-  -webkit-animation-fill-mode: forwards;
+  animation: formRight 0.5s;
   animation-fill-mode: forwards;
-  -webkit-transform: translate3d(100px, 0, 0);
   transform: translate3d(100px, 0, 0);
   opacity: 0;
   overflow: hidden;
@@ -56,7 +53,7 @@
     font-size: 14px;
     color: rgba(0, 0, 0, 0.7);
     .dynamicMsgItem {
-      line-height: 2;
+      // line-height: 2;
       white-space: pre-wrap;
       word-break: break-all;
       margin-bottom: 10px;
@@ -100,7 +97,7 @@
     white-space: pre-wrap;
     color: rgba(0, 0, 0, 0.7);
     font-size: 14px;
-    line-height: 2;
+    // line-height: 2;
     .momentTitle {
       font-weight: bold;
       color: black;
@@ -229,7 +226,7 @@
         color: white;
         text-align: left;
         padding-left: 20px;
-        line-height: 2;
+        // line-height: 2;
         font-weight: bold;
       }
       .dynamicSummary {
@@ -285,5 +282,39 @@
   to {
     opacity: 1;
     transform: translate3d(0, 0px, 0);
+  }
+}
+
+@keyframes formRight {
+  form {
+    opacity: 0;
+    transform: translate3d(-100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+.dynamicDetailImg {
+  opacity: 0;
+  transform: translate3d(-100px, 0, 0);
+  animation: formRight 0.5s forwards;
+  animation-delay: 0.1s;
+}
+.dynamicDetailContent {
+  opacity: 0;
+  transform: translate3d(0px, 80px, 0);
+  animation: formTop 0.5s forwards;
+  animation-delay: 0.1s;
+}
+
+@keyframes formTop {
+  form {
+    opacity: 0;
+    transform: translate3d(0, 80px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }

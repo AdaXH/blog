@@ -3,10 +3,8 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-console.log(
-  'path.resolve(__dirname, "public")',
-  path.resolve(__dirname, "public")
-);
+const theme = require("./config/theme");
+
 module.exports = {
   entry: ["babel-polyfill", "./src/index.js"],
   output: {
@@ -50,7 +48,7 @@ module.exports = {
       {
         test: /\.js|jsx$/,
         include: [path.resolve(__dirname, "src")],
-        use: ["source-map-loader", "babel-loader"],
+        use: ["source-map-loader", "babel-loader", "eslint-loader"],
         exclude: /node_modules/
       },
       {
@@ -102,7 +100,8 @@ module.exports = {
           {
             loader: "less-loader",
             options: {
-              javascriptEnabled: true
+              javascriptEnabled: true,
+              modifyVars: theme
             }
           }
         ],

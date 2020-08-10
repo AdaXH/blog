@@ -160,21 +160,48 @@ const AticleManage = props => {
       summary: BraftEditor.createEditorState(null),
       newArticle: { visible: true, target: 'add' },
     });
+
+  const onFullscreen = isFull => {
+    const header = document.querySelector('header');
+    header.style.display = isFull ? 'none' : 'block';
+  };
   return (
     <div className={styles.articleManage}>
-      {visible && (
+      {visible ? (
         <div className={styles.quillContainer}>
-          <Select
-            style={{ width: 120 }}
-            defaultValue={_type}
-            onChange={value => changeType(value)}
+          <div>
+            <span>文章类型：</span>
+            <Select
+              defaultValue={_type}
+              onChange={value => changeType(value)}
+              className={styles.typeSelect}
+            >
+              {types.map(item => (
+                <Option key={item}>{item}</Option>
+              ))}
+            </Select>
+          </div>
+          <div className={styles.inputTitle}>
+            <span>文章标题：</span>
+            <Input defaultValue={title} ref={iRef} placeholder="文章标题" />
+          </div>
+          <Button
+            type="danger"
+            className={styles.backBtn}
+            onClick={() =>
+              setState({
+                ...state,
+                newArticle: { visible: false },
+              })
+            }
           >
-            {types.map(item => (
-              <Option key={item}>{item}</Option>
-            ))}
-          </Select>
-          <Input defaultValue={title} ref={iRef} />
-          <BraftEditor value={summary} onChange={handleChange} />
+            close
+          </Button>
+          <BraftEditor
+            value={summary}
+            onChange={handleChange}
+            onFullscreen={onFullscreen}
+          />
           <div style={{ marginTop: '20px' }}>
             <Button
               style={{ marginRight: '20px' }}
@@ -183,27 +210,16 @@ const AticleManage = props => {
             >
               submit
             </Button>
-            <Button
-              type="danger"
-              onClick={() =>
-                setState({
-                  ...state,
-                  newArticle: { visible: false },
-                })
-              }
-            >
-              close
-            </Button>
           </div>
         </div>
+      ) : (
+        <div className={styles.tableContainer}>
+          <Button type="primary" onClick={onCreate}>
+            New
+          </Button>
+          <Table rowKey={a => a._id} columns={columns} dataSource={data} />
+        </div>
       )}
-
-      <div className={styles.tableContainer}>
-        <Button type="primary" onClick={onCreate}>
-          New
-        </Button>
-        <Table rowKey={a => a._id} columns={columns} dataSource={data} />
-      </div>
     </div>
   );
 };

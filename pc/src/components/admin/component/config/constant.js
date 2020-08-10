@@ -15,6 +15,11 @@ export const configs = [
     type: 'input',
   },
   {
+    label: '站点logo',
+    code: 'logo',
+    type: 'input',
+  },
+  {
     label: '欢迎文案',
     code: 'welcome',
     type: 'textArea',

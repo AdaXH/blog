@@ -23,7 +23,6 @@ export default () => {
   );
   useDidMount(async () => {
     try {
-      console.log('cacheData', cacheData);
       if (!cacheData.length) Loading.show();
       const result = await queryFriends();
       if (result.success) {
@@ -42,8 +41,7 @@ export default () => {
     if (!/^https:\/\/+|^http:\/\//.test(link)) {
       url = 'https://' + url;
     }
-    // window.open(url);
-    return url;
+    window.open(`${url}?from=adaxh.site`);
   };
   return (
     <div className={styles.another}>
@@ -68,8 +66,7 @@ export default () => {
                       className={styles.friendItem}
                       key={link}
                       style={setStyle(index)}
-                      href={turn2Page(link)}
-                      target="blank"
+                      onClick={() => turn2Page(link)}
                     >
                       <div className={styles.avatar}>
                         <img src={icon} alt="icon" />

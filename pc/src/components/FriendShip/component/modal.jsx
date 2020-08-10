@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, Form, Input } from 'antd';
 import Loading from '../../../wrapComponent/Loading';
 import { addFriend } from '../service';
+import Tip from './tip';
 import styles from '../index.less';
 import Notification from '../../../wrapComponent/Notification';
 
@@ -15,7 +16,6 @@ export default Form.create()((props) => {
     try {
       Loading.show();
       const value = await validateFields();
-      console.log('value', value);
       const { success, errorMsg } = (await addFriend(value)) || {};
       if (success) {
         Notification.success({
@@ -79,7 +79,7 @@ export default Form.create()((props) => {
         })(<Input placeholder="您的站点链接" />)}
       </Form.Item>
 
-      <Form.Item label="头像">
+      <Form.Item label="站点图标">
         {getFieldDecorator('icon', {
           rules: [
             {
@@ -100,6 +100,7 @@ export default Form.create()((props) => {
           ],
         })(<Input placeholder="申请通过会邮箱通知~" />)}
       </Form.Item>
+      <Tip />
     </Modal>
   );
 });

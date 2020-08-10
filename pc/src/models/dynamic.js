@@ -14,7 +14,7 @@ export default {
     reduceUpvote(state, { payload }) {
       const { dynamicDetail, dynamic } = state;
       const hasUpvote = JSON.parse(localStorage.getItem('hasUpvote')) || [];
-      const index = hasUpvote.findIndex(item => item === payload);
+      const index = hasUpvote.findIndex((item) => item === payload);
       hasUpvote.splice(index, 1);
       localStorage.setItem('hasUpvote', JSON.stringify([...hasUpvote]));
       for (let item of dynamic)
@@ -44,12 +44,7 @@ export default {
         dynamicDetail: { ...dynamicDetail },
       };
     },
-    callUpvote(
-      state,
-      {
-        payload: { _id },
-      }
-    ) {
+    callUpvote(state, { payload: { _id } }) {
       const { dynamic, dynamicDetail } = state;
       const hasUpvote = JSON.parse(localStorage.getItem('hasUpvote')) || [];
 
@@ -88,7 +83,7 @@ export default {
       };
     },
     callDelete(state, { _id }) {
-      const data = state.dynamic.filter(item => item._id !== _id);
+      const data = state.dynamic.filter((item) => item._id !== _id);
       return {
         ...state,
         dynamic: [...data],
@@ -161,15 +156,11 @@ export default {
       }
       return result;
     },
-    *setDynamicImg(
-      {
-        payload: { name, dataUrl, _id },
-      },
-      { call, put }
-    ) {
+    *setDynamicImg({ payload: { name, dataUrl, _id, img } }, { call, put }) {
       const result = yield call(Api, 'api/setDynamicImg', 'POST', {
         dataUrl,
         name,
+        img,
       });
       return result;
     },
@@ -226,7 +217,7 @@ export default {
       return result.success;
     },
     *load({ payload, reload }, { call, put, select }) {
-      const dynamic = yield select(state => state.dynamic.dynamic);
+      const dynamic = yield select((state) => state.dynamic.dynamic);
       if (reload || !dynamic.length) {
         const result = yield call(Api, 'api/getDynamic');
         yield put({

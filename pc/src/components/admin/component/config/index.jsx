@@ -31,11 +31,10 @@ const Config = props => {
     ),
     color: props => <ColorPicker {...props} />,
   };
-
   return (
     <div className={styles.configContainer}>
       {configs.map(({ label, code, type }) => (
-        <Form.Item label={label}>
+        <Form.Item label={label} key={code}>
           {getFieldDecorator(code, {
             initialValue: config && config[code],
           })(

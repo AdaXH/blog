@@ -6,6 +6,7 @@ import Loading from '../../../../wrapComponent/Loading';
 import Notification from '../../../../wrapComponent/Notification';
 import EmptyForm from './emptyForm';
 import { validatorPwd } from './util';
+import Avatar from './component/avatar';
 import styles from './index.less';
 
 export default Form.create()((props) => {
@@ -27,6 +28,9 @@ export default Form.create()((props) => {
         value.password = Base64.encode(value.password);
         delete value.checkPwd;
       }
+      Object.keys(value).forEach((key) => {
+        if (!value[key]) delete value[key];
+      });
       const { success, errorMsg } = await updateUserInfo({
         _id: user._id,
         ...value,
@@ -112,20 +116,12 @@ export default Form.create()((props) => {
           ],
         })(<Input disabled={!checkRequired()} />)}
       </Form.Item>
-      <span className={styles.label}>点击上传头像：</span>
-      <div
-        className={styles.userAvatar1}
-        style={{ backgroundImage: `url(${user.avatar})` }}
-      >
-        <input
-          type="file"
-          title=""
-          onChange={(info) =>
-            handleUpload(info, (avatar) => setFieldsValue({ avatar }))
-          }
-        />
-        {user.imgBlocked && <div>头像资源被内网拦截</div>}
-      </div>
+      <Avatar
+        user={user}
+        handleUpload={handleUpload}
+        setFieldsValue={setFieldsValue}
+        code="avatar"
+      />
     </Modal>
   );
 });

@@ -4,9 +4,10 @@ import Notification from '@/wrapComponent/Notification';
 import classnames from 'classnames';
 import { connect } from 'dva';
 import routes from '@/config/router.config';
+import { getCache } from '@/utils/functions';
+import { FULL_SCREEN_PATH } from '@/utils/constant';
 import { getNavStyle } from './util';
 import styles from './header.less';
-import { getCache } from '@/utils/functions';
 
 const Header = props => {
   const {
@@ -54,7 +55,7 @@ const Header = props => {
         location: { pathname },
       } = history;
       setStyle(getNavStyle(pathname, styles));
-      setHeaderStyle(pathname === '/friend-ship');
+      setHeaderStyle(FULL_SCREEN_PATH.includes(pathname));
     });
   }, []);
   const onFocusSearch = () => {

@@ -9,11 +9,11 @@ import styles from '../index.less';
 export default (props) => {
   const {
     item,
-    index,
     dispatch,
     deleteMsgCallback,
     updateRepeat,
     user,
+    index,
   } = props;
   const [state, setState] = useSetState({
     showOperation: false, // 展开操作
@@ -33,7 +33,7 @@ export default (props) => {
       deleteMsgCallback(_id);
     }
   };
-  const leaveMsg = (_id, toRepeat) => {
+  const leaveMsg = (_id, toRepeat, toRepeatId) => {
     if (noLogin()) return;
     const cb = async (value) => {
       if (!value || value.trim() === '') {
@@ -45,6 +45,7 @@ export default (props) => {
           _id,
           info: escapeData(value),
           toRepeat,
+          toRepeatId,
         });
         if (result.success) {
           dispatch({ type: 'dialog/hide' });
@@ -67,15 +68,18 @@ export default (props) => {
     });
   };
   return (
-    <li className={styles.messageItem} key={item._id + index}>
+    <li
+      className={styles.messageItem}
+      style={{ animationDelay: `${index * 0.07}s` }}
+    >
       <div className={styles.msgAvatar}>
         <img src={item.avatar} alt="" />
       </div>
       <div className={styles.mssageName}>
         <div className={styles.leaveInfo}>
           <div>
-            {item.name}{' '}
-            <span className={styles.msgDate}>在{renderDate(item.date)}说</span>
+            <span>{item.name}</span>
+            <span className={styles.msgDate}>{renderDate(item.date)}</span>
           </div>
         </div>
       </div>
@@ -96,7 +100,7 @@ export default (props) => {
         </div>
         {showOperation && (
           <div className={styles.msgOperation}>
-            <div onClick={() => leaveMsg(item._id, item.name)}>
+            <div onClick={() => leaveMsg(item._id, item.name, item.userId)}>
               <i className="iconfont icon-liuyan-A" />
             </div>
             <div onClick={() => deleteMsg(item._id)}>
