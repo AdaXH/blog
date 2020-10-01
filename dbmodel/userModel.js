@@ -2,15 +2,22 @@ module.exports = {
   name: String,
   avatar: {
     type: String,
-    default: "/upload/user_avatar/default_avatar.jpg",
+    default: '/upload/user_avatar/default_avatar.jpg',
   },
   userId: {
-    default: "",
+    default: '',
     type: String,
   },
   email: {
     type: String,
-    default: "",
+    default: '',
   },
   originName: String,
+  lastLoginTime: String,
+  superAdmin: {
+    type: Boolean,
+    default: false,
+  },
+  unionid: String,
+  qqUserId: String,
 };

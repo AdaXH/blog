@@ -1,4 +1,4 @@
-const uuid = require('uuid/v1');
+const { v4: uuid } = require('uuid');
 const { isJSON } = require('./util');
 
 module.exports = async (ctx, next) => {
@@ -12,7 +12,7 @@ module.exports = async (ctx, next) => {
     const bodyParse = JSON.parse(body);
     // 排除直接返回true的接口
     if (bodyParse === true) return;
-    ctx.body = { ...bodyParse, traceId };
+    ctx.body = { ...bodyParse, traceId, pid: process.pid, ppid: process.ppid };
   } catch (error) {
     console.log('error', error);
   }

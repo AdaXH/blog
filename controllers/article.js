@@ -1,6 +1,11 @@
 const Article = require('./../dbmodel/Article');
 const User = require('./../dbmodel/User');
-const { parseToken, reMapError, sendEmail } = require('../common/util');
+const {
+  parseToken,
+  reMapError,
+  sendEmail,
+  escapeData,
+} = require('../common/util');
 const { setAllAvatar } = require('../common/apiPrefix');
 
 const routerExports = {};
@@ -98,7 +103,7 @@ routerExports.updateArticle = {
       if (!article) throw '文章不存在';
       await Article.updateOne(
         { _id },
-        { $set: { viewer: article.viewer + 1 } }
+        { $set: { viewer: article.viewer + 1 } },
       );
       ctx.body = { success: true };
     } catch (error) {
@@ -143,7 +148,7 @@ routerExports.deleteArticleMsg = {
       const message = article.message || [];
       await Article.updateOne(
         { _id: articleId },
-        { $set: { message: message.filter((item) => item._id != messageId) } }
+        { $set: { message: message.filter((item) => item._id != messageId) } },
       );
       ctx.body = { success: true };
     } catch (error) {
@@ -177,7 +182,7 @@ routerExports.deleteArticleReplyMsg = {
       }
       await Article.updateOne(
         { _id: articleId },
-        { $set: { message: [...message] } }
+        { $set: { message: [...message] } },
       );
       ctx.body = { success: true };
     } catch (error) {
@@ -202,6 +207,7 @@ routerExports.discussArticle = {
       if (!quickReply) {
         tokenParse = parseToken(authorization);
       }
+      const newMsg = escapeData(msg);
       const { _id: userId } = tokenParse;
       if (!quickReply && !tokenParse._id) throw '登录过期，请重新登陆';
       const article = await Article.findById(articleId, {
@@ -226,15 +232,10 @@ routerExports.discussArticle = {
           $set: {
             message: [
               ...message,
-              {
-                msg,
-                date,
-                quickReply,
-                ...extraData,
-              },
+              { msg: newMsg, date, quickReply, ...extraData },
             ],
           },
-        }
+        },
       );
       const saveMsg = await Article.findById(articleId, { message: 1 });
       saveMsg.message = await setAllAvatar(saveMsg.message.reverse());
@@ -243,11 +244,11 @@ routerExports.discussArticle = {
       sendEmail(
         `hi，Ada，文章《${article.title}》评论中有了新的评论～\n
           ${curUser.name || '陌生人'}（${curUser.eamil || 'email'}） 说 ：\n
-          “${msg}” \n
+          “${newMsg}” \n
           详情(pc)：https://adaxh.site/article-detail?id=${articleId}
         `,
         '18668465750@163.com',
-        '文章新评论通知'
+        '文章新评论通知',
       );
       ctx.body = { success: true, data: saveMsg };
     } catch (error) {
@@ -282,13 +283,17 @@ routerExports.replyArticleMsg = {
       });
       if (!article) throw '文章已不存在';
       const { message } = article;
+      const newMsg = escapeData(msg);
       for await (const item of message) {
         const { _id, repeat } = item;
         if (_id == messageId) {
-          item.repeat = [...repeat, { msg, date, toRepeatUserId, userId }];
+          item.repeat = [
+            ...repeat,
+            { msg: newMsg, date, toRepeatUserId, userId },
+          ];
           await Article.updateOne(
             { _id: articleId },
-            { $set: { message: [...message] } }
+            { $set: { message: [...message] } },
           );
           break;
         }
@@ -301,15 +306,13 @@ routerExports.replyArticleMsg = {
       const curUser = await User.findById(userId);
       if (toRepeatUser && toRepeatUser.email) {
         sendEmail(
-          `hi，${toRepeatUser.name}，你在https://adaxh.site 的文章《${
-            article.title
-          }》评论中有了新的回复～\n
+          `hi，${toRepeatUser.name}，你在https://adaxh.site 的文章《${article.title}》评论中有了新的回复～\n
           ${curUser.name} 说 ：\n
-          “${msg}” \n
+          “${newMsg}” \n
           详情(pc)：https://adaxh.site/article-detail?id=${articleId}
         `,
           toRepeatUser.email,
-          '文章评论回复通知'
+          '文章评论回复通知',
         );
       }
       ctx.body = {

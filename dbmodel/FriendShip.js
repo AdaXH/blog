@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 module.exports = mongoose.model(
-  "friends",
+  'friends',
   mongoose.Schema({
     title: String,
     link: String,
@@ -12,5 +12,5 @@ module.exports = mongoose.model(
       type: Boolean,
       default: false,
     },
-  })
+  }),
 );

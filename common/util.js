@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const request = require('request');
 const { SMTPClient } = require('emailjs');
 
 /* 通过token获取JWT的payload部分 */
@@ -9,6 +10,18 @@ const getJWTPayload = (token) => {
 };
 
 module.exports = {
+  request2: (url) => {
+    return new Promise((resolve, reject) => {
+      request(url, (err, _, res) => {
+        if (res) {
+          resolve(res);
+        }
+        if (err) {
+          reject(err);
+        }
+      });
+    });
+  },
   getJWTPayload,
   parseToken: (authorization) => {
     try {
@@ -21,95 +34,54 @@ module.exports = {
     }
   },
   reMapError,
-  timeago,
-  sendEmail: async (
-    content,
-    target,
-    title
-  ) => {
+  sendEmail: async (content, target = 'xxx.com', title = '友情链接通知') => {
     try {
       const SMTP = 'your smtp code';
       const server = new SMTPClient({
-        user: 'address',
+        user: 'xxxxx',
         password: SMTP,
-        host: 'host',
+        host: 'smtp.qq.com',
         ssl: true,
       });
-      //开始发送邮件
+      // 开始发送邮件
       server.send(
         {
-          text: content, //邮件内容
-          from: 'adaxh@qq.com', //谁发送的
-          to: target, //发送给谁的
-          subject: title, //邮件主题
+          text: content, // 邮件内容
+          from: 'xxxx@.com', // 谁发送的
+          to: target, // 发送给谁的
+          subject: title, // 邮件主题
         },
         (err, message) => {
           console.log(err || message);
-        }
+        },
       );
     } catch (err) {
       console.log('err', err);
     }
   },
+  randomCode: (length) => {
+    if (!length) return '';
+    const result = [];
+    for (let i = 0; i < length; i++) {
+      result.push(Math.floor(Math.random() * 10));
+    }
+    return result.join('');
+  },
+  getRandomLength: (length) => {
+    return Math.floor(Math.random() * length);
+  },
+  escapeData: (data) => {
+    return data
+      .replace(
+        /<input\stype="text"\sdata-formula="e=mc\^2"\sdata-link="quilljs\.com"\sdata-video="Embed\sURL"\splaceholder="Embed\sURL">/g,
+        '',
+      )
+      .replace(
+        /<\/?script>+|傻逼+|爸爸+|你爸+|SB+|sB+|sb+|操+|你妈+|我草+|我艹/g,
+        '**',
+      );
+  },
 };
-
-function timeago(dateTimeStamp) {
-  //dateTimeStamp是一个时间毫秒，注意时间戳是秒的形式，在这个毫秒的基础上除以1000，就是十位数的时间戳。13位数的都是时间毫秒。
-  const minute = 1000 * 60; //把分，时，天，周，半个月，一个月用毫秒表示
-  const hour = minute * 60;
-  const day = hour * 24;
-  const week = day * 7;
-  const halfamonth = day * 15;
-  const month = day * 30;
-  const now = new Date().getTime(); //获取当前时间毫秒
-  const diffValue = now - dateTimeStamp; //时间差
-
-  if (diffValue < 0) {
-    return;
-  }
-  const minC = diffValue / minute; //计算时间差的分，时，天，周，月
-  const hourC = diffValue / hour;
-  const dayC = diffValue / day;
-  const weekC = diffValue / week;
-  const monthC = diffValue / month;
-  if (monthC >= 1 && monthC <= 3) {
-    result = ' ' + parseInt(monthC) + '月前';
-  } else if (weekC >= 1 && weekC <= 3) {
-    result = ' ' + parseInt(weekC) + '周前';
-  } else if (dayC >= 1 && dayC <= 6) {
-    result = ' ' + parseInt(dayC) + '天前';
-  } else if (hourC >= 1 && hourC <= 23) {
-    result = ' ' + parseInt(hourC) + '小时前';
-  } else if (minC >= 1 && minC <= 59) {
-    result = ' ' + parseInt(minC) + '分钟前';
-  } else if (diffValue >= 0 && diffValue <= minute) {
-    result = '刚刚';
-  } else {
-    const datetime = new Date();
-    datetime.setTime(dateTimeStamp);
-    const Nyear = datetime.getFullYear();
-    const Nmonth =
-      datetime.getMonth() + 1 < 10
-        ? '0' + (datetime.getMonth() + 1)
-        : datetime.getMonth() + 1;
-    const Ndate =
-      datetime.getDate() < 10 ? '0' + datetime.getDate() : datetime.getDate();
-    const Nhour =
-      datetime.getHours() < 10
-        ? '0' + datetime.getHours()
-        : datetime.getHours();
-    const Nminute =
-      datetime.getMinutes() < 10
-        ? '0' + datetime.getMinutes()
-        : datetime.getMinutes();
-    const Nsecond =
-      datetime.getSeconds() < 10
-        ? '0' + datetime.getSeconds()
-        : datetime.getSeconds();
-    result = Nyear + '-' + Nmonth + '-' + Ndate;
-  }
-  return result;
-}
 
 function reMapError(error) {
   return error instanceof Object

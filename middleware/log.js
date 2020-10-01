@@ -33,6 +33,12 @@ module.exports = async (ctx, next) => {
     } else {
       target = 'dva';
     }
+    if (body instanceof Object && 'summary' in body) {
+      delete body.summary;
+    }
+    if ('dataUrl' in body) {
+      delete body.dataUrl;
+    }
     const log = `客户端: ${agentUrl || ''}
 版本： ${target}
 date: ${time} 

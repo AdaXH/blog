@@ -11,7 +11,9 @@ const {
   parseToken,
   randomCode,
   sendEmail,
+  request2,
 } = require('../common/util');
+const querystring = require('querystring');
 
 const secret = 'secret';
 
@@ -40,7 +42,10 @@ routerExports.uploadGallery = {
 };
 
 function callSaveGalleryToBucket(fileName, dataUrl) {
-  const bf = Buffer(dataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+  const bf = Buffer.from(
+    dataUrl.replace(/^data:image\/\w+;base64,/, ''),
+    'base64',
+  );
 
   return new Promise((resolve, reject) => {
     const s3 = new SinaCloud.S3();
@@ -51,13 +56,13 @@ function callSaveGalleryToBucket(fileName, dataUrl) {
         Key: `extra/${fileName.replace(/jpeg+|JPG/g, 'jpg')}`,
         Body: bf,
       },
-      function(error, response) {
+      function (error, response) {
         if (error) {
           reject(error);
         } else {
           resolve();
         }
-      }
+      },
     );
   });
 }
@@ -98,7 +103,7 @@ routerExports.setPics = {
 
 const callHandlePic = (type, binary) => {
   return new Promise((resolve, reject) => {
-    const bf = Buffer(binary, 'binary');
+    const bf = Buffer.from(binary, 'binary');
     fs.writeFile(`./public/resouce/images/${type}.jpg`, bf, (err) => {
       if (err === null) {
         User.findOne({ name: 'Ada' })
@@ -110,24 +115,28 @@ const callHandlePic = (type, binary) => {
               ] = `resouce/imagses/${type}.jpg`;
               User.updateOne(
                 { name: 'Ada' },
-                { $set: { pics: { ...picData } } }
+                { $set: { pics: { ...picData } } },
               )
                 .then((res) => (res ? resolve() : reject('更新出错')))
                 .catch((err) =>
                   reject(
-                    err instanceof Object ? JSON.stringify(err) : err.toString()
-                  )
+                    err instanceof Object
+                      ? JSON.stringify(err)
+                      : err.toString(),
+                  ),
                 );
             }
           })
           .catch((err) =>
-            reject(err instanceof Object ? JSON.stringify(err) : err.toString())
+            reject(
+              err instanceof Object ? JSON.stringify(err) : err.toString(),
+            ),
           );
       } else
         reject(
           '保存文件时出错' + err instanceof Object
             ? JSON.stringify(err)
-            : err.toString()
+            : err.toString(),
         );
     });
   });
@@ -137,7 +146,7 @@ routerExports.login = {
   method: 'post',
   url: '/login',
   route: async (ctx, next) => {
-    const { name, pwd, state } = ctx.request.body;
+    const { name, pwd } = ctx.request.body;
     const date = new Date();
     date.setDate(date.getDate() + 2);
     try {
@@ -156,23 +165,23 @@ routerExports.login = {
       if (!user) {
         throw '账号和密码不匹配';
       }
-      state &&
-        ctx.cookies.set('user', Base64.encode(name), {
-          expires: date,
-          httpOnly: false,
-          overwrite: false,
-        });
-      ctx.cookies.set('token', getToken({ _id: user._id }), {
+      const isDev = process.env.NODE_ENV === 'development';
+      const cookieCfg = {
         expires: date,
         httpOnly: false,
         overwrite: false,
-      });
+      };
+      if (!isDev) {
+        cookieCfg.domain = '.adaxh.site';
+      }
+      ctx.cookies.set('user', Base64.encode(name), cookieCfg);
+      ctx.cookies.set('token', getToken({ _id: user._id }), cookieCfg);
       delete user._doc.password;
-      user.name = name;
+      // user.name = name;
       console.log(name + ' 上线');
       await User.updateOne(
         { name: user.name },
-        { $set: { lastLoginTime: Date.now() } }
+        { $set: { lastLoginTime: Date.now() } },
       );
       ctx.body = {
         success: true,
@@ -205,12 +214,25 @@ routerExports.getUserInfoByToken = {
       }
       const payload = getJWTPayload(authorization);
       if (!payload) throw 'token认证失败';
-      const user = await User.findOne({ _id: payload._id });
-      delete user._doc.password;
+      const key = payload._id ? '_id' : 'qqUserId';
+      const filterKey = [
+        'name',
+        'avatar',
+        '_id',
+        'userId',
+        'admin',
+        'superAdmin',
+        'originName',
+        'email',
+      ];
+      const user = await User.findOne(
+        { [key]: payload[key] },
+        filterKey.join(' '),
+      );
       console.log(user.name + ' 重新连接');
       await User.updateOne(
         { _id: payload._id },
-        { $set: { lastLoginTime: Date.now() } }
+        { $set: { lastLoginTime: Date.now() } },
       );
       ctx.body = {
         success: true,
@@ -255,40 +277,6 @@ function callIntroduce() {
   });
 }
 
-routerExports.updateIntroduce = {
-  method: 'post',
-  url: '/updateIntroduce',
-  route: async (ctx, next) => {
-    const { introduce } = ctx.request.body;
-    try {
-      const {
-        headers: { authorization },
-      } = ctx;
-      const tokenParse = parseToken(authorization);
-      const { _id: userId } = tokenParse;
-      await callUpdateIntroduce(introduce);
-      ctx.body = {
-        success: true,
-      };
-    } catch (error) {
-      ctx.body = {
-        success: false,
-        errorMsg: error,
-      };
-    }
-  },
-};
-
-function callUpdateIntroduce(introduce) {
-  return new Promise((resolve, reject) => {
-    User.updateOne({ $set: { introduce } })
-      .then((res) => {
-        res.ok === 1 ? resolve(true) : reject('更新失败');
-      })
-      .catch((err) => reject(err));
-  });
-}
-
 routerExports.getAvatar = {
   method: 'post',
   url: '/get-avatar',
@@ -307,7 +295,7 @@ routerExports.getAvatar = {
               errorMsg: '无法获取头像',
             });
       })
-      .catch((err) => {
+      .catch((error) => {
         ctx.body = {
           success: false,
           errorMsg: error,
@@ -320,7 +308,7 @@ routerExports.setAvatar = {
   method: 'post',
   url: '/set-avatar',
   route: async (ctx, res) => {
-    const { avatar, name, fileName } = ctx.request.body;
+    const { avatar, fileName } = ctx.request.body;
     try {
       const {
         headers: { authorization },
@@ -329,7 +317,7 @@ routerExports.setAvatar = {
       const src = await callSaveAvatarToBucket(
         avatar,
         tokenParse._id,
-        fileName
+        fileName,
       );
       ctx.body = {
         success: true,
@@ -345,7 +333,7 @@ routerExports.setAvatar = {
 };
 
 async function callSaveAvatarToBucket(avatar, _id, fileName) {
-  const bf = Buffer(avatar, 'binary');
+  const bf = Buffer.from(avatar, 'binary');
   const imgs = fileName.split('.');
   const imgType = /gif+|GIF/.test(imgs[imgs.length - 1]) ? 'gif' : 'jpg';
 
@@ -359,18 +347,20 @@ async function callSaveAvatarToBucket(avatar, _id, fileName) {
         Key: `avatar/${fileName}${_id}.${imgType}`,
         Body: bf,
       },
-      function(error, response) {
+      function (error, response) {
         if (error) {
           reject(error);
         } else {
-          User.updateOne({ _id }, { $set: { avatar: newAvatar } }).then(
-            (data) =>
-              data.n === 1
-                ? resolve({ avatar: newAvatar, bf })
-                : reject('头像更新失败')
+          User.updateOne(
+            { _id },
+            { $set: { avatar: newAvatar } },
+          ).then((data) =>
+            data.n === 1
+              ? resolve({ avatar: newAvatar, bf })
+              : reject('头像更新失败'),
           );
         }
-      }
+      },
     );
   });
 }
@@ -465,7 +455,7 @@ routerExports.queryUsers = {
           email: 1,
           avatar: 1,
           admin: 1,
-        }
+        },
       ).sort({ lastLoginTime: -1 });
       ctx.body = { success: true, data: users };
     } catch (error) {
@@ -488,7 +478,7 @@ routerExports.changeUserStatus = {
       const payload = getJWTPayload(authorization);
       const { superAdmin, admin } = await User.findOne(
         { _id: payload._id },
-        { admin: 1, superAdmin: 1 }
+        { admin: 1, superAdmin: 1 },
       );
       if (!admin || !superAdmin) throw '暂无权限';
       await User.updateOne({ _id: userId }, { $set: { admin: status } });
@@ -540,11 +530,9 @@ routerExports.sendCodeToEmail = {
       const emailCode = randomCode(4);
       ctx.session.emailCode = emailCode;
       sendEmail(
-        `hi~ ${
-          user.name
-        }：\n这是您在https://adaxh.site\n找回密码的验证码：${emailCode}\n请妥善保管，以防泄漏`,
+        `hi~ ${user.name}：\n这是您在https://adaxh.site\n找回密码的验证码：${emailCode}\n请妥善保管，以防泄漏`,
         email,
-        '找回密码-验证码'
+        '找回密码-验证码',
       );
       ctx.body = {
         success: true,
@@ -576,6 +564,78 @@ routerExports.resetPassword = {
       };
     } catch (error) {
       ctx.body = { success: false, errorMsg: error };
+    }
+  },
+};
+
+routerExports.qq_login = {
+  url: '/qq_login',
+  method: 'get',
+  route: async (ctx) => {
+    try {
+      const { query } = ctx;
+      const body = await request2(
+        `https://graph.qq.com/oauth2.0/me?${querystring.stringify(
+          query,
+          '&',
+          '=',
+        )}`,
+      );
+      const { client_id: appid, openid, unionid } = JSON.parse(body);
+      const qqUser = await request2(`
+      https://graph.qq.com/user/get_user_info?${querystring.stringify(
+        {
+          access_token: query.access_token,
+          appid,
+          openid,
+          unionid,
+        },
+        '&',
+        '=',
+      )}`);
+      const qqUserObj = JSON.parse(qqUser);
+      const qqUserVo = {
+        qqUserId: openid,
+        unionid,
+        name: qqUserObj.nickname,
+        avatar: qqUserObj.figureurl_qq,
+      };
+      const user = await User.findOne({ qqUserId: openid });
+      const nameCount = await User.find(
+        { name: qqUserObj.nickname },
+        { name: 1 },
+      ).count();
+      if (nameCount) {
+        qqUserVo.name += '' + nameCount;
+      }
+      if (!user) {
+        new User({
+          ...qqUserVo,
+        }).save();
+      }
+      const date = new Date();
+      date.setDate(date.getDate() + 2);
+      const _qqUserId = (await User.findOne({ qqUserId: openid })) || {};
+      const isDev = process.env.NODE_ENV === 'development';
+      const cookieCfg = {
+        expires: date,
+        httpOnly: false,
+        overwrite: false,
+      };
+      if (!isDev) {
+        cookieCfg.domain = '.adaxh.site';
+      }
+      ctx.cookies.set('token', getToken({ _id: _qqUserId._id }), cookieCfg);
+      ctx.cookies.set('user', Base64.encode(qqUserObj.nickname), cookieCfg);
+      ctx.body = {
+        ...qqUserObj,
+        success: true,
+      };
+    } catch (error) {
+      ctx.body = {
+        error,
+        success: false,
+      };
     }
   },
 };

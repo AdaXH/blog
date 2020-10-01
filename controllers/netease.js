@@ -1,45 +1,68 @@
-const { MusicClient } = require("netease-music-sdk");
-const { getRandomLength } = require("../common/util");
+const { MusicClient } = require('netease-music-sdk');
+const { getRandomLength } = require('../common/util');
+const Config = require('./../dbmodel/BlogConfig');
 const routerExports = {};
 
 const sdk = new MusicClient();
-routerExports["netease/get-comment"] = {
-  method: "get",
-  url: "/netease/get-comment",
-  route: async ctx => {
+routerExports['netease/get-comment'] = {
+  method: 'get',
+  url: '/netease/get-comment',
+  route: async (ctx) => {
     try {
       const {
         query: {
-          limit = 3,
-          keyword,
-          type,
-          offset = Math.floor(Math.random() * 10),
+          limit = 40,
+          keyword = '爱',
+          type = 1,
+          offset = Math.floor(Math.random() * 20),
         },
       } = ctx;
-      const ret = await sdk.search(keyword, type, limit, offset);
-      const { playlists } = ret.result;
-      const ids = load(playlists);
-      let comments = [];
-      for await (const item of ids) {
-        const res = await sdk.getSongComment(item, limit, offset);
-        const { hotComments = [], topComments = [], comments: coms = [] } = res;
-        const list = [...hotComments, ...topComments, ...coms];
-        if (list) {
-          list.forEach(({ content, contentId, user: { nickname } }) => {
-            if (content.length > 15) {
-              comments.push({ content, contentId, name: nickname });
+      const { result = {} } = await sdk.search(
+        keyword === 'undefined' ? '爱' : keyword,
+        type,
+        limit,
+        offset,
+      );
+      let commentObj = { song: {}, comments: [] };
+      if (result.songs) {
+        for await (const song of result.songs) {
+          const res = await sdk.getSongComment(song.id);
+          if (res.hotComments && res.hotComments.length) {
+            const { id: songId, name: songName } = song;
+            commentObj = {
+              comments: res.hotComments,
+              song: {
+                songId,
+                songName,
+              },
+            };
+            if (commentObj.comments.length > 3) {
+              break;
             }
-          });
+          }
         }
       }
-      const index = getRandomLength(comments.length);
-      //   console.log()
+      const index = getRandomLength(commentObj.comments.length);
+      const curComment = commentObj.comments[index < 0 ? 0 : index] || {
+        user: {},
+      };
+      const {
+        content,
+        user: { nickname: name, avatarUrl },
+        commentId,
+      } = curComment;
       ctx.body = {
         success: true,
-        comment: comments[index < 0 ? 0 : index],
+        comment: {
+          content,
+          commentId,
+          name,
+          ...commentObj.song,
+          avatarUrl,
+        },
       };
     } catch (error) {
-      console.log("error", error);
+      console.log('error', error);
       ctx.body = {
         success: false,
         errorMsg: error,
@@ -48,44 +71,70 @@ routerExports["netease/get-comment"] = {
     }
   },
 };
-
-async function queryFn(keyword, type, comments = [], offset = 1, limit = 1) {
-  const ret = await sdk.search(keyword, type, limit, offset);
-  const { playlists } = ret.result;
-  const ids = load(playlists);
-  console.log(comments, offset, limit);
-  if (!comments.length) {
-    for await (const item of ids) {
-      const res = await sdk.getSongComment(item, limit, offset);
-      const hotComments = res.hotComments || res.topComments || res.comments;
-      console.log("hotComments", hotComments);
-      if (hotComments) {
-        comments = hotComments.map(
-          ({ content, contentId, user: { nickname } }) => ({
-            content,
-            contentId,
-            name: nickname,
-          })
-        );
+routerExports['/ada/get-comment'] = {
+  method: 'get',
+  url: '/ada/get-comment',
+  route: async (ctx) => {
+    try {
+      let {
+        query: { keyword },
+      } = ctx;
+      if (!keyword) {
+        const [cfg] = (await Config.find({}, { neteaseKeyword: 1 })) || [{}];
+        const { neteaseKeyword } = cfg;
+        if (neteaseKeyword) {
+          const keywordsArr = neteaseKeyword.split(',');
+          const idx = getRandomLength(keywordsArr.length);
+          keyword = keywordsArr[idx];
+        }
       }
+      const limit = 40;
+      const type = 1;
+      const offset = Math.floor(Math.random() * 20);
+      const utf8Keyword = decodeURIComponent(keyword).replace(/鲸小萌 /, '');
+      const { result = {} } = await sdk.search(
+        utf8Keyword,
+        type,
+        limit,
+        offset,
+      );
+      let commentObj = { song: {}, comments: [] };
+      if (result.songs) {
+        for await (const song of result.songs) {
+          const res = await sdk.getSongComment(song.id);
+          if (res.hotComments && res.hotComments.length) {
+            const { id: songId, name: songName } = song;
+            commentObj = {
+              comments: res.hotComments,
+              song: {
+                songId,
+                songName,
+              },
+            };
+            if (commentObj.comments.length > 5) {
+              break;
+            }
+          }
+        }
+      }
+      const index = getRandomLength(commentObj.comments.length);
+      const curComment = commentObj.comments[index < 0 ? 0 : index] || {};
+      const { content } = curComment;
+      if (!content) {
+        ctx.body = '糟糕，系统坏了T.T';
+        return;
+      }
+      ctx.body = content;
+    } catch (error) {
+      console.log('error', error);
+      ctx.body = error;
+      ctx.body = {
+        success: false,
+        errorMsg: error,
+        error,
+      };
     }
-    offset += 1;
-    limit += 1;
-    return await queryFn(keyword, type, comments, offset, limit);
-  }
-  return comments;
-}
-
-function load(result) {
-  const temp = [];
-  if (result) {
-    result.forEach(({ track = {} }) => {
-      if (track.id) {
-        temp.push(track.id);
-      }
-    });
-  }
-  return temp;
-}
+  },
+};
 
 module.exports = routerExports;

@@ -20,13 +20,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 node_modules/
-public/upload/user_avatar/*
-backup/
-backup.zip
-/public/upload
-/pc/node_modules/
-/umi-mobile/node_modules
-/common/util.js
-serverConfig.js
+mobile/node_modules/
+umi-mobile/node_modules/
+pc/node_modules/
+log/
 
 /public/sass/*.map

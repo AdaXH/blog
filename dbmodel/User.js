@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const userModel = require('./userModel');
 
 module.exports = mongoose.model(
@@ -14,5 +14,5 @@ module.exports = mongoose.model(
       default: undefined,
     },
     ...userModel,
-  })
-)
+  }),
+);

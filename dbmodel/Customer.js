@@ -1,7 +1,10 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const customerCollection = mongoose.model('customers', mongoose.Schema({
-    number: Number
-}))
+const customerCollection = mongoose.model(
+  'customers',
+  mongoose.Schema({
+    number: Number,
+  }),
+);
 
-module.exports = customerCollection
+module.exports = customerCollection;
