@@ -15,8 +15,8 @@ module.exports = {
   output: {
     filename: "pc.js",
     path: path.resolve(__dirname, "dist"),
-    publicPath: "./"
-    // chunkFilename: "[name].async.js"
+    publicPath: "/",
+    chunkFilename: "[name].async.js"
   },
 
   resolve: {

@@ -1,21 +1,11 @@
 @keyframes formRight {
   from {
     opacity: 0;
-    transform: translate3d(-100px, 0, 0) scale3d(0.3, 0.3, 0.3);
+    transform: translate3d(30px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
-  }
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale3d(0.3, 0.3, 0.3);
-  }
-  to {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
+    transform: translate3d(0, 0, 0);
   }
 }
 .dark {
@@ -31,14 +21,51 @@
 // .light {
 //   background: white !important;
 // }
+.page {
+  width: 100%;
+  position: absolute;
+  display: flex;
+  margin-top: 1.52rem;
+  padding-bottom: 0.1rem;
+  justify-content: space-around;
+  background: #192a34;
+  color: #cccccc;
+  animation: formRight 1s forwards;
+  opacity: 0;
+  z-index: 1;
+  a,
+  a i {
+    color: #cccccc;
+
+    font-size: 0.18rem;
+  }
+  a {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.14rem;
+    i {
+      position: relative;
+      top: 0.05rem;
+    }
+  }
+  a[disabled] {
+    text-decoration: line-through;
+  }
+}
 .itemF {
   display: flex;
   flex-wrap: wrap;
+  padding: 0 0.25rem;
   padding-bottom: 0.37rem;
+  margin-top: 1.66rem;
   cursor: pointer;
   overflow-x: hidden;
-  // animation: fadeIn 0.6s forwards;
-  transition: all 1s;
+  animation: formRight 1s forwards;
+  opacity: 0;
+  transform: translate3d(100px, 0, 0);
+  float: left;
+  height: 3.57rem;
+  overflow-y: auto;
   .siteTitle {
     margin: 0.2rem 0 0 0.2rem;
     position: relative;
@@ -52,17 +79,11 @@
     margin: 0 auto;
     margin-top: 0.2rem;
     position: relative;
-    width: 3rem;
-    // height: 1rem;
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
-    animation: formRight 1s forwards;
-    opacity: 0;
-    transform: translate3d(100px, 0, 0) scale3d(0.3, 0.3, 0.3);
     color: #2d2c2cd6;
-    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
-      0 9px 28px 8px rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.3s, border-color 0.3s, -webkit-box-shadow 0.3s;
+    border-bottom: 1px solid #f2f2f2;
     .avatar {
       width: 0.4rem;
       height: 0.4rem;
@@ -86,13 +107,13 @@
       flex-direction: column;
       .title {
         height: 0.3rem;
-        color: black;
+        color: #cccccc;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         transition: all 1s;
+        font-size: 0.12rem;
         .date {
-          font-size: 0.12rem;
           color: #949494;
         }
       }
@@ -103,13 +124,15 @@
         overflow: hidden;
         text-overflow: ellipsis;
         color: #8a8a8a;
+        font-size: 0.13rem;
         span {
           float: right;
         }
-        svg {
+        i {
           // padding: 10px;
+          font-size: 0.13rem;
           position: relative;
-          top: 0.04rem;
+          top: 0.02rem;
           display: inline-block;
           width: 0.17rem;
           height: 0.17rem;

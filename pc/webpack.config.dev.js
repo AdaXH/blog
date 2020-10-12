@@ -1,158 +1,162 @@
-const webpack = require("webpack");
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const theme = require("./config/theme");
+const webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const theme = require('./config/theme');
 
 module.exports = {
-  entry: ["babel-polyfill", "./src/index.js"],
+  entry: ['babel-polyfill', './src/index.js'],
   output: {
-    filename: "main.js",
-    path: path.resolve(__dirname, "./cache")
+    filename: 'main.js',
+    path: path.resolve(__dirname, './cache'),
+    publicPath: '/',
+    chunkFilename: '[name].async.js',
   },
-  devtool: "cheap-module-source-map",
+  devtool: 'cheap-module-source-map',
   devServer: {
-    contentBase: "./src",
-    host: "localhost",
+    publicPath: '/',
+    contentBase: './src',
+    host: 'localhost',
     port: 8000,
     open: false,
     inline: true,
-    openPage: "",
+    openPage: '',
     hot: true,
     historyApiFallback: true,
     overlay: {
-      errors: true
+      errors: true,
     },
     proxy: {
-      "/api": {
-        target: "http://localhost:5050",
+      '/api': {
+        target: 'http://localhost:5050',
         changeOrigin: true,
-        pathRewrite: { api: "/" }
-      }
-    }
+        pathRewrite: { api: '/' },
+      },
+    },
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src/")
+      '@': path.resolve(__dirname, 'src/'),
     },
-    extensions: [".ts", ".tsx", ".js", ".jsx", ".css", ".less"]
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.css', '.less'],
   },
   stats: {
     children: false,
-    warningsFilter: warn => warn.indexOf("Conflicting order between:") > -1
+    warningsFilter: (warn) => warn.indexOf('Conflicting order between:') > -1,
   },
 
   module: {
     rules: [
       {
         test: /\.js|jsx$/,
-        include: [path.resolve(__dirname, "src")],
-        use: ["source-map-loader", "babel-loader", "eslint-loader"],
-        exclude: /node_modules/
+        include: [path.resolve(__dirname, 'src')],
+        use: ['source-map-loader', 'babel-loader', 'eslint-loader'],
+        exclude: /node_modules/,
       },
       {
         test: /\.css$/,
         use: [
-          "css-hot-loader",
+          'css-hot-loader',
           MiniCssExtractPlugin.loader,
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
-              importLoaders: 1
-            }
-          }
-        ]
+              importLoaders: 1,
+            },
+          },
+        ],
       },
       {
         test: /\.less$/,
         use: [
-          "css-hot-loader",
+          'css-hot-loader',
           MiniCssExtractPlugin.loader,
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               importLoaders: 1,
               modules: {
-                localIdentName: "[name]_[local]-[hash:base64:5]"
-              }
-            }
+                localIdentName: '[name]_[local]-[hash:base64:5]',
+              },
+            },
           },
           {
-            loader: "less-loader",
+            loader: 'less-loader',
             options: {
-              javascriptEnabled: true
-            }
-          }
+              javascriptEnabled: true,
+            },
+          },
         ],
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.less$/,
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
-              importLoaders: 1
-            }
+              importLoaders: 1,
+            },
           },
           {
-            loader: "less-loader",
+            loader: 'less-loader',
             options: {
               javascriptEnabled: true,
-              modifyVars: theme
-            }
-          }
+              modifyVars: theme,
+            },
+          },
         ],
-        exclude: /src/
+        exclude: /src/,
       },
       {
         test: /\.(png|svg|jpg|gif|ttf)$/,
         use: [
           {
-            loader: "url-loader",
+            loader: 'url-loader',
             options: {
               limit: 8192,
-              outputPath: "./assets/"
-            }
-          }
-        ]
-      }
-    ]
+              outputPath: './assets/',
+            },
+          },
+        ],
+      },
+    ],
   },
   node: {
-    fs: "empty",
-    module: "empty"
+    fs: 'empty',
+    module: 'empty',
   },
   optimization: {
     splitChunks: {
       cacheGroups: {
         styles: {
-          name: "styles",
+          name: 'styles',
           test: /\.(css|less)/,
-          chunks: "all",
-          enforce: true
-        }
-      }
-    }
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "[name].css"
+      filename: '[name].css',
+      ignoreOrder: true,
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, "public", "index.html"),
-      filename: "index.html",
-      hash: true
+      template: path.resolve(__dirname, 'public', 'index.html'),
+      filename: 'index.html',
+      hash: true,
     }),
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, "public")
-        }
-      ]
+          from: path.resolve(__dirname, 'public'),
+        },
+      ],
     }),
-    new webpack.HotModuleReplacementPlugin()
-  ]
+    new webpack.HotModuleReplacementPlugin(),
+  ],
 };

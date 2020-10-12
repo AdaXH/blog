@@ -23,13 +23,13 @@ export default ({ theme }) => {
       }
     }
   });
-  const onUpvote = async _id => {
+  const onUpvote = async (_id) => {
     const upvoteIds = getCache('upvoteIds') || [];
     if (upvoteIds.includes(_id)) return;
     const { success } = (await upvoteMoment(_id)) || {};
     if (success) {
       setCache('upvoteIds', [...upvoteIds, _id]);
-      data.forEach(item => {
+      data.forEach((item) => {
         if (item._id === _id) {
           item.upvote += 1;
         }
@@ -43,11 +43,6 @@ export default ({ theme }) => {
   });
   return (
     <div className={cla}>
-      <div className={styles.friendItem}>
-        <div className={styles.view}>
-          <div className={styles.title}>动态</div>
-        </div>
-      </div>
       {data.map(({ _id, content, title, img, upvote = 0 }, index) => {
         return (
           <div className={styles.friendItem} key={_id} style={setStyle(index)}>
@@ -58,9 +53,10 @@ export default ({ theme }) => {
               <div className={styles.title}>
                 {title}
                 <span onClick={() => onUpvote(_id)}>
-                  <svg className="icon" aria-hidden="true">
+                  <i className="iconfont icon-mengbanhangkonghangtian-xingxingstar"></i>
+                  {/* <svg className="icon" aria-hidden="true">
                     <use href="#icon-mengbanhangkonghangtian-xingxingstar"></use>
-                  </svg>
+                  </svg> */}
                   {upvote}
                 </span>
               </div>

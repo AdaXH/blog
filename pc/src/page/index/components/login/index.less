@@ -1,0 +1,176 @@
+.rightContainer {
+  width: 400px;
+  // height: 500px;
+  float: right;
+  // margin-top: 100px;
+  // opacity: 0;
+  // transform: translate3d(100px, 0, 0);
+  // animation: formRight 1s;
+  // animation-fill-mode: forwards;
+  animation: formRight 1s;
+  will-change: opacity, transform;
+  opacity: 0;
+  transform: translate3d(60px, 0, 0);
+  animation-fill-mode: forwards;
+  transition: all 1s;
+  .top {
+    height: 60px;
+    background: transparent;
+    .selectSignUp,
+    .selectLogin {
+      width: 50%;
+      text-align: center;
+      line-height: 60px;
+      cursor: pointer;
+      color: white;
+      transition: all 0.4s;
+    }
+    .up {
+      width: 100px;
+    }
+    .selectSignUp {
+      float: left;
+    }
+    .selectLogin {
+      float: right;
+    }
+    .current {
+      color: #f54c53;
+    }
+  }
+  .down {
+    float: left;
+    width: 400px;
+    padding: 20px;
+    transition: all 0.5s;
+    background: #ffffff8f;
+    overflow: hidden;
+    .inputItem {
+      margin-top: 5px;
+      // margin-left: 25px;
+      position: relative;
+      .captcha {
+        position: absolute;
+        right: 84px;
+        top: -1px;
+        height: 50px;
+        width: 150px;
+        cursor: pointer;
+      }
+      .btn {
+        // display: inline-block;
+        float: left;
+        background: #f54c53;
+        color: white;
+        height: 40px;
+        line-height: 40px;
+        cursor: pointer;
+        text-align: center;
+        width: 100px;
+        border-radius: 4px;
+      }
+      span {
+        color: #777;
+        font-size: 16px;
+        display: block;
+        text-align: left;
+      }
+      input {
+        display: block;
+        box-shadow: none;
+        background: transparent;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        height: 46px;
+        font-size: 16px;
+        font-weight: 300;
+        padding-left: 15px;
+        padding-right: 15px;
+        margin-top: 10px;
+        width: 100%;
+        color: #555555;
+        border-radius: 4px;
+        line-height: 50px;
+        transition: all 0.5s;
+      }
+      input:-internal-autofill-previewed,
+      input:-internal-autofill-selected,
+      textarea:-internal-autofill-previewed,
+      textarea:-internal-autofill-selected,
+      select:-internal-autofill-previewed,
+      select:-internal-autofill-selected {
+        background-color: transparent !important;
+        background-image: none !important;
+        color: rgb(0, 0, 0) !important;
+      }
+      input:focus {
+        border-color: transparent;
+        border-bottom: 2px solid #f54c53;
+      }
+    }
+  }
+  // }
+  .currentType {
+    transform: translate3d(-400px, 0, 0);
+  }
+  // }
+}
+.qqSign {
+  // display: inline-block;
+  background: #f54c53;
+  color: white;
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+  text-align: center;
+  width: 100px;
+  border-radius: 4px;
+  overflow: hidden;
+  float: right;
+}
+.qqLogo {
+  display: none !important;
+}
+@keyframes formRight {
+  form {
+    opacity: 0;
+    transform: translate3d(100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@media (max-width: 1150px) {
+  div.rightContainer {
+    // display: none;
+    margin-right: 100px;
+  }
+}
+@media (max-width: 1040px) {
+  div.rightContainer {
+    // display: none;
+    margin-right: 200px;
+  }
+}
+@media (max-width: 950px) {
+  div.rightContainer {
+    // display: none;
+    margin-right: 300px;
+  }
+}
+@media (max-width: 840px) {
+  div.rightContainer {
+    // display: none;
+    margin-right: 400px;
+  }
+}
+@media (max-width: 750px) {
+  .rightContainer {
+    display: none;
+  }
+}
+@media (max-height: 700px) {
+  .rightContainer {
+    display: none;
+  }
+}

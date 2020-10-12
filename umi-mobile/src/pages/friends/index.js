@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { useDidMount } from '@/util/hooks';
 import { getCache, setCache } from '@/util/functions';
 import { queryFriends } from './service';
-import { setStyle } from './util';
+// import { setStyle } from './util';
 
 import styles from './index.less';
 
@@ -29,20 +29,14 @@ export default ({ theme }) => {
   });
   return (
     <div className={cla}>
-      {/* <div className={styles.siteTitle}>友情链接</div> */}
-      <div className={styles.friendItem}>
-        <div className={styles.view}>
-          <div className={styles.title}>友情链接</div>
-        </div>
-      </div>
       {data
-        .filter(item => item.verify)
+        .filter((item) => item.verify)
         .map(({ link, desc, title, icon }, index) => {
           return (
             <a
               className={styles.friendItem}
               key={link}
-              style={setStyle(index)}
+              // style={setStyle(index)}
               href={link}
               target="blank"
             >

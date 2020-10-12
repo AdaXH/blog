@@ -14,6 +14,6 @@ export function relativetime(date) {
 
 export function setStyle(index) {
   return {
-    animationDelay: `${index / 3}s`,
+    animationDelay: `${index / 20}s`,
   };
 }

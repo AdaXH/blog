@@ -5,5 +5,6 @@ export default [
   'React',
   'NodeJs',
   'Vue',
+  'Code',
   'Others',
 ];

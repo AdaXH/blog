@@ -3,7 +3,6 @@ const Article = require('../dbmodel/Article');
 const Dynamic = require('../dbmodel/Dynamic');
 const Customer = require('../dbmodel/Customer');
 const Mood = require('../dbmodel/Mood');
-const { timeago } = require('../common/util');
 const { setAllAvatar } = require('../common/apiPrefix');
 
 const routerExports = {};
@@ -96,15 +95,6 @@ function messageArr() {
   return new Promise((resolve, reject) => {
     Message.find({}, (err, res) => {
       err ? reject([]) : resolve(res);
-      for (const item of res)
-        if (item.repeat && item.repeat.length !== 0) {
-          for (const item2 of item.repeat) {
-            if (item2 && item2 !== null) {
-              const temp = new Date(item2.date).getTime();
-              item2.date = timeago(temp);
-            }
-          }
-        }
     });
   });
 }

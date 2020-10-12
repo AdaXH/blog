@@ -158,6 +158,58 @@ routerExports._leaveMsg = {
   },
 };
 
+routerExports._leaveMsgv2 = {
+  method: 'post',
+  url: '/leaveMsgv2',
+  route: async (ctx) => {
+    const { date, content, quickReply = false } = ctx.request.body;
+    const newContent = escapeData(content);
+    try {
+      let user = {
+        name: '陌生人',
+      };
+      let payload = { _id: 'null' };
+      if (!quickReply) {
+        payload = getJWTPayload(ctx.headers.authorization);
+        if (!payload) throw 'token认证失败';
+        if (!date || !content) throw '入参错误';
+        user = await User.findOne(
+          { _id: payload._id },
+          { name: 1, avatar: 1, email: 1 },
+        );
+      }
+      const data = await new Message({
+        name: user.name,
+        date,
+        content: newContent,
+        repeat: [],
+        userId: payload._id,
+        ...user,
+      }).save();
+      if (/default_avatar/.test(data.avatar)) {
+        const user =
+          payload._id === 'null'
+            ? {
+                avatar: '/upload/user_avatar/default_avatar.jpg',
+              }
+            : await User.findOne({ _id: payload._id });
+        data.avatar = user.avatar;
+      }
+      ctx.body = { success: true, data };
+      sendEmail(
+        `${user.name}（${user.email}）给你留言了：${newContent}`,
+        undefined,
+        '留言回复通知',
+      );
+    } catch (error) {
+      ctx.body = {
+        success: false,
+        errorMsg: error,
+      };
+    }
+  },
+};
+
 routerExports.getAllMessage = {
   method: 'post',
   url: '/getAllMessage',

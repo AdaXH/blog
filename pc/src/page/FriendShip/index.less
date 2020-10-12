@@ -1,0 +1,216 @@
+.another {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background: white;
+  animation: formRight 1s forwards;
+  transform: translate3d(100px, 0, 0);
+  background: rgba(255, 255, 255, 0.9);
+  .site {
+    position: absolute;
+    right: 60px;
+    top: 100px;
+    width: 227px;
+    height: 160px;
+    z-index: 100;
+    padding: 15px;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+      0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s, border-color 0.3s, -webkit-box-shadow 0.3s;
+    background: white;
+    h4 {
+      border-bottom: 1px solid #ababab;
+      padding-bottom: 2px;
+    }
+    div {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  }
+  .ref {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    .layer {
+      display: flex !important;
+      height: 100%;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    .someSpace {
+      height: 100%;
+      position: absolute;
+      width: 100%;
+    }
+  }
+  // h1 {
+  //   color: black;
+  //   font-size: 5em;
+  //   font-weight: 100;
+  //   letter-spacing: 0.2em;
+  //   position: absolute;
+  //   top: 50%;
+  //   left: 50%;
+  //   -webkit-transform: translate3d(-50%, -50%, 0);
+  //   transform: translate3d(-50%, -50%, 0);
+  // }
+}
+@keyframes formRight {
+  form {
+    opacity: 0;
+    transform: translate3d(100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+.content {
+  position: relative;
+  margin: 0 auto;
+  width: 840px;
+  // min-height: 600px;
+  overflow: hidden;
+  overflow-y: auto;
+  .fTitle {
+    color: #2d2c2cd6;
+  }
+}
+.itemF {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-left: 28px;
+  padding-bottom: 37px;
+  cursor: pointer;
+  .friendItem:hover {
+    // animation: bottomEffect 0.6s linear forwards;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+      0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s, border-color 0.3s, -webkit-box-shadow 0.3s;
+  }
+  // .friendItem:hover {
+  //   animation: rightEffect 0.6s forwards;
+  //   animation-delay: 0.6s;
+  // }
+  .friendItem {
+    position: relative;
+    width: 260px;
+    height: 100px;
+    display: flex;
+    animation: formRight 1s forwards;
+    opacity: 0;
+    transform: translate3d(100px, 0, 0);
+    color: #2d2c2cd6;
+    .effectLineBottom {
+      position: absolute;
+      height: 1px;
+      background: black;
+      width: 0px;
+      opacity: 1;
+      bottom: 20px;
+      left: 0;
+    }
+    .effectLineRight {
+      position: absolute;
+      height: 0;
+      background: black;
+      width: 1px;
+      opacity: 1;
+      bottom: 21px;
+      right: 12px;
+    }
+    .avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      overflow: hidden;
+      align-self: center;
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .view {
+      width: 170px;
+      margin: 10px 0 0 10px;
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      .title {
+        height: 30px;
+        color: black;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .desc {
+        height: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+@keyframes bottomEffect {
+  form {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 247px;
+    opacity: 1;
+  }
+}
+@keyframes rightEffect {
+  form {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 97px;
+    opacity: 1;
+  }
+}
+.modal {
+  :global {
+    .ant-modal-footer {
+      border: none;
+      div {
+        text-align: center;
+        button {
+          display: inline-block;
+          margin: 7px;
+        }
+      }
+    }
+    .ant-form-explain {
+      position: absolute;
+    }
+    .ant-form-item {
+      display: flex;
+      margin-bottom: 13px;
+      .ant-form-item-label {
+        width: 100px;
+      }
+      .ant-form-item-control-wrapper {
+        max-width: 300px;
+        flex: 1;
+      }
+    }
+  }
+}
+@media (max-width: 950px) {
+  .site {
+    display: none;
+  }
+}
+.tip {
+  margin-left: 100px;
+  color: rgba(0, 0, 0, 0.85);
+}

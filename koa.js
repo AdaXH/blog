@@ -11,9 +11,9 @@ const tokenVerify = require('./middleware/tokenVerify');
 const cache = require('./middleware/cache');
 const router = require('koa-router')();
 const Database = require('./common/db');
+const { getEnv } = require('./common/util');
 
 const registerRouter = require('./common/registerRoutet');
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 
 const config = {
   ...require('./serverConfig'),
@@ -65,6 +65,6 @@ app.on('error', (err, ctx) => {
   console.log('server error', err, ctx);
 });
 app.listen(config.port, (_) => {
-  const database = new Database(config[process.env.NODE_ENV]);
+  const database = new Database(config[getEnv()]);
   database.connect();
 });

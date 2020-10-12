@@ -7,17 +7,48 @@ export const NAVS = [
     // callback: () => router.push('/'),
   },
   {
-    link: '/friends',
-    icon: 'icon-Friends-',
-    color: '#f9a01c',
-    callback: () => router.push('/friends'),
-  },
-  {
     icon: 'icon-QQ',
     color: '#12b7f5',
     callback: () => {
       window.open('http://wpa.qq.com/msgrd?v=3&uin=3532371088&site=qq&menu=yes');
     },
+  },
+  {
+    icon: 'icon-github',
+    color: 'balck',
+    callback: () => {
+      window.open('https://github.com/adaxh');
+    },
+  },
+  {
+    icon: 'icon-shequdongtai',
+    callback: () => router.push('/moments'),
+    bgColor: 'rgb(220 179 85)',
+    title: '动态',
+    iconfont: 'icon-dongtai',
+  },
+  {
+    icon: 'icon-message',
+    callback: () => router.push('/article'),
+    bgColor: '#00bbee',
+    title: '文章',
+    iconfont: 'icon-liuyanban1',
+  },
+  {
+    icon: 'icon-message',
+    callback: () => router.push('/message'),
+    bgColor: 'rgb(174 109 245)',
+    title: '留言板',
+    iconfont: 'icon-liuyanban1',
+  },
+  {
+    link: '/friends',
+    icon: 'icon-Friends-',
+    color: '#f9a01c',
+    callback: () => router.push('/friends'),
+    bgColor: 'rgb(152, 185, 220)',
+    title: '友情链接',
+    iconfont: 'icon-lianjie',
   },
   {
     icon: 'icon-weibo',
@@ -30,21 +61,9 @@ export const NAVS = [
         },
       });
     },
-  },
-  {
-    icon: 'icon-github',
-    color: 'balck',
-    callback: () => {
-      window.open('https://github.com/adaxh');
-    },
-  },
-  {
-    icon: 'icon-message',
-    callback: () => router.push('/message'),
-  },
-  {
-    icon: 'icon-shequdongtai',
-    callback: () => router.push('/moments'),
+    bgColor: 'rgb(234 102 102)',
+    title: '微博',
+    iconfont: 'icon-weibo2',
   },
 ];
 

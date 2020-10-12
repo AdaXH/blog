@@ -1,6 +1,13 @@
 import Api from '@/utils/request';
 import Cookies from 'js-cookie';
-import { Base64 } from 'js-base64';
+// import { Base64 } from 'js-base64';
+
+// function isDev() {
+//   return /localhost/.test(window.location.href);
+// }
+
+// const { host } = window.location;
+// const prefix = /www/.test(host) ? host : host.replace(/www/g, '');
 
 export default {
   namespace: 'user',
@@ -10,7 +17,7 @@ export default {
       yield put({ type: 'save' });
     },
     *customer(action, { call, put, select }) {
-      const customer = yield select(state => state.user.customer);
+      const customer = yield select((state) => state.user.customer);
       if (!customer) {
         const newCustomer = yield call(Api, 'api/get-customer');
         if (newCustomer.success) {
@@ -27,12 +34,7 @@ export default {
       });
       return customer;
     },
-    *register(
-      {
-        payload: { pwd, name, captchaCode, email },
-      },
-      { call, put }
-    ) {
+    *register({ payload: { pwd, name, captchaCode, email } }, { call, put }) {
       const result = yield call(Api, 'api/register', 'POST', {
         name,
         pwd,
@@ -47,7 +49,7 @@ export default {
       return result;
     },
     *setAvatar(state, { call, put }) {
-      const arrayBufferToBase64 = buffer => {
+      const arrayBufferToBase64 = (buffer) => {
         let binary = '';
         const bytes = new Uint8Array(buffer);
         const len = bytes.byteLength;
@@ -76,12 +78,7 @@ export default {
       });
       return result;
     },
-    *getUserInfo(
-      {
-        payload: { cb },
-      },
-      { call, put }
-    ) {
+    *getUserInfo({ payload: { cb } }, { call, put }) {
       const result = yield call(Api, 'api/getUserInfoByToken', 'POST');
       yield put({
         type: 'callGetUserInfo',
@@ -93,18 +90,13 @@ export default {
       });
       yield cb && cb();
     },
-    *login(
-      {
-        payload: { pwd, name, state },
-      },
-      { call, put, select }
-    ) {
+    *login({ payload: { pwd, name, state } }, { call, put, select }) {
       const result = yield call(Api, 'api/login', 'POST', {
         name,
         pwd,
         state,
       });
-      const customer = yield select(s => s.user.customer);
+      const customer = yield select((s) => s.user.customer);
       yield put({
         type: 'callLogin',
         payload: {
@@ -130,8 +122,7 @@ export default {
       };
     },
     signOut(state) {
-      Cookies.remove('user');
-      Cookies.remove('token');
+      removeInfo();
       return {
         isLogin: false,
         user: {},
@@ -146,13 +137,32 @@ export default {
       return payload;
     },
     callLogin(state, { payload }) {
-      if (payload.success && payload.token) {
-        Cookies.set('token', payload.token, { expires: 2 });
-        Cookies.set('user', Base64.encode(payload.name), {
-          expires: 2,
-        });
-      }
+      // if (payload.success && payload.token) {
+      //   const cfg = {
+      //     domain: !isDev() ? 'localhost' : prefix,
+      //     expires: 2,
+      //   };
+      //   Cookies.set('token', payload.token, cfg);
+      //   Cookies.set('user', Base64.encode(payload.name), cfg);
+      // }
+      // console.log('payload', payload);
       return payload;
     },
   },
 };
+
+function removeInfo() {
+  [
+    '.adaxh.site',
+    'www.adaxh.site',
+    'adaxh.site',
+    'localhost',
+    'adaxh.applinzi.com',
+    'www.adaxh.applinzi.com',
+  ].forEach((domain) => {
+    Cookies.remove('user', {
+      domain,
+    });
+    Cookies.remove('token', { domain });
+  });
+}

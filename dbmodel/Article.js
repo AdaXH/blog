@@ -36,5 +36,9 @@ module.exports = mongoose.model(
       }),
       default: [],
     },
+    abstract: {
+      type: String,
+      default: '该文章没有摘要~',
+    },
   }),
 );

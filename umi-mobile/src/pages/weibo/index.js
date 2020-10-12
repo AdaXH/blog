@@ -13,8 +13,7 @@ export default ({
   const [layVisible, setVisible] = useState(true);
   useEffect(() => {
     if (ref && ref.current) {
-      ref.current.onload = e => {
-        console.log('e', e);
+      ref.current.onload = (e) => {
         setVisible(false);
       };
     }
@@ -26,7 +25,6 @@ export default ({
           <Loading />
         </div>
       )}
-      <div className={styles.ifTitle}>我的微博</div>
       <iframe ref={ref} src={decodeURIComponent(src)} title="ada" allowFullScreen></iframe>
     </div>
   );

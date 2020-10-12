@@ -1,0 +1,47 @@
+.flyItem {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  max-width: 300px;
+  background: #1b1c1d;
+  padding: 20px;
+  will-change: transform, translate;
+  border-radius: 5px;
+  // color: rgba(0, 0, 0, 0.85);
+  color: white;
+  animation: opacityIn 1s forwards;
+  transform: translate3d(0, 0, 0);
+  transition: background 1.5s, color 1.5s;
+  .content {
+    white-space: pre-wrap;
+  }
+  .footer {
+    font-size: 12px;
+    .line {
+      display: inline-block;
+      width: 50px;
+      position: relative;
+      height: 0.5px;
+      background: rgba(0, 0, 0, 0.85);
+      top: -3.5px;
+      right: 7px;
+    }
+    margin-top: 10px;
+    text-align: right;
+    border-top: 1px solid #b5b4b1;
+    padding-top: 5px;
+  }
+  //   transition: transform 1s linear;
+}
+.flyItem:hover {
+  background: #fff2f2;
+  color: black;
+}
+@keyframes opacityIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

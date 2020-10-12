@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "umi dev",
-    "build": "umi build",
+    "build": "umi build && mv ./dist/ ../public/mobile",
     "test": "umi test",
     "lint": "eslint --ext .js src mock tests",
     "precommit": "lint-staged"
@@ -10,8 +10,12 @@
   "dependencies": {
     "dva": "^2.6.0-beta.6",
     "moment": "^2.24.0",
+    "qs-stringify": "^1.2.1",
+    "rc-texty": "^0.2.0",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react-html-parser": "^2.0.2",
+    "react-use": "^15.3.4"
   },
   "devDependencies": {
     "babel-eslint": "^9.0.0",

@@ -3,9 +3,11 @@ body,
 #root {
   min-height: 100%;
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 #root {
   transition: background 1s;
+  background: #192a34;
 }
 body {
   margin: 0;

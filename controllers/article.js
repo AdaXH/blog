@@ -69,6 +69,7 @@ routerExports.saveArticle = {
       type,
       time,
       title = 'title',
+      abstract,
     } = ctx.request.body;
     try {
       const saveResult = await new Article({
@@ -79,6 +80,7 @@ routerExports.saveArticle = {
         type,
         viewer: 0,
         title,
+        abstract,
       }).save();
       if (!saveResult._id) throw '保存失败';
       ctx.body = { success: true };
@@ -119,9 +121,12 @@ routerExports.updateArticleById = {
   method: 'post',
   url: '/updateArticleById',
   route: async (ctx, next) => {
-    const { _id, summary, title = '', type } = ctx.request.body;
+    const { _id, summary, title = '', type, abstract } = ctx.request.body;
     try {
-      await Article.updateOne({ _id }, { $set: { summary, type, title } });
+      await Article.updateOne(
+        { _id },
+        { $set: { summary, type, title, abstract } },
+      );
       ctx.body = { success: true };
     } catch (error) {
       ctx.body = {

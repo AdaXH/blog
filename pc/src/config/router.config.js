@@ -1,65 +1,69 @@
-import Index from '../components/index';
-import Dynamic from '../components/dynamic';
-import Message from '../components/message';
-import Gallery from '../components/gallery/gallery';
-import Introduction from '../components/introduction';
-import Admin from '../components/admin';
-import Article from '../components/article/';
-import Detail from '../components/article/component/ArticleDetail';
-import FriendShip from '../components/FriendShip';
-
 export default [
   {
     path: '/home',
-    Component: () => Index,
+    component: () => import('@/page/index'),
     exact: false,
-    title: '首页',
+    title: 'Home',
   },
   {
     path: '/gallery',
-    Component: () => Gallery,
+    component: () => import('@/page/gallery/gallery'),
     exact: false,
-    title: '图库',
+    title: 'Gallery',
   },
   {
     path: '/moment',
-    Component: () => Dynamic,
+    component: () => import('@/page/dynamic'),
     exact: false,
-    title: '动态',
+    title: 'Moment',
   },
   {
     path: '/article',
-    Component: () => Article,
+    component: () => import('@/page/article/'),
     exact: true,
-    title: '文章',
+    title: 'Article',
   },
   {
     path: '/message',
-    Component: () => Message,
+    component: () => import('@/page/message'),
     exact: false,
-    title: '留言板',
-  },
-  {
-    path: '/admin',
-    Component: () => Admin,
-    exact: false,
-    title: '管理员',
-    permission: true,
-  },
-  {
-    path: '/friend-ship',
-    Component: () => FriendShip,
-    title: '友情链接',
+    title: 'Message',
   },
   {
     path: '/introduction',
-    Component: () => Introduction,
+    component: () => import('@/page/introduction'),
     exact: false,
-    title: '关于',
+    title: 'About',
+  },
+  {
+    path: '/more',
+    type: 'more',
+    title: 'More',
+    component: () => import('@/config/children'),
+    childRoutes: [
+      {
+        path: '/more/admin',
+        component: () => import('@/page/admin'),
+        exact: false,
+        title: 'Admin',
+        permission: true,
+      },
+      {
+        path: '/more/friend-ship',
+        component: () => import('@/page/FriendShip'),
+        title: 'Link',
+      },
+      {
+        path: '/more/netease',
+        component: () => import('@/page/netease'),
+        exact: false,
+        title: 'Netease',
+      },
+    ],
   },
   {
     path: '/article-detail',
-    Component: () => Detail,
+    component: () => import('@/page/article/component/ArticleDetail'),
     exact: false,
     hidden: true,
   },

@@ -1,8 +1,13 @@
 import moment from 'moment';
 moment.lang('zh-cn');
 
-export const delay = time =>
-  new Promise(resolve => setTimeout(() => resolve()), time * 1000);
+export function delay(time) {
+  return new Promise((ok) => {
+    setTimeout(() => {
+      ok();
+    }, time * 1000);
+  });
+}
 
 export const getParam = (search, key) => {
   try {
@@ -21,10 +26,14 @@ export const getParam = (search, key) => {
 };
 
 export function setCache(key, data) {
-  window.localStorage.setItem(
-    key,
-    data instanceof Object ? JSON.stringify(data) : data
-  );
+  try {
+    window.localStorage.setItem(
+      key,
+      data instanceof Object ? JSON.stringify(data) : data
+    );
+  } catch (error) {
+    //
+  }
 }
 
 export function getCache(key) {
@@ -45,9 +54,7 @@ export function hasChange(data1, data2) {
 
 export function relativeTime(time) {
   if (isNaN(time)) {
-    return moment(time)
-      .startOf('minute')
-      .fromNow();
+    return moment(time).startOf('minute').fromNow();
   }
   return moment(new Date(Number(time)))
     .startOf('minute')
@@ -59,6 +66,6 @@ export function formatTime(time) {
 }
 
 export function resetObj(obj) {
-  Object.keys(obj).forEach(key => (obj[key] = ''));
+  Object.keys(obj).forEach((key) => (obj[key] = ''));
   return obj;
 }

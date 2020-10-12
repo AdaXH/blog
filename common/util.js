@@ -1,16 +1,19 @@
 const jwt = require('jsonwebtoken');
 const request = require('request');
+const { HOST } = require('./constant');
 const { SMTPClient } = require('emailjs');
 
+const env = getEnv();
+
 /* 通过token获取JWT的payload部分 */
-const getJWTPayload = (token) => {
+const getJWTPayload = token => {
   // 验证并解析JWT
   if (!token) return;
   return jwt.verify(token, 'secret');
 };
 
 module.exports = {
-  request2: (url) => {
+  request2: url => {
     return new Promise((resolve, reject) => {
       request(url, (err, _, res) => {
         if (res) {
@@ -23,7 +26,7 @@ module.exports = {
     });
   },
   getJWTPayload,
-  parseToken: (authorization) => {
+  parseToken: authorization => {
     try {
       const tokenParse = getJWTPayload(authorization);
       if (!tokenParse) throw 'token认证失败';
@@ -34,11 +37,16 @@ module.exports = {
     }
   },
   reMapError,
-  sendEmail: async (content, target = 'xxx.com', title = '友情链接通知') => {
+  sendEmail: async (
+    content,
+    target = '18668465750@163.com',
+    title = '友情链接通知',
+  ) => {
     try {
-      const SMTP = 'your smtp code';
+      if (env === 'development') return;
+      const SMTP = 'xxx';
       const server = new SMTPClient({
-        user: 'xxxxx',
+        user: 'adaxh@qq.com',
         password: SMTP,
         host: 'smtp.qq.com',
         ssl: true,
@@ -47,7 +55,7 @@ module.exports = {
       server.send(
         {
           text: content, // 邮件内容
-          from: 'xxxx@.com', // 谁发送的
+          from: 'adaxh@qq.com', // 谁发送的
           to: target, // 发送给谁的
           subject: title, // 邮件主题
         },
@@ -59,7 +67,7 @@ module.exports = {
       console.log('err', err);
     }
   },
-  randomCode: (length) => {
+  randomCode: length => {
     if (!length) return '';
     const result = [];
     for (let i = 0; i < length; i++) {
@@ -67,10 +75,10 @@ module.exports = {
     }
     return result.join('');
   },
-  getRandomLength: (length) => {
+  getRandomLength: length => {
     return Math.floor(Math.random() * length);
   },
-  escapeData: (data) => {
+  escapeData: data => {
     return data
       .replace(
         /<input\stype="text"\sdata-formula="e=mc\^2"\sdata-link="quilljs\.com"\sdata-video="Embed\sURL"\splaceholder="Embed\sURL">/g,
@@ -81,6 +89,20 @@ module.exports = {
         '**',
       );
   },
+  getEnv,
+  setCookieWithHost: (cookies, key, value, options = {}) => {
+    const date = new Date();
+    date.setDate(date.getDate() + 2);
+    HOST.forEach(item => {
+      cookies.set(key, value, {
+        ...options,
+        expires: date,
+        httpOnly: false,
+        overwrite: false,
+        domain: item,
+      });
+    });
+  },
 };
 
 function reMapError(error) {
@@ -89,4 +111,13 @@ function reMapError(error) {
       ? '会话已过期，请重新登录验证'
       : JSON.stringify(error)
     : error.toString();
+}
+
+function getEnv() {
+  try {
+    return process.argv[process.argv.length - 1].replace(/--env=/, '');
+  } catch (error) {
+    console.log('get env error', error);
+    return 'udnefined';
+  }
 }

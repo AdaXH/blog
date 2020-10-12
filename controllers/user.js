@@ -12,6 +12,7 @@ const {
   randomCode,
   sendEmail,
   request2,
+  setCookieWithHost,
 } = require('../common/util');
 const querystring = require('querystring');
 
@@ -147,10 +148,9 @@ routerExports.login = {
   url: '/login',
   route: async (ctx, next) => {
     const { name, pwd } = ctx.request.body;
-    const date = new Date();
-    date.setDate(date.getDate() + 2);
     try {
       // const result = await callLogin(name, pwd, state, email)
+      const { cookies } = ctx;
       const findUser = await User.findOne({ name });
       const findEmail = await User.findOne({ email: name });
       if (!findUser && !findEmail) {
@@ -165,17 +165,8 @@ routerExports.login = {
       if (!user) {
         throw '账号和密码不匹配';
       }
-      const isDev = process.env.NODE_ENV === 'development';
-      const cookieCfg = {
-        expires: date,
-        httpOnly: false,
-        overwrite: false,
-      };
-      if (!isDev) {
-        cookieCfg.domain = '.adaxh.site';
-      }
-      ctx.cookies.set('user', Base64.encode(name), cookieCfg);
-      ctx.cookies.set('token', getToken({ _id: user._id }), cookieCfg);
+      setCookieWithHost(cookies, 'user', Base64.encode(name));
+      setCookieWithHost(cookies, 'token', getToken({ _id: user._id }));
       delete user._doc.password;
       // user.name = name;
       console.log(name + ' 上线');
@@ -186,7 +177,7 @@ routerExports.login = {
       ctx.body = {
         success: true,
         ...user._doc,
-        token: getToken({ _id: user._id }),
+        // token: getToken({ _id: user._id }),
       };
     } catch (error) {
       console.log('error', error);
@@ -573,7 +564,7 @@ routerExports.qq_login = {
   method: 'get',
   route: async (ctx) => {
     try {
-      const { query } = ctx;
+      const { query, cookies } = ctx;
       const body = await request2(
         `https://graph.qq.com/oauth2.0/me?${querystring.stringify(
           query,
@@ -609,24 +600,13 @@ routerExports.qq_login = {
         qqUserVo.name += '' + nameCount;
       }
       if (!user) {
-        new User({
+        await new User({
           ...qqUserVo,
         }).save();
       }
-      const date = new Date();
-      date.setDate(date.getDate() + 2);
       const _qqUserId = (await User.findOne({ qqUserId: openid })) || {};
-      const isDev = process.env.NODE_ENV === 'development';
-      const cookieCfg = {
-        expires: date,
-        httpOnly: false,
-        overwrite: false,
-      };
-      if (!isDev) {
-        cookieCfg.domain = '.adaxh.site';
-      }
-      ctx.cookies.set('token', getToken({ _id: _qqUserId._id }), cookieCfg);
-      ctx.cookies.set('user', Base64.encode(qqUserObj.nickname), cookieCfg);
+      setCookieWithHost(cookies, 'user', Base64.encode(qqUserObj.nickname));
+      setCookieWithHost(cookies, 'token', getToken({ _id: _qqUserId._id }));
       ctx.body = {
         ...qqUserObj,
         success: true,

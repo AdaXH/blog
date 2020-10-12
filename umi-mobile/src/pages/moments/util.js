@@ -3,7 +3,7 @@ moment.lang('zh-cn');
 
 export function setStyle(index) {
   return {
-    animationDelay: `${index / 3}s`,
+    animationDelay: `${index / 7}s`,
   };
 }
 

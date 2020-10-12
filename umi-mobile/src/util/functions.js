@@ -1,10 +1,12 @@
-export const delay = time => new Promise(resolve => setTimeout(() => resolve(), time * 1000));
+import moment from 'moment';
 
-export const loadImage = img => {
-  return new Promise(resolve => {
+export const delay = (time) => new Promise((resolve) => setTimeout(() => resolve(), time * 1000));
+
+export const loadImage = (img) => {
+  return new Promise((resolve) => {
     const f = new Image();
     f.src = img || 'https:www.adaxh.site/resouce/images/fly.jpg';
-    f.onload = e => {
+    f.onload = (e) => {
       if (f.complete) {
         resolve(f.src);
         return;
@@ -14,7 +16,11 @@ export const loadImage = img => {
 };
 
 export function setCache(key, data) {
-  window.localStorage.setItem(key, data instanceof Object ? JSON.stringify(data) : data);
+  try {
+    window.localStorage.setItem(key, data instanceof Object ? JSON.stringify(data) : data);
+  } catch (error) {
+    // ingore
+  }
 }
 
 export function getCache(key) {
@@ -27,4 +33,8 @@ export function getCache(key) {
     }
   }
   return null;
+}
+
+export function formatTime(time) {
+  return moment(new Date(Number(time))).format('YYYY-MM-DD HH:mm');
 }

@@ -1,0 +1,162 @@
+@keyframes formRight {
+  form {
+    opacity: 0;
+    transform: translate3d(100px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+.galleryContainer {
+  overflow: hidden;
+  overflow-y: auto;
+  height: 700px;
+  padding: 20px;
+  .cardContainer {
+    float: left;
+    width: 210px;
+    height: 170px;
+    margin-left: 20px;
+    margin-top: 20px;
+    box-sizing: border-box;
+    // padding-left: 20px;
+    border: 1px solid #eee;
+    position: relative;
+    .upload {
+      position: absolute;
+      z-index: 1;
+      opacity: 0;
+      width: 100%;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+      height: 100%;
+      display: block;
+    }
+    img {
+      display: block;
+      width: 100%;
+      height: 120px;
+    }
+    span {
+      color: rgba(68, 68, 68, 0.486);
+      line-height: 40px;
+      margin-left: 20px;
+    }
+  }
+}
+.adminContainer {
+  width: 100%;
+  position: relative;
+  margin: 0 auto;
+  height: 100%;
+  opacity: 0;
+  will-change: opacity, transform;
+  animation: formRight 1s;
+  animation-fill-mode: forwards;
+  transform: translate3d(100px, 0, 0);
+  background: white;
+  padding: 50px;
+  overflow-y: auto;
+
+  :global {
+    .ant-tabs {
+      margin-top: 30px;
+    }
+  }
+  .info {
+    text-align: center;
+    font-size: 20px;
+    color: #f54c53;
+    margin-top: 50px;
+  }
+  section {
+    position: unset;
+  }
+}
+#components-layout-demo-custom-trigger .trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+#components-layout-demo-custom-trigger .trigger:hover {
+  color: #1890ff;
+}
+
+#components-layout-demo-custom-trigger .logo {
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px;
+}
+.content {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.operation {
+  a {
+    margin-right: 20px;
+  }
+}
+.articleManage {
+  position: relative;
+  // height: 750px;
+  height: 760px;
+  overflow-y: auto;
+  .quillContainer {
+    overflow: hidden;
+    overflow-y: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    background: white;
+    .backBtn {
+      margin-left: 70px;
+      margin-top: 10px;
+    }
+    .typeSelect {
+      width: 300px;
+    }
+    .inputTitle {
+      margin-top: 10px;
+      input {
+        width: 300px;
+      }
+    }
+    div.quill {
+      min-height: 500px;
+    }
+    pre {
+      background-color: #312f2f !important;
+    }
+  }
+  .tableContainer {
+    overflow: hidden;
+    overflow-y: auto;
+    //   position: relative;
+    //   right: -50px;
+    //   padding-right: 50px;
+  }
+  .summary {
+    overflow: hidden;
+    width: 330px;
+    height: 21px;
+    line-height: 21px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .summary * {
+    font-size: 14px !important;
+    font-weight: normal !important;
+    white-space: pre-wrap !important;
+    //   white-space: nowrap !important;
+    //   display: inline !important;
+  }
+}

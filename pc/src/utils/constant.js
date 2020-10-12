@@ -14,12 +14,14 @@ export const NO_LOADING_API = [
   '/queryArticleById',
   '/updateArticleViewerById',
   '/queryFriends',
+  '/netease/get-comment',
 ];
 
 export const NOERROR_API = ['/getUserInfoByToken'];
 
 // 全屏的路由
 export const FULL_SCREEN_PATH = [
-  '/friend-ship', // 友情链接
-  '/admin', // 管理员
+  '/more/friend-ship', // 友情链接
+  '/more/admin', // 管理员
+  '/more/netease', // 网抑云
 ];

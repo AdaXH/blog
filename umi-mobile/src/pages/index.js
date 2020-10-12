@@ -7,7 +7,7 @@ import { useDidMount } from '@/util/hooks';
 import request from '@/util/request';
 import styles from './index.less';
 
-export default props => {
+export default (props) => {
   const [loading, change] = useState(true);
   useDidMount(async () => {
     const cacheData = [
@@ -17,9 +17,10 @@ export default props => {
         key: 'moments',
       },
       {
-        api: '/api/getAllMessages',
-        data: getCache('messages'),
-        key: 'messages',
+        api: '/api/getAllMessage',
+        data: getCache('messages1'),
+        method: 'POST',
+        key: 'messages1',
       },
       {
         api: '/api/queryFriends',
@@ -29,7 +30,7 @@ export default props => {
     ];
     for await (const item of cacheData) {
       if (!item.data) {
-        const result = await request(item.api);
+        const result = await request(item.api, item.method || 'get');
         if (result.success) {
           setCache(item.key, result.data);
         }
@@ -38,10 +39,12 @@ export default props => {
     change(false);
   });
   if (loading) return <Loading />;
+  const curraneYear = new Date().getFullYear();
   return (
     <>
       <Home {...props} />
-      <div className={styles.tip}>移动端没怎么写，完整交互在pc</div>
+      <div className={styles.footerInfo}>React Blog © 2018 - {curraneYear} Adaxh</div>
+      <div className={styles.tip}>移动端remaking，完整交互在pc</div>
     </>
   );
 };

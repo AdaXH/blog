@@ -11,7 +11,7 @@
     <link rel="canonical" href="http://www.adaxh.site" />
     <meta http-equiv="X-Frame-Options" content="*" />
     <script>
-      (function() {
+      (function () {
         var canonicalURL, curProtocol;
         var x = document.getElementsByTagName('link');
         if (x.length > 0) {
@@ -21,7 +21,7 @@
         if (!canonicalURL) curProtocol = window.location.protocol.split(':')[0];
         else curProtocol = canonicalURL.split(':')[0];
         if (!canonicalURL) canonicalURL = window.location.href;
-        !(function() {
+        !(function () {
           var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,
             r = canonicalURL,
             t = document.referrer;
@@ -41,8 +41,8 @@
     </script>
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.json" />
-    <script src="https://at.alicdn.com/t/font_1928124_x3oa34ls7s.js"></script>
-    <title>Your App</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1928124_7xhkouq5ecq.css" />
+    <title>React - Mobile</title>
     <script>
       //按照iphoneX 适配rem
       document.documentElement.style.fontSize = document.documentElement.clientWidth / 3.75 + 'px';
@@ -52,4 +52,11 @@
   <body>
     <div id="root"></div>
   </body>
+  <script
+    type="text/javascript"
+    charset="utf-8"
+    src="https://connect.qq.com/qc_jssdk.js"
+    data-appid="101902433"
+    data-redirecturi="https://www.adaxh.site/qq"
+  ></script>
 </html>

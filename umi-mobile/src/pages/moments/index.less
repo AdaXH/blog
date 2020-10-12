@@ -1,21 +1,12 @@
+@fontColor: #ffffff9c;
 @keyframes formRight {
   from {
     opacity: 0;
-    transform: translate3d(-100px, 0, 0) scale3d(0.3, 0.3, 0.3);
+    transform: translate3d(30px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
-  }
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale3d(0.3, 0.3, 0.3);
-  }
-  to {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
+    transform: translate3d(0, 0, 0);
   }
 }
 .dark {
@@ -23,18 +14,21 @@
   .friendItem {
     .view {
       div.title {
-        color: white;
+        color: @fontColor;
       }
     }
   }
 }
 .light {
-  background: white !important;
+  background: @fontColor !important;
 }
 .itemF {
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 0.37rem;
+  animation: formRight 1s forwards;
+  opacity: 0;
+  transform: translate3d(100px, 0, 0);
   cursor: pointer;
   overflow-x: hidden;
   // animation: fadeIn 0.6s forwards;
@@ -55,13 +49,9 @@
     width: 3rem;
     // height: 1rem;
     display: flex;
-    animation: formRight 1s forwards;
-    opacity: 0;
-    transform: translate3d(100px, 0, 0) scale3d(0.3, 0.3, 0.3);
     color: #2d2c2cd6;
-    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
-      0 9px 28px 8px rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.3s, border-color 0.3s, -webkit-box-shadow 0.3s;
+    flex-direction: column;
+    border-bottom: 1px solid #f2f2f2;
     .avatar {
       width: 3rem;
       height: 2rem;
@@ -84,7 +74,7 @@
       flex-direction: column;
       .title {
         height: 0.3rem;
-        color: black;
+        color: @fontColor;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

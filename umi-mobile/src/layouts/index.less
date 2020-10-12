@@ -1,4 +1,65 @@
 // @import 'https://at.alicdn.com/t/font_1436901_hxc1zfa7tt8.css';
+header {
+  position: fixed;
+  // background: #5a5a5a;
+  width: 100%;
+  height: 0.6rem;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding-left: 0.3rem;
+  background: rgba(25, 42, 52, 0);
+  transition: all 0.5s;
+  div {
+    position: relative;
+    display: initial;
+    padding-right: 20px;
+    line-height: 0.6rem;
+    text-align: center;
+    font-size: 0.11rem;
+    a {
+      color: white;
+    }
+  }
+  div.isCurrent a {
+    color: white;
+    padding-bottom: 22px;
+    border-bottom: 1px solid white;
+    font-weight: 500;
+  }
+}
+.bg {
+  background: rgba(25, 42, 52, 1);
+}
+.content {
+  // position: relative;
+  // margin-top: 0.6rem;
+  .wrapper {
+    position: relative;
+    // top: -0.6rem;
+    height: 2.5rem;
+    background-size: cover;
+    .navInfo {
+      text-align: center;
+      font-size: 0.13rem;
+      color: white;
+      .text {
+        animation: leftf 0.5s forwards;
+      }
+      .line {
+        height: 0.01rem;
+        background: white;
+      }
+      .pathName {
+        animation: rightf 0.5s forwards;
+      }
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate3d(-50%, -50%, 0);
+    }
+  }
+}
 .normal {
   position: relative;
   width: 100%;
@@ -36,6 +97,26 @@
   }
   to {
     opacity: 1;
+  }
+}
+@keyframes leftf {
+  from {
+    opacity: 0;
+    transform: translate3d(0.5rem, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes rightf {
+  from {
+    opacity: 0;
+    transform: translate3d(-0.5rem, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 .back,

@@ -3,19 +3,6 @@ import Cookies from 'js-cookie';
 import Loading from '../wrapComponent/Loading';
 import Notification from '../wrapComponent/Notification';
 import { NO_LOADING_API, NOERROR_API } from './constant';
-// function parseJSON(response) {
-//   return response.json();
-// }
-
-// function checkStatus(response) {
-//   if (response.status >= 200 && response.status < 300) {
-//     return response;
-//   }
-
-//   const error = new Error(response.statusText);
-//   error.response = response;
-//   throw error;
-// }
 
 /**
  * Requests a URL, returning a promise.
@@ -24,13 +11,6 @@ import { NO_LOADING_API, NOERROR_API } from './constant';
  * @param  {object} [options] The options we want to pass to "fetch"
  * @return {object}           An object containing either "data" or "err"
  */
-// export function _request(url, options) {
-//   return fetch(url, options)
-//     .then(checkStatus)
-//     .then(parseJSON)
-//     .then(data => ({ data }))
-//     .catch(err => ({ err }));
-// }
 
 function parseError(error) {
   return error instanceof Object
@@ -40,11 +20,13 @@ function parseError(error) {
 
 const isBuild = /5050+|adaxh/.test(window.location.href);
 export default function Api(url, method = 'GET', data, isSvg = false) {
-  const _url_ = isBuild ? url.replace(/api/, '') : url;
-  // console.log(_url_)
-  const needLoading = NO_LOADING_API.includes(
-    /api/.test(_url_) ? _url_.replace(/api/g, '') : _url_
-  );
+  const _url_ = (isBuild ? url.replace(/api/, '') : url).replace(/\/more/, '');
+  const { origin } = window.location;
+  const needLoading =
+    /netease/.test(_url_) ||
+    NO_LOADING_API.includes(
+      /api/.test(_url_) ? _url_.replace(/api/g, '') : _url_
+    );
   // 不需要提示错误的接口
   const noError = NOERROR_API.includes(
     /api/.test(_url_) ? _url_.replace(/api/g, '') : _url_
@@ -60,9 +42,13 @@ export default function Api(url, method = 'GET', data, isSvg = false) {
       },
     };
     method === 'POST' && (options.body = JSON.stringify(data));
+    let senceKey = origin[origin.length - 1] === '/' ? '' : '/';
+    if (isBuild) {
+      senceKey = '';
+    }
     return new Promise((resolve, reject) => {
       !needLoading && Loading.show({});
-      fetch(_url_, options)
+      fetch(`${origin}${senceKey}${_url_}`, options)
         .then((response) => {
           if (response.status >= 200 && response.status < 300)
             return response.json();
@@ -92,8 +78,9 @@ export default function Api(url, method = 'GET', data, isSvg = false) {
         withCredentials: true,
       },
     };
+    const { origin } = window.location;
     return new Promise((resolve, reject) => {
-      fetch(_url_, options)
+      fetch(`${origin}${_url_}`, options)
         .then((response) => {
           if (response.status >= 200 && response.status < 300)
             return response.text();
