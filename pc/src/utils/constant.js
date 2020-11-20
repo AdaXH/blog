@@ -25,3 +25,5 @@ export const FULL_SCREEN_PATH = [
   '/more/admin', // 管理员
   '/more/netease', // 网抑云
 ];
+
+export const EMOJI_CACHE_KEY = '__emoji__list';

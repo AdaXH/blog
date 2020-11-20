@@ -1,4 +1,4 @@
-const { isTarget, isJSON, needFilter, getTime } = require('./util');
+const { isTarget, isJSON, needFilter, getTime } = require('../common/util');
 
 module.exports = async (ctx, next) => {
   const {
@@ -9,7 +9,7 @@ module.exports = async (ctx, next) => {
   const end = Date.now();
   try {
     const res = JSON.parse(isJSON(ctx.body, 'String') ? ctx.body : '{}');
-    const { success, errorMsg } = res;
+    const { success, errorMsg, traceId } = res;
     const agentUrl = header['user-agent'];
     if (needFilter(agentUrl) || needFilter(url)) return;
     if (
@@ -20,10 +20,6 @@ module.exports = async (ctx, next) => {
     const userAgent = /Mobile+|iPhone+|Android/.test(agentUrl)
       ? 'Mobile'
       : 'pc';
-    // const date = new Date()
-    // const time = `${
-    //   date.getMonth() + 1
-    // }月${date.getDate()}号 ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`;
     const time = getTime();
     let target = 'unknown';
     if (userAgent === 'Mobile') {
@@ -44,7 +40,7 @@ module.exports = async (ctx, next) => {
 date: ${time} 
 api:  [${method} ${end - start}ms ${url}] 
 request: ${JSON.stringify(isTarget(body, 'Object') ? body : {})} 
-response: ${JSON.stringify({ success, errorMsg })}
+response: ${JSON.stringify({ success, errorMsg, traceId })}
     `;
     console.log(log);
   } catch (error) {

@@ -1,7 +1,8 @@
 import React from 'react';
 // import { FLY_USERS, MAX_PAGE_COUNT } from '../constant';
+import { getHtml } from '../util';
 import styles from '../index.less';
-export default ({ data }) => {
+export default ({ data, emojiList }) => {
   if (!data.length) return null;
   return (
     <div className={styles.flyMsgContainer}>
@@ -11,9 +12,10 @@ export default ({ data }) => {
             key={i}
             style={{ animationDuration: 20 + i + 's' }}
             className={styles.msgFlyItem}
-          >
-            {item.content}
-          </div>
+            dangerouslySetInnerHTML={{
+              __html: getHtml(item.content, emojiList),
+            }}
+          />
         );
       })}
     </div>

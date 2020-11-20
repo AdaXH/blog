@@ -1,0 +1,42 @@
+.box {
+  // background: #efefef;
+  height: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.user {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: box 0.5s forwards;
+  .avatar {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.5rem;
+    background-size: cover;
+    overflow: hidden;
+  }
+  .name {
+    margin-top: 0.1rem;
+    font-size: 0.15rem;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    a {
+      font-size: 0.12rem;
+      font-weight: normal;
+    }
+  }
+}
+@keyframes box {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -19,3 +19,7 @@ export async function deleteInnerRepeat(data) {
 export function getAllMessage(data) {
   return Api('api/getAllMessage', 'POST', data);
 }
+
+export async function getEmojis() {
+  return Api('api/getEmojis');
+}

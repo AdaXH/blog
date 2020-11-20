@@ -11,7 +11,7 @@ routerExports.deleteInnerRepeat = {
     const { _id, _parent_id: parentId, toRepeatUserId } = ctx.request.body;
     try {
       const payload = getJWTPayload(ctx.headers.authorization);
-      if (!payload) throw 'token认证失败';
+      if (!payload) throw '会话过期，请重新登陆';
       const user = await User.findOne({ _id: payload._id });
       if (!user) throw '当前用户不存在或会话已过期';
       if (toRepeatUserId !== payload._id && !user.admin) {
@@ -43,7 +43,7 @@ routerExports._repeatMsg = {
     const { _id, toRepeat, info, toRepeatId } = ctx.request.body;
     try {
       const payload = getJWTPayload(ctx.headers.authorization);
-      if (!payload) throw 'token认证失败';
+      if (!payload) throw '会话过期，请重新登陆';
       const user = await User.findOne({ _id: payload._id });
       if (!user) throw '当前用户不存在';
       if (payload._id === toRepeatId) throw '请勿回复自己';
@@ -77,6 +77,7 @@ routerExports._repeatMsg = {
       newMsg.repeat = await setAllAvatar(newMsg.repeat);
       ctx.body = { success: true, data: { ...newMsg._doc } };
     } catch (error) {
+      console.log('error', error);
       ctx.body = {
         success: false,
         errorMsg: error,
@@ -92,7 +93,7 @@ routerExports.deleteMsg = {
     const { _id } = ctx.request.body;
     try {
       const payload = getJWTPayload(ctx.headers.authorization);
-      if (!payload) throw 'token认证失败';
+      if (!payload) throw '会话过期，请重新登陆';
       const currentMsg = await Message.findOne({ _id });
       const user = await User.findOne({ _id: payload._id });
       if (!user) throw '会话已过期';
@@ -119,7 +120,7 @@ routerExports._leaveMsg = {
       let payload = { _id: 'null' };
       if (!quickReply) {
         payload = getJWTPayload(ctx.headers.authorization);
-        if (!payload) throw 'token认证失败';
+        if (!payload) throw '会话过期，请重新登陆';
         if (!date || !content) throw '入参错误';
         user = await User.findOne(
           { _id: payload._id },
@@ -171,7 +172,7 @@ routerExports._leaveMsgv2 = {
       let payload = { _id: 'null' };
       if (!quickReply) {
         payload = getJWTPayload(ctx.headers.authorization);
-        if (!payload) throw 'token认证失败';
+        if (!payload) throw '会话过期，请重新登陆';
         if (!date || !content) throw '入参错误';
         user = await User.findOne(
           { _id: payload._id },

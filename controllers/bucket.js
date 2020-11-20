@@ -37,7 +37,7 @@ routerExports.uploadBucket = {
     const { binary } = JSON.parse(ctx.request.body);
     try {
       // const payload = getJWTPayload(ctx.headers.authorization)
-      // if (!payload) throw 'token认证失败'
+      // if (!payload) throw '会话过期，请重新登陆'
       // else {
       // 	const { _id } = payload
       // 	const user = await User.findOne({ _id })

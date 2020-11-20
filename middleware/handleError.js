@@ -1,5 +1,5 @@
 const { reMapError } = require('../common/util');
-const { isJSON } = require('./util');
+const { isJSON } = require('../common/util');
 module.exports = async (ctx, next) => {
   try {
     const { body } = ctx;

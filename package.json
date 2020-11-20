@@ -22,7 +22,8 @@
     "mobile-server": "cd umi-mobile && npm run dev",
     "lint-server": "eslint ./controllers/**/*.js ./middleware/**/*.js ./common/**/*.js",
     "lint-server-fix": "eslint --fix ./controllers/**/*.js ./middleware/**/*.js ./common/**/*.js",
-    "precommit": "npm run lint-server"
+    "precommit": "npm run lint-server",
+    "push": "node push.js"
   },
   "author": "Ada",
   "license": "ISC",
@@ -64,7 +65,7 @@
     "koa-session": "^5.10.1",
     "koa-static": "^5.0.0",
     "koa-views": "^6.1.4",
-    "moment-timezone": "^0.5.31",
+    "moment-timezone": "^0.5.32",
     "mongoose": "^5.2.6",
     "netease-music-sdk": "^0.3.3",
     "request": "^2.88.2",

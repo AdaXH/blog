@@ -2,18 +2,19 @@ import React from 'react';
 import { useSetState } from 'react-use';
 import Notification from '@/wrapComponent/Notification';
 import RepeatItem from './repeatItem';
-import { deleteMsgById, repeatMsg } from '../service';
-import { escapeData, renderDate } from '../util';
+import { deleteMsgById } from '../service';
+import { renderDate, getHtml } from '../util';
 import styles from '../index.less';
 
 export default (props) => {
   const {
     item,
-    dispatch,
     deleteMsgCallback,
     updateRepeat,
     user,
     index,
+    callLeave,
+    emojiList,
   } = props;
   const [state, setState] = useSetState({
     showOperation: false, // 展开操作
@@ -33,44 +34,7 @@ export default (props) => {
       deleteMsgCallback(_id);
     }
   };
-  const leaveMsg = (_id, toRepeat, toRepeatId) => {
-    if (toRepeatId === 'null') {
-      Notification.fail({ msg: '不能回复快捷评论~' });
-      return;
-    }
-    if (noLogin()) return;
-    const cb = async (value) => {
-      if (!value || value.trim() === '') {
-        Notification.fail({
-          msg: '输入不规范',
-        });
-      } else {
-        const result = await repeatMsg({
-          _id,
-          info: escapeData(value),
-          toRepeat,
-          toRepeatId,
-        });
-        if (result.success) {
-          dispatch({ type: 'dialog/hide' });
-          const {
-            data: { repeat },
-          } = result;
-          updateRepeat(_id, repeat);
-        } else {
-          Notification.fail({ msg: result.errorMsg });
-        }
-      }
-    };
-    dispatch({
-      type: 'dialog/open',
-      payload: {
-        placeholder: '回复' + toRepeat + ': ',
-        cb,
-        maxInput: 100,
-      },
-    });
-  };
+  console.log('emojiList', emojiList);
   return (
     <li
       className={styles.messageItem}
@@ -88,7 +52,10 @@ export default (props) => {
         </div>
       </div>
       <div className={styles.msgContent}>
-        {item.content}
+        <span
+          className={styles.conBox}
+          dangerouslySetInnerHTML={{ __html: getHtml(item.content, emojiList) }}
+        />
         <div className={styles.moreCon}>
           <div onClick={() => setState({ showRepeat: !showRepeat })}>
             <span className={styles.count}>{item.repeat.length}</span>
@@ -104,7 +71,7 @@ export default (props) => {
         </div>
         {showOperation && (
           <div className={styles.msgOperation}>
-            <div onClick={() => leaveMsg(item._id, item.name, item.userId)}>
+            <div onClick={() => callLeave(item._id, item.name, item.userId)}>
               <i className="iconfont icon-liuyan-A" />
             </div>
             <div onClick={() => deleteMsg(item._id)}>
@@ -117,8 +84,9 @@ export default (props) => {
         <RepeatItem
           list={item.repeat}
           parentId={item._id}
-          leaveMsg={leaveMsg}
+          leaveMsg={callLeave}
           updateRepeat={updateRepeat}
+          emojiList={emojiList}
         />
       )}
     </li>

@@ -167,7 +167,7 @@ routerExports.discussDynamic = {
     const { _id, msg, name } = ctx.request.body;
     try {
       const payload = getJWTPayload(ctx.headers.authorization);
-      if (!payload) throw 'token认证失败';
+      if (!payload) throw '会话过期，请重新登陆';
       if (!_id || !msg || !name) throw '入参错误';
       const currentDynamic = await Dynamic.findOne({ _id });
       const user = await User.findOne({ _id: payload._id });

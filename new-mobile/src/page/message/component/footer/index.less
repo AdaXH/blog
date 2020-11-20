@@ -1,0 +1,58 @@
+.msgFooter {
+  position: fixed;
+  bottom: 0px;
+  padding: 10px 0;
+  left: 0;
+  width: 100%;
+  //   min-height: 40px;
+  //   background: white;
+  display: flex;
+  justify-content: space-between;
+  animation: show 0.5s forwards;
+  animation-delay: 0.5s;
+  background: #182631;
+  opacity: 0;
+  textarea:focus,
+  textarea:hover {
+    border: none;
+  }
+  textarea {
+    border: none;
+    outline: none;
+    background: #dedede;
+    flex: 1;
+    border-radius: 30px;
+    //     padding: 0 0.1rem;
+    padding: 0.1rem;
+    resize: none;
+    margin-left: 0.05rem;
+  }
+  a {
+    width: 0.5rem;
+    height: 0.35rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #40a9ff;
+    color: white;
+    border-radius: 0.1rem;
+    margin: 0 0.05rem;
+    transition: all 0.5s;
+    align-self: center;
+  }
+  a:active {
+    background: #045292;
+    //     color: balck;
+  }
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}

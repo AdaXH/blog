@@ -13,7 +13,6 @@ import styles from './header.less';
 const Header = (props) => {
   const {
     dispatch,
-    config,
     history,
     user,
     search: { visible },
@@ -21,6 +20,7 @@ const Header = (props) => {
   } = props;
   const [style, setStyle] = useState({});
   const [headerStyle, setHeaderStyle] = useState(false);
+  const [blogTitle, setTitle] = useState('Home');
   const inputRef = useRef({});
   const handleSearch = (e) => {
     const {
@@ -49,7 +49,6 @@ const Header = (props) => {
     visible && dispatch({ type: 'search/close' });
     dynamicDetail.visible && dispatch({ type: 'dynamic/closeDetail' });
   };
-  const title = (config && config.blogTitle) || 'Ada - Blog';
   useEffect(() => {
     history.listen(() => {
       const {
@@ -59,17 +58,18 @@ const Header = (props) => {
       setHeaderStyle(
         FULL_SCREEN_PATH.includes(pathname) && pathname.replace(/\/+|-/g, '')
       );
-      const { title } =
+      const { title, newTitle } =
         routes.find((item) => {
           if (!item.childRoutes) {
             return item.path === pathname;
           }
           return item.childRoutes.find((iItem) => {
-            item.title = iItem.title;
+            item.newTitle = iItem.title;
             return iItem.path === pathname;
           });
         }) || {};
-      document.title = `Ada ${title ? '- ' + title : ''}`;
+      document.title = 'Ada - ' + (newTitle || title || 'Blog');
+      setTitle(newTitle || title);
     });
   }, []);
   const onFocusSearch = () => {
@@ -80,7 +80,7 @@ const Header = (props) => {
   };
   function renderLinks(links) {
     return links.map((item) => {
-      const { hidden, permission, type, childRoutes, path, url, title } = item;
+      const { hidden, permission, type, childRoutes, path, title } = item;
       if (hidden || (permission && !user.admin)) return null;
       let content = (
         <NavLink to={path} url={path}>
@@ -93,7 +93,7 @@ const Header = (props) => {
         );
       }
       return (
-        <li onClick={(e) => handleLine(e)} key={url}>
+        <li onClick={(e) => handleLine(e)} key={path}>
           {content}
         </li>
       );
@@ -105,7 +105,12 @@ const Header = (props) => {
         [styles[headerStyle]]: true,
       })}
     >
-      <h1 className={styles.logo}>{title}</h1>
+      <h1 className={styles.logo}>
+        Ada -{' '}
+        <span key={blogTitle} className={styles.blogTitle}>
+          {blogTitle}
+        </span>
+      </h1>
       <div className={styles.search}>
         <div className={styles.searchIcon} onClick={onFocusSearch}>
           <i className="icon-search iconfont" />
@@ -124,11 +129,8 @@ const Header = (props) => {
   );
 };
 
-export default connect(
-  ({ search, blogConfig: { config }, dynamic: { dynamicDetail }, user }) => ({
-    search,
-    config,
-    dynamicDetail,
-    user,
-  })
-)(withRouter(Header));
+export default connect(({ search, dynamic: { dynamicDetail }, user }) => ({
+  search,
+  dynamicDetail,
+  user,
+}))(withRouter(Header));

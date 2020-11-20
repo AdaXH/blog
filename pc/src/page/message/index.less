@@ -112,6 +112,9 @@
       right: 0;
       transform: translateX(300px);
       animation: flyFromRight 20s infinite linear;
+      * {
+        display: inline-block;
+      }
     }
   }
   .wrapContainer {
@@ -333,6 +336,20 @@
               font-size: 13px;
               position: relative;
               word-break: break-all;
+              .conBox {
+                * {
+                  color: white;
+                }
+                p,
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6 {
+                  margin-bottom: 5px;
+                }
+              }
             }
           }
         }
@@ -345,6 +362,20 @@
           position: relative;
           font-size: 13px;
           line-height: 1.5;
+          .conBox {
+            * {
+              color: white;
+            }
+            p,
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+              margin-bottom: 5px;
+            }
+          }
           .msgOperation::after {
             content: '';
             position: absolute;

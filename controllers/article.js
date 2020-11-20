@@ -153,7 +153,7 @@ routerExports.deleteArticleMsg = {
       const message = article.message || [];
       await Article.updateOne(
         { _id: articleId },
-        { $set: { message: message.filter((item) => item._id != messageId) } },
+        { $set: { message: message.filter(item => item._id != messageId) } },
       );
       ctx.body = { success: true };
     } catch (error) {
@@ -181,7 +181,7 @@ routerExports.deleteArticleReplyMsg = {
       const message = article._doc.message || [];
       for await (const item of message) {
         if (item._id == messageId) {
-          item.repeat = item.repeat.filter((item) => item._id != repeatId);
+          item.repeat = item.repeat.filter(item => item._id != repeatId);
           break;
         }
       }
@@ -202,7 +202,7 @@ routerExports.deleteArticleReplyMsg = {
 routerExports.discussArticle = {
   method: 'post',
   url: '/discussArticle',
-  route: async (ctx) => {
+  route: async ctx => {
     const { msg, date = Date.now(), articleId, quickReply } = ctx.request.body;
     try {
       const {
@@ -250,7 +250,7 @@ routerExports.discussArticle = {
         `hi，Ada，文章《${article.title}》评论中有了新的评论～\n
           ${curUser.name || '陌生人'}（${curUser.eamil || 'email'}） 说 ：\n
           “${newMsg}” \n
-          详情(pc)：https://adaxh.site/article-detail?id=${articleId}
+          详情(pc)：https://adaxh.site/article-detail?id=${articleId}&version=old
         `,
         '18668465750@163.com',
         '文章新评论通知',
@@ -269,7 +269,7 @@ routerExports.discussArticle = {
 routerExports.replyArticleMsg = {
   method: 'post',
   url: '/replyArticleMsg',
-  route: async (ctx) => {
+  route: async ctx => {
     const {
       msg,
       date = Date.now(),
@@ -311,10 +311,13 @@ routerExports.replyArticleMsg = {
       const curUser = await User.findById(userId);
       if (toRepeatUser && toRepeatUser.email) {
         sendEmail(
-          `hi，${toRepeatUser.name}，你在https://adaxh.site 的文章《${article.title}》评论中有了新的回复～\n
+          `hi，${toRepeatUser.name}，你在https://adaxh.site 的文章《${
+            article.title
+          }》评论中有了新的回复～\n
           ${curUser.name} 说 ：\n
           “${newMsg}” \n
-          详情(pc)：https://adaxh.site/article-detail?id=${articleId}
+          详情(pc)：https://adaxh.site/article-detail?id=${articleId}&version=old
+
         `,
           toRepeatUser.email,
           '文章评论回复通知',

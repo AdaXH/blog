@@ -1,0 +1,48 @@
+@fontColor: #000000a8;
+.view {
+  margin: 0 auto;
+  margin-bottom: 0.1rem;
+  width: 3rem;
+  background: #ffffffb3;
+  padding: 0.1rem;
+  border-radius: 0.1rem;
+  position: relative;
+  .title {
+    height: 0.3rem;
+    color: @fontColor;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 0.14rem;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+  .abstract {
+    word-wrap: break-word;
+    word-break: break-all;
+    font-size: 0.12rem;
+    color: rgba(12, 11, 11, 0.55);
+    padding-bottom: 0.3rem;
+  }
+  .articleDesc {
+    white-space: nowrap;
+    position: absolute;
+    bottom: 0.1rem;
+    left: 0.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #8a8a8a;
+    border-bottom: 1px solid #f2f2f2;
+    line-height: 0.12rem;
+    width: 94%;
+    padding-bottom: 0.06rem;
+    span {
+      font-size: 0.12rem;
+    }
+    i:nth-of-type(2) {
+      position: relative;
+      top: 0.01rem;
+      margin-left: 0.05rem;
+      font-size: 0.15rem;
+    }
+  }
+}

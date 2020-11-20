@@ -1,4 +1,4 @@
-const { ADMIN_API, USER_API } = require('./constant');
+const { ADMIN_API, USER_API } = require('../common/constant');
 const User = require('../dbmodel/User');
 const { parseToken, reMapError } = require('../common/util');
 module.exports = async (ctx, next) => {

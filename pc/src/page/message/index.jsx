@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Checkbox } from 'antd';
 import { connect } from 'dva';
 import Cookies from 'js-cookie';
-import { Base64 } from 'js-base64';
 import { useDidMount } from '@/utils/hooks';
 import { setCache, getCache, hasChange } from '@/utils/functions';
-import { getAllMessage } from './service';
 import Pagination from '@/component/pagination/newPagination';
+import Notification from '@/wrapComponent/Notification';
+import { EMOJI_CACHE_KEY } from '@/utils/constant';
+import { getAllMessage, getEmojis } from './service';
 import Loading from '../../wrapComponent/Loading';
-import Notification from '../../wrapComponent/Notification';
 import MsgItem from './component/msgItem';
 import FlyMsg from './component/flyMsg';
-import { escapeData } from './util';
-import { leaveMessage } from './service';
+import TextDialog from './component/textArea';
+// import { escapeData } from './util';
+// import { leaveMessage } from './service';
 import { MAX_PAGE_COUNT } from './constant';
 import styles from './index.less';
 
@@ -22,6 +23,10 @@ const Message = (props) => {
   const [quickReply, changeQuick] = useState(!Cookies.get('user'));
   const [total, setTotal] = useState(getCache('totalCount') || 6);
   const [data, setData] = useState(getCache(`message-${current}`) || []);
+  const [emojiList, setList] = useState(getCache(EMOJI_CACHE_KEY) || []);
+  const [info, setInfo] = useState({
+    type: 'leaveMsg',
+  });
   const container = useRef({});
   async function fetchData(page = current) {
     const key = `message-${page}`;
@@ -56,64 +61,16 @@ const Message = (props) => {
   }, [total]);
   useDidMount(async () => {
     try {
+      const { success, emojis } = await getEmojis();
+      if (success) {
+        setList(emojis);
+        setCache(EMOJI_CACHE_KEY, emojis);
+      }
       await fetchData();
       await dispatch({ type: 'user/getUserInfo', payload: {} });
     } catch (error) {}
   });
 
-  const leaveMsg = (type, _id, toRepeat) => {
-    const cb = async (value) => {
-      if (!value || value.trim() === '')
-        Notification.fail({
-          msg: '输入不规范',
-        });
-      else {
-        if (type === 'leaveMsg') {
-          const msg = escapeData(value);
-          const extraParam = {};
-          if (!_id) {
-            extraParam.name = user.name || Base64.decode(Cookies.get('user'));
-          }
-          const result = await leaveMessage({
-            date: Date.now(),
-            content: msg,
-            // name,
-            ...extraParam,
-            quickReply: _id,
-          });
-          if (result.success) {
-            await fetchData(1);
-            await dispatch({ type: 'dialog/hide' });
-          } else {
-            Notification.fail({
-              msg: result.errorMsg || result || '留言失败',
-            });
-          }
-        } else if (type === 'repeat') {
-          dispatch({
-            type: 'message/repeatMsg',
-            payload: {
-              _id,
-              info: escapeData(value),
-              toRepeat,
-            },
-          }).then((result) => {
-            !result.success && Notification.fail({ msg: result });
-            result.success && dispatch({ type: 'dialog/hide' });
-          });
-        }
-      }
-    };
-    dispatch({
-      type: 'dialog/open',
-      payload: {
-        placeholder:
-          type === 'repeat' ? '回复' + toRepeat + ': ' : '在这里写下留言',
-        cb,
-        maxInput: 100,
-      },
-    });
-  };
   const handleClickWarp = ({ nativeEvent: { target } }) => {
     if (/wrapContainer+|addMsgCon/.test(target.className)) {
       dispatch({ type: 'message/init' });
@@ -138,9 +95,16 @@ const Message = (props) => {
   };
   const checkLogin = user.isLogin && Cookies.get('user');
   const checkLeaveMsg = () => {
-    !quickReply && !checkLogin
-      ? Notification.fail({ msg: '请先登录或勾选快捷留言' })
-      : leaveMsg('leaveMsg', !checkLogin && quickReply);
+    if (!quickReply && !checkLogin) {
+      Notification.fail({ msg: '请先登录或勾选快捷留言' });
+      return;
+    }
+    // 打开输入框
+    setInfo({
+      visible: true,
+      type: 'leaveMsg',
+      cb: async () => await fetchData(1),
+    });
   };
   const onChangeQuick = (e) => {
     e.stopPropagation();
@@ -151,9 +115,27 @@ const Message = (props) => {
     lineHeight: !checkLogin ? 'unset' : '50px',
     width: !checkLogin ? '100%' : 'unset,',
   };
+  const callLeave = useCallback((_id, toRepeat, toRepeatId) => {
+    setInfo({
+      visible: true,
+      type: 'repeat',
+      toRepeat,
+      toRepeatId,
+      cb: updateRepeat,
+      _id,
+    });
+  }, []);
   return (
     <div className={styles.messageContainer}>
-      <FlyMsg data={data} />
+      {info.visible && (
+        <TextDialog
+          info={info}
+          quickReply={quickReply}
+          setInfo={setInfo}
+          emojiList={emojiList}
+        />
+      )}
+      <FlyMsg data={data} emojiList={emojiList} />
       <div className={styles.wrapContainer} onClick={(e) => handleClickWarp(e)}>
         <div className={styles.addMsgCon}>
           <div className={styles.dot} />
@@ -187,14 +169,14 @@ const Message = (props) => {
                 key={item._id}
                 user={user}
                 deleteMsgCallback={deleteMsgCallback}
-                dispatch={dispatch}
-                updateRepeat={updateRepeat}
+                callLeave={callLeave}
+                emojiList={emojiList}
               />
             ))}
           </ul>
         </div>
         <div className={styles.pagination}>
-          {data.length && (
+          {data.length !== 0 && (
             <Pagination
               total={total}
               pageSize={MAX_PAGE_COUNT}

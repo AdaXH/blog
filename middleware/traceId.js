@@ -1,9 +1,9 @@
 const { v4: uuid } = require('uuid');
-const { isJSON } = require('./util');
+const { isJSON } = require('../common/util');
 
 module.exports = async (ctx, next) => {
-  await next();
   try {
+    await next();
     const { body } = ctx;
     if (!isJSON(body)) return;
     const traceId = uuid();

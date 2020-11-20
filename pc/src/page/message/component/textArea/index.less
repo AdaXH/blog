@@ -1,0 +1,113 @@
+@lightColor: #cecece;
+@lightBorder: rgba(255, 255, 255, 0.6);
+@import 'https://at.alicdn.com/t/font_2168107_gqsmy00vd1.css';
+.dialogBox {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  .bgWrap,
+  .container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.31);
+  }
+  .bgWrap {
+    animation: bgWrap 0.3s forwards;
+  }
+  .container {
+    width: 600px;
+    height: 590px;
+    top: 50%;
+    left: 50%;
+    z-index: 10;
+    background: white;
+    padding: 5px;
+    animation: show 0.3s forwards;
+  }
+}
+.content {
+  display: flex;
+  font-family: inherit;
+  flex-wrap: wrap;
+  textarea {
+    display: block;
+    border: 1px solid rgba(115, 115, 115, 0.2);
+    margin: 0 auto;
+    padding: 10px;
+    width: 100%;
+    min-height: 160px;
+    max-height: 400px;
+    color: #424242;
+    font-size: 14px;
+    resize: none;
+    font-family: inherit;
+    background: transparent;
+  }
+  textarea:focus {
+    outline: none;
+  }
+  .footer {
+    position: relative;
+    width: 100%;
+    display: flex;
+    .item:nth-of-type(1) {
+      i {
+        font-size: 28px;
+      }
+    }
+    .item {
+      width: 30px;
+      height: 30px;
+      padding: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.5s;
+      color: #888484;
+      cursor: pointer;
+      i {
+        font-size: 20px;
+      }
+    }
+    .item:nth-of-type(3) {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+    .item:active,
+    .item:hover {
+      background: #888484;
+      color: white;
+    }
+  }
+}
+.light {
+  textarea {
+    color: @lightColor;
+    border-color: @lightBorder;
+  }
+}
+
+@keyframes bgWrap {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes show {
+  from {
+    transform: scale(0.8) translate3d(-50%, -50%, 0);
+  }
+  to {
+    transform: scale(1) translate3d(-50%, -50%, 0);
+  }
+}

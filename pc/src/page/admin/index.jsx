@@ -8,6 +8,7 @@ import Config from './component/config/index';
 import Gallery from './galleryManage';
 import Friends from './component/friends';
 import Users from './component/userConfig';
+import Others from './component/others';
 import styles from './admin.less';
 
 const { TabPane } = Tabs;
@@ -30,6 +31,7 @@ export default connect(({ user }) => ({
     },
     { component: () => <Friends />, description: 'Friends', title: '友情链接' },
     { component: () => <Users />, description: 'Users', title: '用户' },
+    { component: () => <Others />, description: 'Others', title: '其它' },
   ];
   const { user } = props;
   const permission = user.isLogin && Cookies.get('user') && user.admin;

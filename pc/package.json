@@ -19,7 +19,8 @@
     "react-color": "^2.17.3",
     "react-dom": "^16.8.0",
     "react-html-parser": "^2.0.2",
-    "react-use": "^13.3.0"
+    "react-use": "^13.3.0",
+    "showdown": "^1.9.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.4",

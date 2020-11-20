@@ -204,7 +204,7 @@ routerExports.getUserInfoByToken = {
         });
       }
       const payload = getJWTPayload(authorization);
-      if (!payload) throw 'token认证失败';
+      if (!payload) throw '会话过期，请重新登陆';
       const key = payload._id ? '_id' : 'qqUserId';
       const filterKey = [
         'name',
@@ -398,6 +398,11 @@ routerExports.updateUserInfo = {
   route: async (ctx) => {
     const { _id, ...others } = ctx.request.body;
     try {
+      if (others.password) {
+        if (others.password.length && others.password.length <= 6) {
+          throw '密码长度不能低于6位';
+        }
+      }
       // 检测邮箱是否已被使用过
       if (others.email) {
         const curUser = await User.findOne({ _id });
@@ -602,6 +607,7 @@ routerExports.qq_login = {
       if (!user) {
         await new User({
           ...qqUserVo,
+          lastLoginTime: Date.now(),
         }).save();
       }
       const _qqUserId = (await User.findOne({ qqUserId: openid })) || {};

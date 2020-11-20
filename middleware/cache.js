@@ -1,6 +1,6 @@
 const Path = require('path');
-const { readFile } = require('./util');
-const { CACHE_REG, NO_CACHE_API } = require('./constant');
+const { readFile } = require('../common/util');
+const { CACHE_REG, NO_CACHE_API } = require('../common/constant');
 module.exports = async (ctx, next) => {
   try {
     const {

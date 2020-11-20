@@ -21,8 +21,14 @@ yarn-debug.log*
 yarn-error.log*
 node_modules/
 mobile/node_modules/
+new-mobile/node_modules/
+new-mobile/dist/
 umi-mobile/node_modules/
+umi-mobile/dist/
 pc/node_modules/
+pc/dist/
+search/node_modules/
+search/dist/
 log/
 
 /public/sass/*.map

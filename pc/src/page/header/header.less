@@ -51,6 +51,7 @@ header {
     }
   }
   .logo {
+    width: 138px;
     float: left;
     line-height: 80px;
     color: white;
@@ -58,6 +59,10 @@ header {
     text-align: left;
     // margin-left: 100px;
     font-size: 20px;
+    .blogTitle {
+      display: inline-block;
+      animation: fadeIn 1s forwards;
+    }
   }
   ul {
     height: 80px;
@@ -125,5 +130,16 @@ header.morenetease {
   }
   to {
     background: white;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(10px, 0px, 0);
+  }
+  to {
+    // background: white;
+    opacity: 1;
+    transform: translate3d(0, 0px, 0);
   }
 }

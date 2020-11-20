@@ -9,6 +9,7 @@ import Login from './components/login';
 import Aside from './components/aside';
 import Tips from './components/tips';
 import User from './components/user';
+import Footer from './components/footer';
 // import { CHACHE_DATA } from './constant';
 import styles from './index.less';
 
@@ -21,7 +22,7 @@ export default connect(
     article,
     message,
   })
-)(props => {
+)((props) => {
   const { user, config, dispatch } = props;
   const [state, setState] = useState({ customer: 0 });
   const { customer } = state;
@@ -51,16 +52,13 @@ export default connect(
       // Loading.hide();
     }
   });
-  const curraneYear = new Date().getFullYear();
   const Component = Cookies.get('user') && user.isLogin ? User : Login;
   return (
     <div className={styles.indexContainer} ref={dom}>
       <Aside />
       <Tips config={{ ...config, customer }} />
       <Component user={user} dispatch={dispatch} />
-      <div className={styles.footerInfo}>
-        React Blog © 2018 - {curraneYear} Adaxh
-      </div>
+      <Footer />
     </div>
   );
 });

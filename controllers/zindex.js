@@ -43,14 +43,16 @@ routerExports.addCustomer = {
   method: 'post',
   url: '/add-customer',
   route: async (ctx, next) => {
-    try {
-      const customer = await Customer.findOne({});
-      if (customer.number)
-        await Customer.updateOne({}, { $set: { number: customer.number + 1 } });
-      ctx.body = true;
-    } catch (error) {
-      ctx.body = false;
-    }
+    ctx.body = true;
+
+    //   try {
+    //     const customer = await Customer.findOne({});
+    //     if (customer.number)
+    //       await Customer.updateOne({}, { $set: { number: customer.number + 1 } });
+    //     ctx.body = true;
+    //   } catch (error) {
+    //     ctx.body = false;
+    //   }
   },
 };
 
@@ -163,8 +165,12 @@ routerExports.routerIndex = {
     }月${date.getDate()}号 : ${date.getHours()}点${date.getMinutes()}分${date.getSeconds()}秒`;
 
     // Mobile
+    if (/search/.test(url)) {
+      await ctx.render('search');
+      return;
+    }
     if (userAgent === 'Mobile') {
-      await ctx.render('mobile');
+      await ctx.render(/old/.test(url) ? 'mobile' : 'new-mobile');
     } else if (/twui/.test(url)) {
       console.log('twui: ', time);
       await ctx.render('twui');

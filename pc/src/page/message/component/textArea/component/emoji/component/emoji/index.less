@@ -1,0 +1,27 @@
+.emojiContaienr {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-left: 2px;
+  .emojiItem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 53px;
+    height: 42px;
+    cursor: pointer;
+    // padding: 5px;
+    transition: all 0.1s;
+    overflow: hidden;
+    img {
+      display: block;
+    }
+  }
+  .emojiItem:avtive {
+    background: #888483;
+  }
+  .emojiItem:hover {
+    // transform: scale(1.1);
+    background: #888483;
+  }
+}

@@ -20,7 +20,7 @@ function forUrl() {
       'http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?' +
       s.join('&'),
     sina: () => {
-      (function(s, d, e) {
+      (function (s, d, e) {
         try {
         } catch (e) {}
         var f = 'http://v.t.sina.com.cn/share/share.php?',
@@ -76,5 +76,10 @@ export const operations = [
     url: 'http://wpa.qq.com/msgrd?v=3&uin=3532371088&site=qq&menu=yes',
     text: '快速咨询',
     icon: 'icon-qq1',
+  },
+  {
+    url: 'https://adaxh.applinzi.com/search',
+    text: '最简洁的搜索页',
+    icon: 'icon-search',
   },
 ];

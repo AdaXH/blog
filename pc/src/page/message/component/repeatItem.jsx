@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import Notification from '@/wrapComponent/Notification';
 import { deleteInnerRepeat } from '../service';
 import { relativetime } from './util';
+import { getHtml } from '../util';
 import styles from '../index.less';
+import others from '../../admin/component/others';
 
 export default (props) => {
   const { list, ...others } = props;
@@ -22,7 +24,7 @@ export default (props) => {
 };
 
 const Item = (props) => {
-  const { item, parentId, leaveMsg, updateRepeat, index } = props;
+  const { item, parentId, leaveMsg, updateRepeat, index, emojiList } = props;
   const [showOperation, setState] = useState(false);
   const deleteMsg = async ({ _id, userId }) => {
     const result = await deleteInnerRepeat({
@@ -52,7 +54,12 @@ const Item = (props) => {
         </div>
       </div>
       <div className={styles.repeatContent}>
-        {item.info}
+        <span
+          className={styles.conBox}
+          dangerouslySetInnerHTML={{
+            __html: getHtml(item.info, emojiList),
+          }}
+        />
         <div onClick={() => setState(!showOperation)} className={styles.more}>
           {showOperation ? 'Close' : 'More'}
         </div>

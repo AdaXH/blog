@@ -1,0 +1,50 @@
+@fontColor: rgba(255, 255, 255, 0.5);
+@fontColor1: rgba(255, 255, 255, 1);
+.pagination {
+  //   display: block;
+  //   :global {
+  //     .ant-pagination {
+  display: flex;
+  //     }
+  //   }
+  // flex-wrap: wrap;
+  li {
+    border: none;
+    background: transparent;
+    width: 0.32rem;
+    height: 0.32rem;
+    line-height: 0.32rem;
+    flex: 1;
+    a {
+      display: block;
+      color: @fontColor;
+      border: none !important;
+      background: transparent !important;
+      font-size: 0.14rem;
+      padding: 0 0.06rem;
+    }
+  }
+  li:hover a {
+    color: @fontColor;
+  }
+  li:focus a {
+    color: @fontColor1;
+  }
+  li:active {
+    background: white;
+  }
+  :global {
+    .ant-pagination-item-active a {
+      color: @fontColor1;
+    }
+    .ant-pagination-disabled a {
+      color: @fontColor;
+    }
+    .ant-pagination-jump-next:focus,
+    .ant-pagination-jump-prev:focus {
+      i {
+        color: #192a34;
+      }
+    }
+  }
+}
