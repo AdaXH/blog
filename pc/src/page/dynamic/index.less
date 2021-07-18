@@ -143,8 +143,8 @@
   position: relative;
   top: 130px;
   overflow-x: hidden;
-  -webkit-animation: formRight 1s;
-  animation: formRight 1s;
+  -webkit-animation: formRight 0.6s;
+  animation: formRight 0.6s;
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
   -webkit-transform: translate3d(100px, 0, 0);
@@ -179,8 +179,12 @@
     display: block;
     clear: both;
   }
+  .wrap {
+    overflow: hidden;
+    width: 1100px;
+  }
   .container {
-    width: auto;
+    width: 1150px;
     will-change: transform;
     transform: translate3d(0, 0, 0);
     transition: all 0.5s;
@@ -190,9 +194,11 @@
     transform-style: preserve-3d;
     perspective: 1000px;
     overflow: hidden;
+    overflow-y: auto;
     align-items: flex-start;
     top: 0;
     left: 0;
+    height: 100%;
     .dynamicItem::after {
       content: '';
       width: 10px;
@@ -300,13 +306,11 @@
   opacity: 0;
   transform: translate3d(-100px, 0, 0);
   animation: formRight 0.5s forwards;
-  animation-delay: 0.1s;
 }
 .dynamicDetailContent {
   opacity: 0;
   transform: translate3d(0px, 80px, 0);
   animation: formTop 0.5s forwards;
-  animation-delay: 0.1s;
 }
 
 @keyframes formTop {

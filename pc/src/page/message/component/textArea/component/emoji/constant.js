@@ -7,7 +7,7 @@ export const EMOJI_TYPE = [
   {
     code: 'emoji',
     component: () => Emoji,
-    text: 'emoji表情',
+    text: '动画表情',
   },
   {
     code: 'textEmoji',

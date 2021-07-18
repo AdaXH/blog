@@ -56,8 +56,8 @@ export default () => {
               src: newSrc,
               code,
             };
-            return item;
           }
+          return item;
         })
       );
     }
@@ -77,7 +77,7 @@ export default () => {
       {list.map(({ src, code, _id }) => (
         <div className={styles.itemWrap} key={_id || code}>
           <div className={styles.item} onClick={() => onEdit(src, code, _id)}>
-            <img src={src} />
+            <img src={src} alt="" />
           </div>
           <div className={styles.info}>
             {code}

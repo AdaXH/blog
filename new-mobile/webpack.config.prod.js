@@ -14,7 +14,7 @@ module.exports = {
   output: {
     filename: 'new-mobile.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/',
+    publicPath: 'https://bucker-for-sae.oss-cn-hangzhou.aliyuncs.com/blog/mobilelib/dist/',
     // chunkFilename: 'mobile[name].async.js',
   },
 

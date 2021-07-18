@@ -4,7 +4,7 @@ import { deleteInnerRepeat } from '../service';
 import { relativetime } from './util';
 import { getHtml } from '../util';
 import styles from '../index.less';
-import others from '../../admin/component/others';
+// import others from '../../admin/component/others';
 
 export default (props) => {
   const { list, ...others } = props;

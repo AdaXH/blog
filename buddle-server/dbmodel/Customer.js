@@ -1,0 +1,1 @@
+const mongoose=require("mongoose"),customerCollection=mongoose.model("customers",mongoose.Schema({number:Number}));module.exports=customerCollection;

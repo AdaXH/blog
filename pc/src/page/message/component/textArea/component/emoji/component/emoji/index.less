@@ -12,16 +12,36 @@
     cursor: pointer;
     // padding: 5px;
     transition: all 0.1s;
-    overflow: hidden;
-    img {
-      display: block;
+    position: relative;
+    .big {
+      position: absolute;
+      width: 80px;
+      bottom: 100%;
+      left: 50%;
+      padding: 10px;
+      background: #dedede;
+      transform: translateX(-50%);
+      display: none;
+      img {
+        width: 60%;
+        height: auto;
+        display: block;
+      }
     }
-  }
-  .emojiItem:avtive {
-    background: #888483;
+    .small {
+      max-width: 60%;
+      display: block;
+      transition: all 0.2s;
+    }
   }
   .emojiItem:hover {
     // transform: scale(1.1);
-    background: #888483;
+    background: #dedede;
+    .small {
+      max-width: 100%;
+    }
+    // .big {
+    //   display: block;
+    // }
   }
 }

@@ -5,9 +5,10 @@ import ReactHtmlParser from 'react-html-parser';
 import Api from '@/utils/request';
 import Notification from '@/wrapComponent/Notification';
 import { useDidMount } from '@/utils/hooks';
-import { resetObj } from '@/utils/functions';
+import { resetObj, qqSign } from '@/utils/functions';
 import { setContent, checkValue } from './util';
 import FindPwd from './forgetPwd';
+import EmailCode from './emailCode';
 import styles from './index.less';
 export default (props) => {
   const { dispatch } = props;
@@ -19,6 +20,7 @@ export default (props) => {
     captcha: '',
     repeatPassword: '',
     pwd: '',
+    emailCode: '',
   });
   const { captcha } = values;
   const onSetValue = (val, code) => {
@@ -35,18 +37,14 @@ export default (props) => {
   });
   useEffect(() => {
     if (window.QC && ref.current) {
-      console.log('window.QC', window.QC);
       window.QC.Login({
         btnId: 'qqLoginBtn', //插入按钮的节点id
-      });
-      window.QC.Login._onLoginBack((arg) => {
-        console.log('arg', arg);
       });
     }
   }, [window.QC]);
   const content = setContent(isLogin, values);
   const handleSubmit = () => {
-    const { name, pwd, captcha: captchaCode, email } = values;
+    const { name, pwd, captcha: captchaCode, email, emailCode } = values;
     const hasError = checkValue(isLogin ? 'login' : 'register', values);
     if (hasError) {
       Notification.fail({ msg: hasError });
@@ -74,10 +72,12 @@ export default (props) => {
           pwd: Base64.encode(pwd),
           captchaCode,
           email,
+          emailCode,
         },
       }).then((result) => {
         if (result.success) {
           Notification.success({ msg: '注册成功', duration: 3 });
+          changeSatus(true);
         }
       });
     }
@@ -87,14 +87,6 @@ export default (props) => {
     if (e.keyCode === 13) {
       handleSubmit();
     }
-  };
-  const qqSign = () => {
-    try {
-      window.QC.Login.showPopup({
-        appId: '101902433',
-        redirectURI: 'https://www.adaxh.site/qq',
-      });
-    } catch (error) {}
   };
   return (
     <div className={styles.rightContainer}>
@@ -114,19 +106,27 @@ export default (props) => {
       </div>
       <div
         className={styles.down}
-        style={{ height: isLogin ? '250px' : '490px' }}
+        style={{ height: isLogin ? '250px' : '520px' }}
       >
-        {content.map(({ code, value, type, text }) => (
+        {content.map(({ code, value, type, text, email }) => (
           <div key={code} className={styles.inputItem}>
             <span>{text}</span>
             {code !== 'captcha' ? (
-              <input
-                autoComplete="new-password"
-                value={value}
-                type={type}
-                onChange={(e) => onSetValue(e.target.value, code)}
-                onKeyDown={handelKeyDown}
-              />
+              code === 'emailCode' ? (
+                <EmailCode
+                  onKeyDown={handelKeyDown}
+                  onChange={(e) => onSetValue(e.target.value, code)}
+                  email={email}
+                />
+              ) : (
+                <input
+                  autoComplete="new-password"
+                  value={value}
+                  type={type}
+                  onChange={(e) => onSetValue(e.target.value, code)}
+                  onKeyDown={handelKeyDown}
+                />
+              )
             ) : (
               <div className={styles.inputItem}>
                 <input
@@ -150,11 +150,9 @@ export default (props) => {
           <div onClick={qqSign} className={styles.qqSign}>
             QQ 登录
           </div>
-          {isLogin && (
-            <a onClick={(e) => e.stopPropagation()}>
-              <FindPwd />
-            </a>
-          )}
+          <a onClick={(e) => e.stopPropagation()}>
+            <FindPwd />
+          </a>
           <span className={styles.qqLogo} id="qqLoginBtn"></span>
         </div>
       </div>

@@ -23,7 +23,7 @@ export default forwardRef((props, ref) => {
   } = props;
   if (!visible) return null;
   const [preview, setVisible] = useState(true);
-  const [emojiVisible, setEmojiVisible] = useState(false);
+  const [emojiVisible, setEmojiVisible] = useState(true);
   const ref1 = useRef();
   useImperativeHandle(ref, () => ({ getData: () => data }));
   const onSubmit = async () => {
@@ -77,8 +77,9 @@ export default forwardRef((props, ref) => {
       }
     }
   };
-  const onAdd = (code) => {
-    setData(`${data || ''}${EMOJI_PREFIX}${code}${EMOJI_PREFIX}`);
+  const onAdd = (code, pureText = false) => {
+    const prefix = pureText ? ' ' : EMOJI_PREFIX;
+    setData(`${data || ''}${prefix}${code}${prefix}`);
   };
   return (
     <dic className={styles.dialogBox}>

@@ -1,0 +1,1 @@
+const{v4:uuid}=require("uuid"),{isJSON}=require("../common/util");module.exports=async(r,i)=>{try{await i();var{body:e}=r;if(!isJSON(e))return;var o=uuid();if(r.set("Trace-id",o),!isJSON(e))return;var s=JSON.parse(e);if(!0===s)return;r.body={...s,traceId:o,pid:process.pid,ppid:process.ppid}}catch(r){console.log("error",r)}};

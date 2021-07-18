@@ -46,27 +46,29 @@ const Dynamic = (props) => {
   if (!data) return null;
   return (
     <div className={styles.dynamicContainer}>
-      <ul className={styles.container}>
-        {data.map((item, index) => (
-          <li
-            onClick={() => toDynamicDetail(item)}
-            className={`${styles.dynamicItem} _dynamicItem`}
-            key={item._id}
-          >
-            <div
-              className={styles.dynamicBg}
-              style={{ backgroundImage: 'url(' + item.img + ')' }}
-            />
-            <div className={styles.dynamicContent}>
-              <div className={styles.dynamicTitle}>{item.title}</div>
-              <div className={styles.dynamicSummary}>
-                <div>{relativetime(item.date)}</div>
-                <div>{item.content}</div>
+      <div className={styles.wrap}>
+        <ul className={styles.container}>
+          {data.map((item, index) => (
+            <li
+              onClick={() => toDynamicDetail(item)}
+              className={`${styles.dynamicItem} _dynamicItem`}
+              key={item._id}
+            >
+              <div
+                className={styles.dynamicBg}
+                style={{ backgroundImage: 'url(' + item.img + ')' }}
+              />
+              <div className={styles.dynamicContent}>
+                <div className={styles.dynamicTitle}>{item.title}</div>
+                <div className={styles.dynamicSummary}>
+                  <div>{relativetime(item.date)}</div>
+                  <div>{item.content}</div>
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
       <div className={styles.pageNation}>
         <Pagination
           total={data.length}

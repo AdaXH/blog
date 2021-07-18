@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "webpack-dev-server --config=webpack.config.dev.js",
     "build-pc": "cross-env ESLINT=none webpack --config=webpack.config.prod.js --mode production",
-    "build": "npm run build-pc && mv ./dist/ ../public/pc-src",
+    "build": "npm run build-pc",
     "lint": "eslint --ext .js src test",
     "precommit": "npm run lint",
     "lint-fix": "eslint --fix --ext .js ."

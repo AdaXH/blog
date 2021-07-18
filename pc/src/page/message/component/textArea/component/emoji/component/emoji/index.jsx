@@ -11,7 +11,10 @@ export default memo(({ onAdd, emojiList }) => {
           className={styles.emojiItem}
           onClick={() => onAdd(item.code)}
         >
-          <img src={item.src} />
+          {/* <div className={styles.big}> */}
+          <img className={styles.big} src={item.src} alt="" />
+          {/* </div> */}
+          <img className={styles.small} src={item.src} alt="" />
         </a>
       ))}
     </div>

@@ -34,7 +34,6 @@ export default (props) => {
       deleteMsgCallback(_id);
     }
   };
-  console.log('emojiList', emojiList);
   return (
     <li
       className={styles.messageItem}

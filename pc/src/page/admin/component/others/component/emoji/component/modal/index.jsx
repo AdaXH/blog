@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { Modal, Input, Upload } from 'antd';
+import React, { useState } from 'react';
+import { Modal, Input } from 'antd';
 import { updateEmoji } from '../../service';
 
 import styles from './index.less';
@@ -53,7 +53,7 @@ export default ({ onClose, code: oldCode, _id, src, onUpdate }) => {
       <div className={styles.item}>
         <span>preview：</span>
         <span>
-          <img src={dataUrl || src} />
+          <img src={dataUrl || src} alt="" />
         </span>
       </div>
     </Modal>

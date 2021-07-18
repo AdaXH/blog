@@ -7,6 +7,7 @@ import Notification from '../../../../wrapComponent/Notification';
 import EmptyForm from './emptyForm';
 import { validatorPwd } from './util';
 import Avatar from './component/avatar';
+import CharCode from './component/charCode';
 import styles from './index.less';
 
 export default Form.create()((props) => {
@@ -59,6 +60,7 @@ export default Form.create()((props) => {
     return !!a;
   };
   const { avatarSrc } = user;
+  const emailVal = getFieldValue('email');
   return (
     <Modal
       destroyOnClose
@@ -102,6 +104,13 @@ export default Form.create()((props) => {
           ],
         })(<Input placeholder="邮箱将作为本站交互的通知" />)}
       </Form.Item>
+      <CharCode
+        user={user}
+        emailVal={emailVal}
+        validateFields={validateFields}
+        getFieldDecorator={getFieldDecorator}
+        setFieldsValue={setFieldsValue}
+      />
       <Form.Item label="新密码">
         {getFieldDecorator('password', {})(<Input />)}
       </Form.Item>

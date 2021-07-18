@@ -39,3 +39,7 @@ function getURLBase64(url) {
     xhr.send();
   });
 }
+
+export function getRandomLength(length) {
+  return Math.floor(Math.random() * length);
+}

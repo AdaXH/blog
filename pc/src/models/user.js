@@ -34,12 +34,13 @@ export default {
       });
       return customer;
     },
-    *register({ payload: { pwd, name, captchaCode, email } }, { call, put }) {
+    *register({ payload: { pwd, name, captchaCode, email, emailCode } }, { call, put }) {
       const result = yield call(Api, 'api/register', 'POST', {
         name,
         pwd,
         captchaCode,
         email,
+        emailCode,
       });
       result.success &&
         (yield put({

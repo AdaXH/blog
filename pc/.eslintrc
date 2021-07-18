@@ -10,7 +10,8 @@
     "no-unused-vars": 1,
     "react/jsx-pascal-case": 0,
     "no-restricted-globals": 1,
-    "no-undef": 1
+    "no-undef": 1,
+    "no-eval": 0
     // "prettier/prettier": [
     //   "error",
     //   {

@@ -1,0 +1,1 @@
+const fs=require("fs"),path=require("path");module.exports=r=>{const e=fs.readdirSync(path.resolve("./middleware"));return e.forEach(e=>{e.endsWith(".js")&&(e=require(path.resolve("./middleware",e)),r.use(e))}),r};

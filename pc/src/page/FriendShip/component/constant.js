@@ -1,5 +1,5 @@
 export const SITE = {
-  title: 'Ada - Home',
+  title: 'Ada - 卑微小前端',
   desc: '卑微小前端，弱气假后端',
   link: 'https://adaxh.site',
   avatar:

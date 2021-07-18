@@ -20,7 +20,7 @@ const Header = (props) => {
   } = props;
   const [style, setStyle] = useState({});
   const [headerStyle, setHeaderStyle] = useState(false);
-  const [blogTitle, setTitle] = useState('Home');
+  const [blogTitle, setTitle] = useState('卑微小前端');
   const inputRef = useRef({});
   const handleSearch = (e) => {
     const {
@@ -58,7 +58,7 @@ const Header = (props) => {
       setHeaderStyle(
         FULL_SCREEN_PATH.includes(pathname) && pathname.replace(/\/+|-/g, '')
       );
-      const { title, newTitle } =
+      const { title } =
         routes.find((item) => {
           if (!item.childRoutes) {
             return item.path === pathname;
@@ -68,8 +68,9 @@ const Header = (props) => {
             return iItem.path === pathname;
           });
         }) || {};
-      document.title = 'Ada - ' + (newTitle || title || 'Blog');
-      setTitle(newTitle || title);
+      const renderTitle = title === 'Home' ? '卑微小前端' : title || 'Blog';
+      document.title = 'Ada ' + renderTitle;
+      setTitle(title);
     });
   }, []);
   const onFocusSearch = () => {

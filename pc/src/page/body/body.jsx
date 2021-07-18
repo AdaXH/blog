@@ -1,15 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { connect } from 'dva';
 import { useDidMount } from '@/utils/hooks';
-import { loadImg } from './util';
+import { loadImg, getRandomLength } from './util';
 import styles from './index.less';
 const Body = ({ config }) => {
   const bgRef = useRef({});
   const colorRef = useRef({});
-  const bgList = config.bgImg;
+  const cfg = useMemo(() => config || {}, [config]);
+  const bgList = cfg.bgImg;
   useDidMount(async () => {
     if (bgRef.current && colorRef.current && bgList) {
-      let idx = 0;
+      let idx = getRandomLength(bgList.length);
       await randomBg(idx);
       Body.interval = setInterval(async () => {
         idx += 1;

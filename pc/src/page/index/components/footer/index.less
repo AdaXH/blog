@@ -1,12 +1,41 @@
 .footerInfo {
   position: absolute;
-  bottom: 160px;
+  bottom: 140px;
   white-space: nowrap;
   left: 50%;
-  transform: translateX(-50%);
   color: white;
+  text-align: center;
+  transform: translate3d(-50%, 30px, 0);
+  opacity: 0;
+  animation: show .4s forwards;
   span,
   a {
     color: red;
+  }
+}
+.ba {
+  text-align: center;
+  a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+  img {
+    display: inline-block;
+  }
+  p {
+    display: inline-block;
+    margin: 0;
+  }
+}
+@keyframes show {
+  from {
+    transform: translate3d(-50%, 30px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+    opacity: 1;
   }
 }

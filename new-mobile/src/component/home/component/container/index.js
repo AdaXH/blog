@@ -21,7 +21,7 @@ export default (props) => {
   useDidMount(() => {
     history.listen(({ pathname: pathName }) => {
       const { text = 'Home' } = allroutes.find((item) => pathName.includes(item.path)) || {};
-      document.title = `Ada - ${text}`;
+      document.title = `Ada ${text === 'Home' ? '卑微小前端' : text}`;
     });
   });
   return (

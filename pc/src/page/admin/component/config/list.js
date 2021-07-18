@@ -13,7 +13,9 @@ export default (props) => {
     setValue([...value, {}]);
   };
   const onDelete = (index) => {
-    setValue(value.filter((_, idx) => index !== idx));
+    const newVal = value.filter((_, idx) => index !== idx);
+    setValue(newVal);
+    setFieldsValue({ [code]: newVal });
   };
   const onChange = (val, idx, key) => {
     const newVal = value.map((item, index) => {

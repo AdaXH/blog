@@ -2,11 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="KeyWords" content="Ada 向晗 向银龙 主页 前端 blog" />
-    <meta name="Description" content="向银龙 向晗 Ada 主页 前端弱鸡 blog" />
+    <meta name="KeyWords" content="Ada 卑微小前端 Home 主页 blog" />
+    <meta
+      name="Description"
+      content="Ada 卑微小前端，基于react + koa + mogodb的个人主页"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Ada 向晗 向银龙</title>
-    <link rel="stylesheet" href="/live2d/css/live2d.css" />
+    <title>Ada 卑微小前端</title>
+
+    <!-- <link rel="stylesheet" href="/live2d/css/live2d.css" /> -->
     <link
       rel="stylesheet"
       href="https://at.alicdn.com/t/font_1007584_872p8dktes3.css"
@@ -27,20 +31,26 @@
         transition: filter 1s;
       }
     </style>
-    <link rel="stylesheet" href="/pc-src/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://bucker-for-sae.oss-cn-hangzhou.aliyuncs.com/blog/pclib/dist/styles.css"
+    />
   </head>
 
   <body>
     <div id="root"></div>
-    <script src="/pc-src/pc.js"></script>
+    <!-- <script src="/pc-src/pc.js"></script>
     <script src="/pc-src/styles.async.js"></script>
-    <script src="/pc-src/main.async.js"></script>
-    <script type="text/javascript" src="/live2d/js/message.js"></script>
-    <div id="landlord">
+    <script src="/pc-src/main.async.js"></script> -->
+    <script src="https://bucker-for-sae.oss-cn-hangzhou.aliyuncs.com/blog/pclib/dist/pc.js"></script>
+    <script src="https://bucker-for-sae.oss-cn-hangzhou.aliyuncs.com/blog/pclib/dist/0.pc.js"></script>
+    <script src="https://bucker-for-sae.oss-cn-hangzhou.aliyuncs.com/blog/pclib/dist/2.pc.js"></script>
+    <!-- <script type="text/javascript" src="/live2d/js/message.js"></script> -->
+    <!-- <div id="landlord">
       <div class="closeLive" onclick="closeLive()">退下！</div>
       <div class="message" id="live2d_msg"></div>
       <canvas id="live2d" width="200" height="400" class="live2d"></canvas>
-    </div>
+    </div> -->
     <script
       type="text/javascript"
       charset="utf-8"
@@ -61,26 +71,26 @@
         s.parentNode.insertBefore(bp, s);
       })();
     </script>
-    <script type="text/javascript">
+    <!-- <script type="text/javascript">
       var message_Path = '/live2d/';
       var home_Path = 'https://www.adaxh.site';
-    </script>
-    <script type="text/javascript" src="/live2d/js/live2d.js"></script>
-    <script type="text/javascript">
+    </script> -->
+    <!-- <script type="text/javascript" src="/live2d/js/live2d.js"></script> -->
+    <!-- <script type="text/javascript">
       loadlive2d('live2d', '/live2d/model/shizuku/model.json');
-    </script>
+    </script> -->
     <script>
-      var timer = undefined;
-      window.live2dMsg = function (msg, timeOut = 8000) {
-        var msgContainer = document.getElementById('live2d_msg');
-        if (timer) clearTimeout(timer);
-        if (!msgContainer) return;
-        msgContainer.style.cssText = 'opacity: 1';
-        msgContainer.innerHTML = msg;
-        timer = setTimeout(function () {
-          msgContainer.style.cssText = 'opacity: 0';
-        }, timeOut);
-      };
+      // var timer = undefined;
+      // window.live2dMsg = function (msg, timeOut = 8000) {
+      //   var msgContainer = document.getElementById('live2d_msg');
+      //   if (timer) clearTimeout(timer);
+      //   if (!msgContainer) return;
+      //   msgContainer.style.cssText = 'opacity: 1';
+      //   msgContainer.innerHTML = msg;
+      //   timer = setTimeout(function () {
+      //     msgContainer.style.cssText = 'opacity: 0';
+      //   }, timeOut);
+      // };
     </script>
   </body>
 </html>

@@ -52,17 +52,18 @@ const Dialog = (props) => {
           return;
         }
 
-        const setImgResult = await setDynamicImg(_id, curImg);
-        if (setImgResult)
+        const setImgResult = img && await setDynamicImg(_id, curImg);
+        if (img && setImgResult) {
           Notification[setImgResult.success ? 'success' : 'fail']({
             msg: setImgResult.success ? 'upload success' : setImgResult,
           });
+        }
         await dispatch({
           type: 'dynamic/addDynamic',
           date: Date.now(),
           title: _title,
           content: data,
-          img: setImgResult.img,
+          img: img && setImgResult.img,
           upvote: 1,
         }).then((result) => {
           result.success && dispatch({ type: 'dialog/hide' });

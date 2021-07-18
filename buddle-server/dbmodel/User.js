@@ -1,0 +1,1 @@
+const mongoose=require("mongoose"),userModel=require("./userModel");module.exports=mongoose.model("userss",mongoose.Schema({password:String,admin:{type:Boolean,default:!1},introduce:{type:String,default:void 0},...userModel}));

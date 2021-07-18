@@ -1,0 +1,1 @@
+const mongoose=require("mongoose"),userModel=require("./userModel");module.exports=mongoose.model("messages",mongoose.Schema({...userModel,content:String,date:String,ip:String,repeat:Array({info:String,date:String,toRepeat:String,toRepeatUser:userModel,...userModel})}));

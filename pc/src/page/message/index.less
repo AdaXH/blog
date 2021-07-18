@@ -100,9 +100,9 @@
       max-width: 300px;
       letter-spacing: 2px;
       text-align: center;
-      height: 40px;
+      // height: 40px;
       line-height: 40px;
-      overflow: hidden;
+      overflow-x: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       // padding: 20px 0;
@@ -114,6 +114,11 @@
       animation: flyFromRight 20s infinite linear;
       * {
         display: inline-block;
+      }
+      img {
+        max-width: 70px;
+        max-height: 70px;
+        margin-right: 3px;
       }
     }
   }
@@ -217,7 +222,7 @@
     left: 50%;
     margin-left: -300px;
     margin-top: -320px;
-    animation: formRight 1s;
+    animation: formRight .6s;
     -webkit-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
     -webkit-transform: translate3d(100px, 0, 0);
@@ -240,7 +245,7 @@
         .repeatList {
           padding: 20px;
           font-size: 13px;
-          // animation: formRight 1s;
+          // animation: formRight .6s;
           // opacity: 1;
           // -webkit-animation-fill-mode: forwards;
           // animation-fill-mode: forwards;
@@ -340,6 +345,11 @@
                 * {
                   color: white;
                 }
+                img {
+                  max-width: 70px;
+                  max-height: 70px;
+                  margin-right: 3px;
+                }
                 p,
                 h1,
                 h2,
@@ -362,6 +372,11 @@
           position: relative;
           font-size: 13px;
           line-height: 1.5;
+          img {
+            max-width: 70px;
+            max-height: 70px;
+            margin-right: 3px;
+          }
           .conBox {
             * {
               color: white;
